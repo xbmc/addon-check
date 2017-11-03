@@ -45,7 +45,7 @@ def find_in_file(path, search_terms):
 def find_file_name(path, search_terms):
     results = []
 
-    if search_terms.count > 0:
+    if len(search_terms) > 0:
         for dir in os.walk(path):
             for file in dir[2]:
                 for term in search_terms:
