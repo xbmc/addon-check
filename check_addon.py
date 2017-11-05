@@ -80,13 +80,17 @@ def check_addon(error_counter, addon_path):
 
 def check_artwork(error_counter, addon_path):
     # icon, fanart, screenshot
-    e = xml.etree.ElementTree.parse(os.path.join(addon_path, "addon.xml"))
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    try:
+        e = xml.etree.ElementTree.parse(addon_xml_path)
 
-    error_counter = check_image_type(error_counter, "icon", e, addon_path)
-    error_counter = check_image_type(error_counter, "fanart", e, addon_path)
-    error_counter = check_image_type(
-        error_counter, "screenshot", e, addon_path)
-
+        error_counter = check_image_type(error_counter, "icon", e, addon_path)
+        error_counter = check_image_type(error_counter, "fanart", e, addon_path)
+        error_counter = check_image_type(
+            error_counter, "screenshot", e, addon_path)
+    except xml.etree.ElementTree.ParseError:
+        # we're already handling addon.xml parse errors, so don't do it here - or don't count it at least
+        pass
     return error_counter
 
 
@@ -111,26 +115,30 @@ def check_image_type(error_counter, image_type, e, addon_path):
             filepath = os.path.join(addon_path, image.text)
             if(os.path.isfile(filepath)):
                 print("Image %s exists" % image_type)
-                im = Image.open(filepath)
-                width, height = im.size
+                try:
+                    im = Image.open(filepath)
+                    width, height = im.size
 
-                if image_type == "icon":
-                    if((width != 256 and height != 256) and (width != 512 and height != 512)):
-                        error_counter = logProblem(
-                            error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
+                    if image_type == "icon":
+                        if((width != 256 and height != 256) and (width != 512 and height != 512)):
+                            error_counter = logProblem(
+                                error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
+                        else:
+                            print("%s dimensions are fine %sx%s" %
+                                (image_type, width, height))
+                    elif image_type == "fanart":
+                        if((width != 1280 and height != 720) and (width != 1920 and height != 1080)):
+                            error_counter = logProblem(
+                                error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
+                        else:
+                            print("%s dimensions are fine %sx%s" %
+                                (image_type, width, height))
                     else:
-                        print("%s dimensions are fine %sx%s" %
-                              (image_type, width, height))
-                elif image_type == "fanart":
-                    if((width != 1280 and height != 720) and (width != 1920 and height != 1080)):
-                        error_counter = logProblem(
-                            error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
-                    else:
-                        print("%s dimensions are fine %sx%s" %
-                              (image_type, width, height))
-                else:
-                    # screenshots have no size definitions
-                    pass
+                        # screenshots have no size definitions
+                        pass
+                except IOError:
+                    error_counter = logProblem(
+                        error_counter, "Could not open image, is the file corrupted? %s" % filepath)
 
             else:
                 # if it's a fallback path addons.xml should still be able to
@@ -157,13 +165,18 @@ def addon_file_exists(error_counter, addon_path, file_name):
 
 
 def addon_xml_matches_folder(error_counter, addon_path):
-    e = xml.etree.ElementTree.parse(os.path.join(addon_path, "addon.xml"))
-    addon = e.getroot()
-    if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
-        print("Addon id matches foldername")
-    else:
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    try:
+        e = xml.etree.ElementTree.parse(addon_xml_path)
+        addon = e.getroot()
+        if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
+            print("Addon id matches foldername")
+        else:
+            error_counter = logProblem(
+                error_counter, "Addon id and foldername does not match.")
+    except xml.etree.ElementTree.ParseError:
         error_counter = logProblem(
-            error_counter, "Addon id and foldername does not match.")
+            error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
     return error_counter
 
 
