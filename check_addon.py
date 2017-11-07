@@ -59,43 +59,53 @@ def check_addon(error_counter, addon_path):
     colorPrint("Checking %s" % os.path.basename(
         os.path.normpath(addon_path)), "34")
 
-    error_counter = addon_file_exists(error_counter, addon_path, "addon\.xml")
 
-    error_counter = addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
+    error_counter, addon_xml = check_addon_xml(error_counter, addon_path)
 
-    error_counter = addon_xml_matches_folder(error_counter, addon_path)
+    if addon_xml != None:
+        if len(addon_xml.findall("*//broken")) == 0:
+            error_counter = check_artwork(error_counter, addon_path, addon_xml)
 
-    error_counter = check_artwork(error_counter, addon_path)
+            # check if license file is existing
+            error_counter = addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
 
-    error_counter = check_for_legacy_strings_xml(error_counter, addon_path)
+            error_counter = check_for_legacy_strings_xml(error_counter, addon_path)
 
-    error_counter = check_for_legacy_language_path(error_counter, addon_path)
+            error_counter = check_for_legacy_language_path(error_counter, addon_path)
 
-    error_counter = find_blacklisted_strings(error_counter, addon_path)
+            error_counter = find_blacklisted_strings(error_counter, addon_path)
 
-    error_counter = find_blacklisted_files(error_counter, addon_path)
+            error_counter = find_blacklisted_files(error_counter, addon_path)
+        else:
+            print "Addon marked as broken - skipping"
 
     return error_counter
 
 
-def check_artwork(error_counter, addon_path):
-    # icon, fanart, screenshot
+def check_addon_xml(error_counter, addon_path):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
+    addon_xml = None
     try:
-        e = xml.etree.ElementTree.parse(addon_xml_path)
+        addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
 
-        error_counter = check_image_type(error_counter, "icon", e, addon_path)
-        error_counter = check_image_type(error_counter, "fanart", e, addon_path)
-        error_counter = check_image_type(
-            error_counter, "screenshot", e, addon_path)
+        error_counter = addon_file_exists(error_counter, addon_path, "addon\.xml")
+        error_counter = addon_xml_matches_folder(error_counter, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
-        # we're already handling addon.xml parse errors, so don't do it here - or don't count it at least
-        pass
+        error_counter = logProblem(error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
+    return error_counter, addon_xml
+
+
+def check_artwork(error_counter, addon_path, addon_xml):
+    # icon, fanart, screenshot
+    error_counter = check_image_type(error_counter, "icon", addon_xml, addon_path)
+    error_counter = check_image_type(error_counter, "fanart", addon_xml, addon_path)
+    error_counter = check_image_type(error_counter, "screenshot", addon_xml, addon_path)
+
     return error_counter
 
 
-def check_image_type(error_counter, image_type, e, addon_path):
-    images = e.findall("*//" + image_type)
+def check_image_type(error_counter, image_type, addon_xml, addon_path):
+    images = addon_xml.findall("*//" + image_type)
 
     icon_fallback = False
     fanart_fallback = False
@@ -164,19 +174,12 @@ def addon_file_exists(error_counter, addon_path, file_name):
         return error_counter
 
 
-def addon_xml_matches_folder(error_counter, addon_path):
-    addon_xml_path = os.path.join(addon_path, "addon.xml")
-    try:
-        e = xml.etree.ElementTree.parse(addon_xml_path)
-        addon = e.getroot()
-        if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
-            print("Addon id matches foldername")
-        else:
-            error_counter = logProblem(
-                error_counter, "Addon id and foldername does not match.")
-    except xml.etree.ElementTree.ParseError:
-        error_counter = logProblem(
-            error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
+def addon_xml_matches_folder(error_counter, addon_path, addon_xml):
+    addon = addon_xml.getroot()
+    if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
+        print("Addon id matches foldername")
+    else:
+        error_counter = logProblem(error_counter, "Addon id and foldername does not match.")
     return error_counter
 
 
