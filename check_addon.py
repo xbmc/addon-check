@@ -55,10 +55,12 @@ def find_file_name(path, search_terms):
     return results
 
 
-def check_addon(error_counter, addon_path):
+def check_config(config, value):
+    return config is None or config[value] is True
+
+def check_addon(error_counter, addon_path, config = None):
     colorPrint("Checking %s" % os.path.basename(
         os.path.normpath(addon_path)), "34")
-
 
     error_counter, addon_xml = check_addon_xml(error_counter, addon_path)
 
@@ -71,7 +73,8 @@ def check_addon(error_counter, addon_path):
 
             error_counter = check_for_legacy_strings_xml(error_counter, addon_path)
 
-            error_counter = check_for_legacy_language_path(error_counter, addon_path)
+            if check_config(config, "check_legacy_language_path"):
+                error_counter = check_for_legacy_language_path(error_counter, addon_path)
 
             error_counter = find_blacklisted_strings(error_counter, addon_path)
 
