@@ -10,7 +10,6 @@ def find_file(name, path):
     for file in os.listdir(path):
         match = re.match(name, file)
         if match != None:
-            print("Found %s" % match.string)
             return os.path.join(path, match.string)
     return
 
@@ -68,10 +67,12 @@ def check_addon(error_counter, addon_path, config = None):
         if len(addon_xml.findall("*//broken")) == 0:
             error_counter = check_artwork(error_counter, addon_path, addon_xml)
 
-            # check if license file is existing
-            error_counter = addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
+            if check_config(config, "check_license_file_exists"):
+                # check if license file is existing
+                error_counter = addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
 
-            error_counter = check_for_legacy_strings_xml(error_counter, addon_path)
+            if check_config(config, "check_legacy_strings_xml"):
+                error_counter = check_for_legacy_strings_xml(error_counter, addon_path)
 
             if check_config(config, "check_legacy_language_path"):
                 error_counter = check_for_legacy_language_path(error_counter, addon_path)
@@ -89,9 +90,11 @@ def check_addon_xml(error_counter, addon_path):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     addon_xml = None
     try:
-        addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
-
         error_counter = addon_file_exists(error_counter, addon_path, "addon\.xml")
+
+        addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
+        addon = addon_xml.getroot()
+        colorPrint ("created by %s" % addon.attrib.get("provider-name"), "34")
         error_counter = addon_xml_matches_folder(error_counter, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
         error_counter = logProblem(error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
