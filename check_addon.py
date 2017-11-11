@@ -18,7 +18,6 @@ def find_file(name, path):
 def find_file_recursive(name, path):
     for file in os.walk(path):
         if name in file[2]:
-            print("Found " + name)
             return os.path.join(path, name)
     return
 
