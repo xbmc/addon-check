@@ -18,7 +18,7 @@ def check_repo():
         os.path.dirname(os.path.realpath(__file__)), os.pardir))
     print("Repo path " + repo_path)
 
-    toplevel_folders = next(os.walk(repo_path))[1]
+    toplevel_folders = sorted(next(os.walk(repo_path))[1])
     print("Toplevel folders " + str(toplevel_folders))
 
     config = read_config_for_version(repo_path)
