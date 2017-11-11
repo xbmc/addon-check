@@ -1,8 +1,16 @@
 import os
 import sys
+import json
 import check_addon
 from common import colorPrint
 
+
+def read_config_for_version(repo_path):
+    config_path = os.path.join(repo_path, '.tests-config.json')
+    with open(config_path) as json_data:
+        return json.load(json_data)
+
+    return None
 
 def check_repo():
     error_counter = {"warnings": 0, "problems": 0}
@@ -13,10 +21,12 @@ def check_repo():
     toplevel_folders = next(os.walk(repo_path))[1]
     print("Toplevel folders " + str(toplevel_folders))
 
+    config = read_config_for_version(repo_path)
+
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             addon_path = os.path.join(repo_path, addon_folder)
-            error_counter = check_addon.check_addon(error_counter, addon_path)
+            error_counter = check_addon.check_addon(error_counter, addon_path, config)
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
