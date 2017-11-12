@@ -3,6 +3,10 @@
 This tool checks the Kodi repo for best practices and creates problem and warning reports
 
 ## Features
+- Checks if all images are valid images
+
+- Checks if all xml files are valid
+
 - Checks if addon.xml and license file exists for an addon
 
 - Checks if the addon id in addon.xml matches with the folder name
