@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import xml.etree.ElementTree
 from PIL import Image
 from common import colorPrint
@@ -60,6 +61,9 @@ def start(error_counter, addon_path, config = None):
 
             error_counter = _check_for_invalid_xml_files(error_counter, file_index)
 
+            error_counter = _check_for_invalid_json_files(
+                error_counter, file_index)
+
             error_counter = _check_artwork(error_counter, addon_path, addon_xml, file_index)
 
             if _check_config(config, "check_license_file_exists"):
@@ -90,6 +94,21 @@ def _check_for_invalid_xml_files(error_counter, file_index):
                 xml.etree.ElementTree.parse(xml_path)
             except xml.etree.ElementTree.ParseError:
                 error_counter = _logProblem(error_counter, "Invalid xml found. %s" % xml_path)
+
+    return error_counter
+
+
+def _check_for_invalid_json_files(error_counter, file_index):
+    for file in file_index:
+        if ".json" in file["name"]:
+            path = os.path.join(file["path"], file["name"])
+            try:
+                # Just try if we can successfully parse it
+                with open(path) as json_data:
+                    json.load(json_data)
+            except ValueError:
+                error_counter = _logProblem(
+                    error_counter, "Invalid json found. %s" % path)
 
     return error_counter
 
@@ -247,7 +266,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info)?$"
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf)?$"
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")
