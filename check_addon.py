@@ -266,7 +266,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf)?$"
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme)?$"
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")
@@ -274,7 +274,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         # This will not check "README" or ".gitignore"
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts)-1]
-            if re.match(whitelist, file_ending) == None:
+            if re.match(whitelist, file_ending.lower()) == None:
                 error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
                     os.path.join(file["path"], file["name"])))
 
