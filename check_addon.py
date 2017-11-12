@@ -266,7 +266,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml)?$"
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict)?$"
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")
