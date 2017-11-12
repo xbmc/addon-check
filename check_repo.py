@@ -7,8 +7,9 @@ from common import colorPrint
 
 def _read_config_for_version(repo_path):
     config_path = os.path.join(repo_path, '.tests-config.json')
-    with open(config_path) as json_data:
-        return json.load(json_data)
+    if os.path.isfile(config_path):
+        with open(config_path) as json_data:
+            return json.load(json_data)
 
     return None
 
