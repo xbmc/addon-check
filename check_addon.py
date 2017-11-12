@@ -45,20 +45,6 @@ def find_in_file(path, search_terms):
                 searchfile.close()
     return results
 
-
-def _find_file_name(path, search_terms):
-    results = []
-
-    if len(search_terms) > 0:
-        for dir in os.walk(path):
-            for file_name in dir[2]:
-                for term in search_terms:
-                    if term in file_name:
-                        file_path = os.path.join(dir[0], file_name)
-                        results.append({"term": term, "searchfile": file_path})
-    return results
-
-
 def _check_config(config, value):
     return config is None or config[value] is True
 
@@ -88,7 +74,7 @@ def start(error_counter, addon_path, config = None):
 
             error_counter = _find_blacklisted_strings(error_counter, addon_path)
 
-            error_counter = _find_blacklisted_files(error_counter, addon_path)
+            error_counter = _check_file_whitelist(error_counter, file_index, addon_path)
         else:
             print("Addon marked as broken - skipping")
 
@@ -256,17 +242,22 @@ def _check_for_legacy_language_path(error_counter, addon_path):
     return error_counter
 
 
-def _find_blacklisted_files(error_counter, addon_path):
-    problem_list = [".so", ".dll", ".pyo", ".exe",
-                    ".xbt", ".xpr", "Thumbs.db", ".pdf", ".doc"]
-    for result in _find_file_name(addon_path, problem_list):
-        error_counter = _logProblem(error_counter, "Found blacklisted term %s in filename %s" % (
-            result["term"], result["searchfile"]))
+def _check_file_whitelist(error_counter, file_index, addon_path):
+    if ".module." in addon_path:
+        print("Module skipping whitelist")
+        return error_counter
 
-    warning_list = []
-    for result in _find_file_name(addon_path, warning_list):
-        error_counter = _logWarning(error_counter, "Found blacklisted term %s in filename %s" % (
-            result["term"], result["searchfile"]))
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info)?$"
+
+    for file in file_index:
+        file_parts = file["name"].rsplit(".")
+        # Only check file endings if there are file endings... 
+        # This will not check "README" or ".gitignore"
+        if len(file_parts) > 1:
+            file_ending = "." + file_parts[len(file_parts)-1]
+            if re.match(whitelist, file_ending) == None:
+                error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
+                    os.path.join(file["path"], file["name"])))
 
     return error_counter
 
