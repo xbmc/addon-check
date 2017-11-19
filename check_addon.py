@@ -29,12 +29,12 @@ def _create_file_index(path):
             file_index.append({"path": dirs[0], "name": file_name})
     return file_index
 
-def find_in_file(path, search_terms):
+def _find_in_file(path, search_terms):
     results = []
     if len(search_terms) > 0:
-        for dir in os.walk(path):
-            for file_name in dir[2]:
-                file_path = os.path.join(dir[0], file_name)
+        for directory in os.walk(path):
+            for file_name in directory[2]:
+                file_path = os.path.join(directory[0], file_name)
                 searchfile = open(file_path, "r")
                 linenumber = 0
                 for line in searchfile:
@@ -121,7 +121,7 @@ def _check_addon_xml(error_counter, addon_path):
 
         addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        colorPrint ("created by %s" % addon.attrib.get("provider-name"), "34")
+        colorPrint("created by %s" % addon.attrib.get("provider-name"), "34")
         error_counter = _addon_xml_matches_folder(error_counter, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
         error_counter = _logProblem(error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
@@ -153,35 +153,40 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
 
     icon_fallback = False
     fanart_fallback = False
-    if(not images and image_type == "icon"):
+    if not images and image_type == "icon":
         icon_fallback = True
         image = type('image', (object,),
                      {'text': 'icon.png'})()
         images.append(image)
-    elif(not images and image_type == "fanart" and ".module." not in addon_path):
-        fanart_fallback = True
-        image = type('image', (object,),
-                     {'text': 'fanart.jpg'})()
-        images.append(image)
+    elif not images and image_type == "fanart":
+        skip_addon_types = [".module.", "metadata.", "context.", ".language."]
+        for addon_type in skip_addon_types:
+            if addon_type in addon_path:
+                break
+        else:
+            fanart_fallback = True
+            image = type('image', (object,),
+                         {'text': 'fanart.jpg'})()
+            images.append(image)
 
     for image in images:
-        if(image.text):
+        if image.text:
             filepath = os.path.join(addon_path, image.text)
-            if(os.path.isfile(filepath)):
+            if os.path.isfile(filepath):
                 print("Image %s exists" % image_type)
                 try:
                     im = Image.open(filepath)
                     width, height = im.size
 
                     if image_type == "icon":
-                        if((width != 256 and height != 256) and (width != 512 and height != 512)):
+                        if (width != 256 and height != 256) and (width != 512 and height != 512):
                             error_counter = _logProblem(
                                 error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
                         else:
                             print("%s dimensions are fine %sx%s" %
                                 (image_type, width, height))
                     elif image_type == "fanart":
-                        if((width != 1280 and height != 720) and (width != 1920 and height != 1080)):
+                        if (width != 1280 and height != 720) and (width != 1920 and height != 1080):
                             error_counter = _logProblem(
                                 error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
                         else:
@@ -236,14 +241,16 @@ def _check_for_legacy_strings_xml(error_counter, addon_path):
 
 def _find_blacklisted_strings(error_counter, addon_path):
     problem_list = []
-    for result in find_in_file(addon_path, problem_list):
-        error_counter = _logProblem(error_counter, "Found blacklisted term %s in file %s:%s (%s)" % (
-            result["term"], result["searchfile"], result["linenumber"], result["line"]))
+    for result in _find_in_file(addon_path, problem_list):
+        error_counter = _logProblem(error_counter, "Found blacklisted term %s in file %s:%s (%s)"
+                                    % (result["term"], result["searchfile"],
+                                       result["linenumber"], result["line"]))
 
     warning_list = []
-    for result in find_in_file(addon_path, warning_list):
-        error_counter = _logWarning(error_counter, "Found blacklisted term %s in file %s:%s (%s)" % (
-            result["term"], result["searchfile"], result["linenumber"], result["line"]))
+    for result in _find_in_file(addon_path, warning_list):
+        error_counter = _logWarning(error_counter, "Found blacklisted term %s in file %s:%s (%s)"
+                                    % (result["term"], result["searchfile"],
+                                       result["linenumber"], result["line"]))
 
     return error_counter
 
@@ -254,7 +261,7 @@ def _check_for_legacy_language_path(error_counter, addon_path):
         dirs = next(os.walk(language_path))[1]
         found_warning = False
         for dir in dirs:
-            if(not found_warning and "resource.language." not in dir):
+            if not found_warning and "resource.language." not in dir:
                 error_counter = _logWarning(
                     error_counter, "Using the old language directory structure, please move to the new one.")
                 found_warning = True
@@ -266,15 +273,15 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict)?$"
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")
-        # Only check file endings if there are file endings... 
+        # Only check file endings if there are file endings...
         # This will not check "README" or ".gitignore"
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts)-1]
-            if re.match(whitelist, file_ending.lower()) == None:
+            if re.match(whitelist, file_ending.lower()) is None:
                 error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
                     os.path.join(file["path"], file["name"])))
 
