@@ -8,7 +8,7 @@ from common import colorPrint
 
 def _find_file(name, path):
     for file_name in os.listdir(path):
-        match = re.match(name, file_name)
+        match = re.match(name, file_name, re.IGNORECASE)
         if match != None:
             return os.path.join(path, match.string)
     return
@@ -281,7 +281,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         # This will not check "README" or ".gitignore"
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts)-1]
-            if re.match(whitelist, file_ending.lower()) is None:
+            if re.match(whitelist, file_ending, re.IGNORECASE) is None:
                 error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
                     os.path.join(file["path"], file["name"])))
 
