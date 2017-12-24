@@ -1,9 +1,10 @@
 import os
 import re
 import json
+import pathlib
 import xml.etree.ElementTree
 from PIL import Image
-from common import colorPrint
+from common import colorPrint, check_config
 
 
 def _find_file(name, path):
@@ -29,25 +30,25 @@ def _create_file_index(path):
             file_index.append({"path": dirs[0], "name": file_name})
     return file_index
 
-def _find_in_file(path, search_terms):
+
+def _find_in_file(path, search_terms, whitelisted_file_types):
     results = []
     if len(search_terms) > 0:
         for directory in os.walk(path):
             for file_name in directory[2]:
-                file_path = os.path.join(directory[0], file_name)
-                searchfile = open(file_path, "r")
-                linenumber = 0
-                for line in searchfile:
-                    linenumber = linenumber + 1
-                    for term in search_terms:
-                        if term in line:
-                            results.append({"term": term, "line": line.strip(
-                            ), "searchfile": file_path, "linenumber": linenumber})
-                searchfile.close()
-    return results
+                if pathlib.Path(file_name).suffix in whitelisted_file_types or len(whitelisted_file_types) == 0:
+                    file_path = os.path.join(directory[0], file_name)
 
-def _check_config(config, value):
-    return config is None or config[value] is True
+                    searchfile = open(file_path, "r", encoding="utf8")
+                    linenumber = 0
+                    for line in searchfile:
+                        linenumber = linenumber + 1
+                        for term in search_terms:
+                            if term in line:
+                                results.append({"term": term, "line": line.strip(
+                                ), "searchfile": file_path, "linenumber": linenumber})
+                    searchfile.close()
+    return results
 
 def start(error_counter, addon_path, config = None):
     colorPrint("Checking %s" % os.path.basename(
@@ -66,17 +67,23 @@ def start(error_counter, addon_path, config = None):
 
             error_counter = _check_artwork(error_counter, addon_path, addon_xml, file_index)
 
-            if _check_config(config, "check_license_file_exists"):
+            if check_config(config, "check_license_file_exists"):
                 # check if license file is existing
                 error_counter = _addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
 
-            if _check_config(config, "check_legacy_strings_xml"):
+            if check_config(config, "check_legacy_strings_xml"):
                 error_counter = _check_for_legacy_strings_xml(error_counter, addon_path)
 
-            if _check_config(config, "check_legacy_language_path"):
+            if check_config(config, "check_legacy_language_path"):
                 error_counter = _check_for_legacy_language_path(error_counter, addon_path)
 
-            error_counter = _find_blacklisted_strings(error_counter, addon_path)
+            # Kodi 18 Leia + deprecations
+            if check_config(config, "check_kodi_leia_deprecations"):
+                error_counter = _find_blacklisted_strings(
+                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan"], [], [".py", ".xml"])
+
+            # General blacklist
+            error_counter = _find_blacklisted_strings(error_counter, addon_path, [], [], [])
 
             error_counter = _check_file_whitelist(error_counter, file_index, addon_path)
         else:
@@ -241,15 +248,13 @@ def _check_for_legacy_strings_xml(error_counter, addon_path):
         return _logProblem(error_counter, "Found strings.xml in folder %s please migrate to strings.po." % addon_path)
 
 
-def _find_blacklisted_strings(error_counter, addon_path):
-    problem_list = []
-    for result in _find_in_file(addon_path, problem_list):
+def _find_blacklisted_strings(error_counter, addon_path, problem_list, warning_list, whitelisted_file_types):
+    for result in _find_in_file(addon_path, problem_list, whitelisted_file_types):
         error_counter = _logProblem(error_counter, "Found blacklisted term %s in file %s:%s (%s)"
                                     % (result["term"], result["searchfile"],
                                        result["linenumber"], result["line"]))
 
-    warning_list = []
-    for result in _find_in_file(addon_path, warning_list):
+    for result in _find_in_file(addon_path, warning_list, whitelisted_file_types):
         error_counter = _logWarning(error_counter, "Found blacklisted term %s in file %s:%s (%s)"
                                     % (result["term"], result["searchfile"],
                                        result["linenumber"], result["line"]))
