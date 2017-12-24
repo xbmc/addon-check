@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/xbmc/addon-check.svg?branch=master)](https://travis-ci.org/xbmc/addon-check)
+
 # Kodi Addon checker
 
 This tool checks the Kodi repo for best practices and creates problem and warning reports
