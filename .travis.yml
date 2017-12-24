@@ -1,0 +1,12 @@
+language: python
+matrix:
+  include:
+    - python: "3.5"
+    - python: "nightly"
+
+# command to install dependencies
+install:
+  - pip install pytest
+# command to run tests
+script: py.test -v
+
