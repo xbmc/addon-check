@@ -8,7 +8,7 @@ from common import check_config
 
 
 def _read_config_for_version(filename):
-    config_path = os.path.join("tests\\fixtures", filename)
+    config_path = os.path.join("tests", "fixtures", filename)
     if os.path.isfile(config_path):
         with open(config_path) as json_data:
             return json.load(json_data)
@@ -24,7 +24,6 @@ def test_if_false_gets_picked_up():
 
 def test_if_true_gets_picked_up():
     config = _read_config_for_version('.tests-config.json')
-    print(config)
     assert check_config(config, "check_legacy_strings_xml") is True
 
 
