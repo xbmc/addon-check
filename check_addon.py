@@ -203,8 +203,10 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                 # if it's a fallback path addons.xml should still be able to
                 # get build
                 if fanart_fallback or icon_fallback:
-                    error_counter = _logWarning(
-                        error_counter, "%s does not exist at specified path." % image_type)
+                    if icon_fallback:
+                        print("You might want to add a icon")
+                    elif fanart_fallback:
+                        print("You might want to add a fanart")
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
