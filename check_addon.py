@@ -80,7 +80,10 @@ def start(error_counter, addon_path, config = None):
             # Kodi 18 Leia + deprecations
             if check_config(config, "check_kodi_leia_deprecations"):
                 error_counter = _find_blacklisted_strings(
-                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan"], [], [".py", ".xml"])
+                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
+                                                "ListItem.ChannelNumber", "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
+                                                "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber", "VideoPlayer.SubChannelNumber"],
+                                                [], [".py", ".xml"])
 
             # General blacklist
             error_counter = _find_blacklisted_strings(error_counter, addon_path, [], [], [])
