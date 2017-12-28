@@ -6,7 +6,7 @@ matrix:
 
 # command to install dependencies
 install:
-  - pip install pytest
+  - pip install pytest Pillow
 # command to run tests
 script: py.test -v
 
