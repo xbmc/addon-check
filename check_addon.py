@@ -4,7 +4,7 @@ import json
 import pathlib
 import xml.etree.ElementTree
 from PIL import Image
-from common import colorPrint, check_config
+from common import colorPrint, check_config, has_transparency
 
 
 def _find_file(name, path):
@@ -189,6 +189,8 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                     width, height = im.size
 
                     if image_type == "icon":
+                        if(has_transparency(im)):
+                            error_counter = _logProblem(error_counter, "Icon.png should be solid. It has transparency.")
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
                             error_counter = _logProblem(
                                 error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
