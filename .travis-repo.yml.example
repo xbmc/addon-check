@@ -9,7 +9,7 @@ install:
 script: 
   - cd .tests 
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then python check_repo.py; fi'
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then python check_repo.py  $(git diff --name-only HEAD~ | grep / | cut -d / -f1 | sort | uniq); fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then python check_repo.py $(git diff --diff-filter=d --name-only HEAD~ | grep / | cut -d / -f1 | sort | uniq); fi'
 
 notifications:
   email:
