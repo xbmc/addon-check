@@ -2,6 +2,7 @@ import os
 import re
 import json
 import pathlib
+from lxml import etree
 import xml.etree.ElementTree
 from PIL import Image
 from common import colorPrint, check_config, has_transparency
@@ -61,6 +62,8 @@ def start(error_counter, addon_path, config = None):
             file_index = _create_file_index(addon_path)
 
             error_counter = _check_for_invalid_xml_files(error_counter, file_index)
+            error_counter = _check_addon_version(error_counter, addon_path)
+
 
             error_counter = _check_for_invalid_json_files(
                 error_counter, file_index)
@@ -296,6 +299,15 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
             if re.match(whitelist, file_ending, re.IGNORECASE) is None:
                 error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
                     os.path.join(file["path"], file["name"])))
+
+    return error_counter
+
+def _check_addon_version(error_counter, addon_path):
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    try:
+        tree = etree.parse(addon_xml_path)
+    except etree.XMLSyntaxError:
+        error_counter = _logProblem(error_counter,"XML file does not have a valid xml_version")
 
     return error_counter
 
