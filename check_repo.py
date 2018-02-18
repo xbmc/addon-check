@@ -24,7 +24,7 @@ def check_repo():
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
     else:
         toplevel_folders = sorted(parameters)
-        
+
     print("Toplevel folders " + str(toplevel_folders))
 
     config = _read_config_for_version(repo_path)

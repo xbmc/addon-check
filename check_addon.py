@@ -6,7 +6,7 @@ import xml.etree.ElementTree
 from PIL import Image
 from common import colorPrint, check_config, has_transparency
 
-
+REL_PATH=""
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
@@ -54,6 +54,10 @@ def start(error_counter, addon_path, config = None):
     colorPrint("Checking %s" % os.path.basename(
         os.path.normpath(addon_path)), "34")
 
+    global REL_PATH
+    # Extract common path from addon paths
+    # All paths will be printed relative to this path
+    REL_PATH = os.path.split(addon_path[:-1])[0]
     error_counter, addon_xml = _check_addon_xml(error_counter, addon_path)
 
     if addon_xml != None:
@@ -103,7 +107,7 @@ def _check_for_invalid_xml_files(error_counter, file_index):
                 # Just try if we can successfully parse it
                 xml.etree.ElementTree.parse(xml_path)
             except xml.etree.ElementTree.ParseError:
-                error_counter = _logProblem(error_counter, "Invalid xml found. %s" % xml_path)
+                error_counter = _logProblem(error_counter, "Invalid xml found. %s" % relative_path(xml_path))
 
     return error_counter
 
@@ -118,7 +122,7 @@ def _check_for_invalid_json_files(error_counter, file_index):
                     json.load(json_data)
             except ValueError:
                 error_counter = _logProblem(
-                    error_counter, "Invalid json found. %s" % path)
+                    error_counter, "Invalid json found. %s" % relative_path(path))
 
     return error_counter
 
@@ -134,7 +138,8 @@ def _check_addon_xml(error_counter, addon_path):
         colorPrint("created by %s" % addon.attrib.get("provider-name"), "34")
         error_counter = _addon_xml_matches_folder(error_counter, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
-        error_counter = _logProblem(error_counter, "Addon xml not valid, check xml. %s" % addon_xml_path)
+        error_counter = _logProblem(error_counter, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path))
+
     return error_counter, addon_xml
 
 
@@ -153,7 +158,7 @@ def _check_artwork(error_counter, addon_path, addon_xml, file_index):
                 Image.open(image_path)
             except IOError:
                 error_counter = _logProblem(
-                    error_counter, "Could not open image, is the file corrupted? %s" % image_path)
+                    error_counter, "Could not open image, is the file corrupted? %s" % relative_path(image_path))
 
     return error_counter
 
@@ -209,7 +214,7 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                         pass
                 except IOError:
                     error_counter = _logProblem(
-                        error_counter, "Could not open image, is the file corrupted? %s" % filepath)
+                        error_counter, "Could not open image, is the file corrupted? %s" % relative_path(filepath))
 
             else:
                 # if it's a fallback path addons.xml should still be able to
@@ -232,7 +237,7 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
 
 def _addon_file_exists(error_counter, addon_path, file_name):
     if _find_file(file_name, addon_path) is None:
-        return _logProblem(error_counter, "Not found %s in folder %s" % (file_name, addon_path))
+        return _logProblem(error_counter, "Not found %s in folder %s" % (file_name, relative_path(addon_path)))
     else:
         return error_counter
 
@@ -250,7 +255,7 @@ def _check_for_legacy_strings_xml(error_counter, addon_path):
     if _find_file_recursive("strings.xml", addon_path) is None:
         return error_counter
     else:
-        return _logProblem(error_counter, "Found strings.xml in folder %s please migrate to strings.po." % addon_path)
+        return _logProblem(error_counter, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path))
 
 
 def _find_blacklisted_strings(error_counter, addon_path, problem_list, warning_list, whitelisted_file_types):
@@ -299,6 +304,9 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
 
     return error_counter
 
+def relative_path(file_path):
+    path_to_print = file_path[len(REL_PATH):]
+    return ("." + path_to_print)
 
 def _logProblem(error_counter, problem_string):
     colorPrint("PROBLEM: %s" % problem_string, "31")
