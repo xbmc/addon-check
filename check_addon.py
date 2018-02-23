@@ -6,7 +6,9 @@ import xml.etree.ElementTree
 from PIL import Image
 from common import colorPrint, check_config, has_transparency
 
-REL_PATH=""
+REL_PATH = ""
+
+
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
@@ -50,7 +52,8 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
                     searchfile.close()
     return results
 
-def start(error_counter, addon_path, config = None):
+
+def start(error_counter, addon_path, config=None):
     colorPrint("Checking %s" % os.path.basename(
         os.path.normpath(addon_path)), "34")
 
@@ -84,10 +87,11 @@ def start(error_counter, addon_path, config = None):
             # Kodi 18 Leia + deprecations
             if check_config(config, "check_kodi_leia_deprecations"):
                 error_counter = _find_blacklisted_strings(
-                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
-                                                "ListItem.ChannelNumber", "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
-                                                "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber", "VideoPlayer.SubChannelNumber"],
-                                                [], [".py", ".xml"])
+                    error_counter, addon_path,
+                    ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
+                     "ListItem.ChannelNumber", "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
+                     "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber", "VideoPlayer.SubChannelNumber"],
+                    [], [".py", ".xml"])
 
             # General blacklist
             error_counter = _find_blacklisted_strings(error_counter, addon_path, [], [], [])
@@ -151,7 +155,7 @@ def _check_artwork(error_counter, addon_path, addon_xml, file_index):
 
     # go through all but the above and try to open the image
     for file in file_index:
-        if re.match("(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) != None:
+        if re.match("(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
             image_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully open it
@@ -194,21 +198,23 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                     width, height = im.size
 
                     if image_type == "icon":
-                        if(has_transparency(im)):
+                        if has_transparency(im):
                             error_counter = _logProblem(error_counter, "Icon.png should be solid. It has transparency.")
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
                             error_counter = _logProblem(
-                                error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
+                                error_counter,
+                                "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
                         else:
                             print("%s dimensions are fine %sx%s" %
-                                (image_type, width, height))
+                                  (image_type, width, height))
                     elif image_type == "fanart":
                         if (width != 1280 and height != 720) and (width != 1920 and height != 1080):
                             error_counter = _logProblem(
-                                error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
+                                error_counter,
+                                "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
                         else:
                             print("%s dimensions are fine %sx%s" %
-                                (image_type, width, height))
+                                  (image_type, width, height))
                     else:
                         # screenshots have no size definitions
                         pass
@@ -255,7 +261,8 @@ def _check_for_legacy_strings_xml(error_counter, addon_path):
     if _find_file_recursive("strings.xml", addon_path) is None:
         return error_counter
     else:
-        return _logProblem(error_counter, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path))
+        return _logProblem(error_counter,
+                           "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path))
 
 
 def _find_blacklisted_strings(error_counter, addon_path, problem_list, warning_list, whitelisted_file_types):
@@ -297,16 +304,18 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         # Only check file endings if there are file endings...
         # This will not check "README" or ".gitignore"
         if len(file_parts) > 1:
-            file_ending = "." + file_parts[len(file_parts)-1]
+            file_ending = "." + file_parts[len(file_parts) - 1]
             if re.match(whitelist, file_ending, re.IGNORECASE) is None:
                 error_counter = _logProblem(error_counter, "Found non whitelisted file ending in filename %s" % (
                     os.path.join(file["path"], file["name"])))
 
     return error_counter
 
+
 def relative_path(file_path):
     path_to_print = file_path[len(REL_PATH):]
     return ("." + path_to_print)
+
 
 def _logProblem(error_counter, problem_string):
     colorPrint("PROBLEM: %s" % problem_string, "31")
