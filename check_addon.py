@@ -203,12 +203,14 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                             print("%s dimensions are fine %sx%s" %
                                 (image_type, width, height))
                     elif image_type == "fanart":
-                        if (width != 1280 and height != 720) and (width != 1920 and height != 1080):
-                            error_counter = _logProblem(
-                                error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
-                        else:
-                            print("%s dimensions are fine %sx%s" %
-                                (image_type, width, height))
+                            fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
+                            fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
+                            if (width, height) not in fanart_sizes:
+                                error_counter = _logProblem(
+                                      error_counter, "Fanart should have either %s but it has %sx%s" % (fanart_sizes_str,width, height))
+                            else:
+                                print("%s dimensions are fine %sx%s" %
+                                    (image_type, width, height))
                     else:
                         # screenshots have no size definitions
                         pass
