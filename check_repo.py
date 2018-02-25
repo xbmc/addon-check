@@ -13,6 +13,7 @@ def _read_config_for_version(repo_path):
 
     return None
 
+
 def check_repo():
     error_counter = {"warnings": 0, "problems": 0}
     repo_path = os.path.abspath(os.path.join(
@@ -44,5 +45,6 @@ def check_repo():
             error_counter["problems"], error_counter["warnings"]), "35")
 
     print("Finished!")
+
 
 check_repo()
