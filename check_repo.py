@@ -35,15 +35,15 @@ def check_repo():
             error_counter = check_addon.start(
                 error_counter, addon_path, config)
 
-    # if check_addon.check_config(config, "comment_on_pull"):
-    if check_addon.comments:
-        GithubAPI().comment_on_pull(check_addon.comments)
-        GithubAPI().set_label(["Checks failed"])
+    if check_addon.check_config(config, "comment_on_pull"):
+        if check_addon.comments:
+            GithubAPI().comment_on_pull(check_addon.comments)
+            GithubAPI().set_label(["Checks failed"])
+        else:
+            GithubAPI().remove_label(["Checks failed"])
+            GithubAPI().set_label(["Checks passed"])
     else:
-        GithubAPI().remove_label(["Checks failed"])
-        GithubAPI().set_label(["Checks passed"])
-# else:
-    #     colorPrint("No config file found", "7")
+        colorPrint("No config file found", "7")
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
