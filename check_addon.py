@@ -8,6 +8,8 @@ from common import colorPrint, check_config, has_transparency
 
 REL_PATH = ""
 comments = []
+
+
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
@@ -66,22 +68,27 @@ def start(error_counter, addon_path, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            error_counter = _check_for_invalid_xml_files(error_counter, file_index)
+            error_counter = _check_for_invalid_xml_files(
+                error_counter, file_index)
 
             error_counter = _check_for_invalid_json_files(
                 error_counter, file_index)
 
-            error_counter = _check_artwork(error_counter, addon_path, addon_xml, file_index)
+            error_counter = _check_artwork(
+                error_counter, addon_path, addon_xml, file_index)
 
             if check_config(config, "check_license_file_exists"):
                 # check if license file is existing
-                error_counter = _addon_file_exists(error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
+                error_counter = _addon_file_exists(
+                    error_counter, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
 
             if check_config(config, "check_legacy_strings_xml"):
-                error_counter = _check_for_legacy_strings_xml(error_counter, addon_path)
+                error_counter = _check_for_legacy_strings_xml(
+                    error_counter, addon_path)
 
             if check_config(config, "check_legacy_language_path"):
-                error_counter = _check_for_legacy_language_path(error_counter, addon_path)
+                error_counter = _check_for_legacy_language_path(
+                    error_counter, addon_path)
 
             # Kodi 18 Leia + deprecations
             if check_config(config, "check_kodi_leia_deprecations"):
@@ -93,9 +100,11 @@ def start(error_counter, addon_path, config=None):
                     [], [".py", ".xml"])
 
             # General blacklist
-            error_counter = _find_blacklisted_strings(error_counter, addon_path, [], [], [])
+            error_counter = _find_blacklisted_strings(
+                error_counter, addon_path, [], [], [])
 
-            error_counter = _check_file_whitelist(error_counter, file_index, addon_path)
+            error_counter = _check_file_whitelist(
+                error_counter, file_index, addon_path)
         else:
             print("Addon marked as broken - skipping")
 
@@ -110,7 +119,8 @@ def _check_for_invalid_xml_files(error_counter, file_index):
                 # Just try if we can successfully parse it
                 xml.etree.ElementTree.parse(xml_path)
             except xml.etree.ElementTree.ParseError:
-                error_counter = _logProblem(error_counter, "Invalid xml found. %s" % relative_path(xml_path))
+                error_counter = _logProblem(
+                    error_counter, "Invalid xml found. %s" % relative_path(xml_path))
 
     return error_counter
 
@@ -134,23 +144,29 @@ def _check_addon_xml(error_counter, addon_path):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     addon_xml = None
     try:
-        error_counter = _addon_file_exists(error_counter, addon_path, "addon\.xml")
+        error_counter = _addon_file_exists(
+            error_counter, addon_path, "addon\.xml")
 
         addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
         addon = addon_xml.getroot()
         colorPrint("created by %s" % addon.attrib.get("provider-name"), "34")
-        error_counter = _addon_xml_matches_folder(error_counter, addon_path, addon_xml)
+        error_counter = _addon_xml_matches_folder(
+            error_counter, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
-        error_counter = _logProblem(error_counter, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path))
+        error_counter = _logProblem(
+            error_counter, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path))
 
     return error_counter, addon_xml
 
 
 def _check_artwork(error_counter, addon_path, addon_xml, file_index):
     # icon, fanart, screenshot - these will also check if the addon.xml links correctly
-    error_counter = _check_image_type(error_counter, "icon", addon_xml, addon_path)
-    error_counter = _check_image_type(error_counter, "fanart", addon_xml, addon_path)
-    error_counter = _check_image_type(error_counter, "screenshot", addon_xml, addon_path)
+    error_counter = _check_image_type(
+        error_counter, "icon", addon_xml, addon_path)
+    error_counter = _check_image_type(
+        error_counter, "fanart", addon_xml, addon_path)
+    error_counter = _check_image_type(
+        error_counter, "screenshot", addon_xml, addon_path)
 
     # go through all but the above and try to open the image
     for file in file_index:
@@ -198,7 +214,8 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
 
                     if image_type == "icon":
                         if has_transparency(im):
-                            error_counter = _logProblem(error_counter, "Icon.png should be solid. It has transparency.")
+                            error_counter = _logProblem(
+                                error_counter, "Icon.png should be solid. It has transparency.")
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
                             error_counter = _logProblem(
                                 error_counter,
@@ -207,14 +224,16 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                             print("%s dimensions are fine %sx%s" %
                                   (image_type, width, height))
                     elif image_type == "fanart":
-                            fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
-                            fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
-                            if (width, height) not in fanart_sizes:
-                                error_counter = _logProblem(
-                                      error_counter, "Fanart should have either %s but it has %sx%s" % (fanart_sizes_str,width, height))
-                            else:
-                                print("%s dimensions are fine %sx%s" %
-                                    (image_type, width, height))
+                        fanart_sizes = [
+                            (1280, 720), (1920, 1080), (3840, 2160)]
+                        fanart_sizes_str = " or ".join(
+                            ["%dx%d" % (w, h) for w, h in fanart_sizes])
+                        if (width, height) not in fanart_sizes:
+                            error_counter = _logProblem(
+                                error_counter, "Fanart should have either %s but it has %sx%s" % (fanart_sizes_str, width, height))
+                        else:
+                            print("%s dimensions are fine %sx%s" %
+                                  (image_type, width, height))
                     else:
                         # screenshots have no size definitions
                         pass
@@ -253,7 +272,8 @@ def _addon_xml_matches_folder(error_counter, addon_path, addon_xml):
     if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
         print("Addon id matches foldername")
     else:
-        error_counter = _logProblem(error_counter, "Addon id and foldername does not match.")
+        error_counter = _logProblem(
+            error_counter, "Addon id and foldername does not match.")
     return error_counter
 
 
@@ -322,6 +342,7 @@ def _logProblem(error_counter, problem_string):
     comments.append("PROBLEM: %s" % problem_string)
     error_counter["problems"] = error_counter["problems"] + 1
     return error_counter
+
 
 def _logWarning(error_counter, warning_string):
     colorPrint("WARNING: %s" % warning_string, "35")

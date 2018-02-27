@@ -32,15 +32,18 @@ def check_repo():
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             addon_path = os.path.join(repo_path, addon_folder)
-            error_counter = check_addon.start(error_counter, addon_path, config)
+            error_counter = check_addon.start(
+                error_counter, addon_path, config)
 
-    if check_addon.check_config(config, "comment_on_pull"):
-        if check_addon.comments:
-             GithubAPI().comment_on_pull(check_addon.comments)
-             GithubAPI().set_label(["Checks failed"])
-        else:
-            GithubAPI().remove_label(["Checks failed"])
-            GithubAPI().set_label(["Checks passed"])
+    # if check_addon.check_config(config, "comment_on_pull"):
+    if check_addon.comments:
+        GithubAPI().comment_on_pull(check_addon.comments)
+        GithubAPI().set_label(["Checks failed"])
+    else:
+        GithubAPI().remove_label(["Checks failed"])
+        GithubAPI().set_label(["Checks passed"])
+# else:
+    #     colorPrint("No config file found", "7")
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
@@ -50,7 +53,6 @@ def check_repo():
         # If we only found warnings, don't mark the build as broken
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
             error_counter["problems"], error_counter["warnings"]), "35")
-
 
     print("Finished!")
 
