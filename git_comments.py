@@ -11,7 +11,6 @@ class GithubAPI():
         # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
         self.repo = os.environ["TRAVIS_REPO_SLUG"]
         self.pr = os.environ["TRAVIS_PULL_REQUEST"]
-
         # Set in Travis settings
         # https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
         self.token = {"Authorization": "token %s" % os.environ["GITHUB_TOKEN"]}
@@ -28,11 +27,11 @@ class GithubAPI():
         # Getting pull request to comment on
         url = "https://api.github.com/repos/%s/issues/%s/comments" % (
             self.repo, self.pr)
-
         # Find out github username of pull creator
         url_for_name = "https://api.github.com/repos/%s/issues/%s" % (
             self.repo, self.pr)
-        username = requests.get(url_for_name).json()["user"]["login"]
+        username = requests.get(url_for_name, headers=self.token).json()[
+            "user"]["login"]
 
         # Comment message in markdown format
         data = "\n".join(errors)
