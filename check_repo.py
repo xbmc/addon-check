@@ -42,8 +42,6 @@ def check_repo():
         else:
             GithubAPI().remove_label(["Checks failed"])
             GithubAPI().set_label(["Checks passed"])
-    else:
-        colorPrint("No config file found", "7")
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
