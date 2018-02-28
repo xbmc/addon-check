@@ -36,8 +36,8 @@ def check_repo():
                 error_counter, addon_path, config)
 
     if check_addon.check_config(config, "comment_on_pull"):
-        if check_addon.comments:
-            GithubAPI().comment_on_pull(check_addon.comments)
+        if check_addon.comments_problem or check_addon.comments_warning:
+            GithubAPI().comment_on_pull(check_addon.comments_problem, check_addon.comments_warning)
             GithubAPI().set_label(["Checks failed"])
         else:
             GithubAPI().remove_label(["Checks failed"])
