@@ -1,9 +1,10 @@
-import os
 import json
+import os
+
 import requests
 
 
-class GithubAPI():
+class GithubAPI:
 
     def __init__(self):
 
