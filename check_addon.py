@@ -338,7 +338,7 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
 
 def relative_path(file_path):
     path_to_print = file_path[len(REL_PATH):]
-    return "." + path_to_print
+    return ".{}".format(path_to_print) 
 
 
 def _logProblem(error_counter, problem_string):
