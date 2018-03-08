@@ -3,7 +3,10 @@ python:
   - "3.6"
 
 install:
-  - pip install Pillow
+  - pip install Pillow requests
+
+before_install:
+  - git submodule update --init --recursive --remote
 
 # command to run our tests
 script: 

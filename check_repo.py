@@ -3,7 +3,7 @@ import sys
 import json
 import check_addon
 from common import colorPrint
-
+from git_comments import GithubAPI
 
 def _read_config_for_version(repo_path):
     config_path = os.path.join(repo_path, '.tests-config.json')
@@ -19,7 +19,6 @@ def check_repo():
     repo_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)), os.pardir))
     print("Repo path " + repo_path)
-
     parameters = sys.argv[1:]
     if len(parameters) == 0:
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
@@ -33,7 +32,16 @@ def check_repo():
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             addon_path = os.path.join(repo_path, addon_folder)
-            error_counter = check_addon.start(error_counter, addon_path, config)
+            error_counter = check_addon.start(
+                error_counter, addon_path, config)
+
+    if check_addon.check_config(config, "comment_on_pull"):
+        if check_addon.comments_problem or check_addon.comments_warning:
+            GithubAPI().comment_on_pull(check_addon.comments_problem, check_addon.comments_warning)
+            GithubAPI().set_label(["Checks failed"])
+        else:
+            GithubAPI().remove_label(["Checks failed"])
+            GithubAPI().set_label(["Checks passed"])
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
