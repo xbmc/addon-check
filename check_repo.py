@@ -5,6 +5,7 @@ import check_addon
 from common import colorPrint
 from git_comments import GithubAPI
 
+
 def _read_config_for_version(repo_path):
     config_path = os.path.join(repo_path, '.tests-config.json')
     if os.path.isfile(config_path):

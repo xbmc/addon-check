@@ -3,7 +3,7 @@ import json
 import requests
 
 
-class GithubAPI():
+class GithubAPI:
 
     def __init__(self):
 
@@ -16,8 +16,8 @@ class GithubAPI():
         self.token = {"Authorization": "token %s" % os.environ["GITHUB_TOKEN"]}
 
         self.label_url = (
-            "https://api.github.com/repos/%s/issues/%s/labels"
-        ) % (self.repo, self.pr)
+                             "https://api.github.com/repos/%s/issues/%s/labels"
+                         ) % (self.repo, self.pr)
 
     def comment_on_pull(self, problems, warnings):
 
@@ -27,13 +27,13 @@ class GithubAPI():
 
         # Getting pull request to comment on
         url = (
-            "https://api.github.com/repos/%s/issues/%s/comments"
-        ) % (self.repo, self.pr)
+                  "https://api.github.com/repos/%s/issues/%s/comments"
+              ) % (self.repo, self.pr)
 
         # Find out github username of pull creator
         url_for_name = (
-            "https://api.github.com/repos/%s/issues/%s"
-        ) % (self.repo, self.pr)
+                           "https://api.github.com/repos/%s/issues/%s"
+                       ) % (self.repo, self.pr)
 
         req = requests.get(url_for_name, headers=self.token)
         username = req.json()["user"]["login"]
