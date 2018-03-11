@@ -10,6 +10,7 @@ REL_PATH = ""
 comments_problem = []
 comments_warning = []
 
+
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
@@ -64,7 +65,7 @@ def start(error_counter, addon_path, config=None):
     REL_PATH = os.path.split(addon_path[:-1])[0]
     error_counter, addon_xml = _check_addon_xml(error_counter, addon_path)
 
-    if addon_xml != None:
+    if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
@@ -230,7 +231,8 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                             ["%dx%d" % (w, h) for w, h in fanart_sizes])
                         if (width, height) not in fanart_sizes:
                             error_counter = _logProblem(
-                                error_counter, "Fanart should have either %s but it has %sx%s" % (fanart_sizes_str, width, height))
+                                error_counter,
+                                "Fanart should have either %s but it has %sx%s" % (fanart_sizes_str, width, height))
                         else:
                             print("%s dimensions are fine %sx%s" %
                                   (image_type, width, height))
@@ -334,11 +336,11 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
 
 def relative_path(file_path):
     path_to_print = file_path[len(REL_PATH):]
-    return ("." + path_to_print)
+    return ".{}".format(path_to_print)
 
 
 def _logProblem(error_counter, problem_string):
-    colorPrint("PROBLEM: %s" %problem_string, "31")
+    colorPrint("PROBLEM: %s" % problem_string, "31")
     comments_problem.append(problem_string)
     error_counter["problems"] = error_counter["problems"] + 1
     return error_counter
