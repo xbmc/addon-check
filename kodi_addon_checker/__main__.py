@@ -1,4 +1,4 @@
-from addon_checker.check_repo import check_repo
+from kodi_addon_checker.check_repo import check_repo
 
 
 def main():

@@ -4,7 +4,7 @@ import json
 import pathlib
 import xml.etree.ElementTree
 from PIL import Image
-from addon_checker.common import colorPrint, check_config, has_transparency
+from kodi_addon_checker.common import colorPrint, check_config, has_transparency
 
 REL_PATH = ""
 comments_problem = []

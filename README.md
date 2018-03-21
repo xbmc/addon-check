@@ -25,10 +25,15 @@ This tool checks the Kodi repo for best practices and creates problem and warnin
 
 ## Installation
 
-1. Open Terminal in addon-check folder and execute the following command
+Open Terminal in addon-check folder and execute the following command
 
+### Unix
 ```
-python setup.py install
+sudo -H python setup.py install
+```
+## Windows
+```
+py setup.py install
 ```
 
 ## How to use
@@ -37,7 +42,25 @@ python setup.py install
 
 2. Execute kodi-addon-checker
 
+### Unix
 ```
 kodi-addon-checker
 ```
+
+### Windows
+```
+py -m kodi_addon_checker
+```
+
 Above command will run kodi-addon-checker in current working directory
+
+## Uninstall
+### Unix
+```
+pip unistall kodi-addon-checker
+```
+
+### Windows
+```
+py -m pip uninstall kodi-addon-checker
+```

@@ -4,7 +4,7 @@ import setuptools
 
 REQUIRES = [
     'Pillow',
-    'pytest'
+    'requests'
 ]
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -22,8 +22,7 @@ setuptools.setup(
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(),
     install_requires=REQUIRES,
-    entry_points={'console_scripts': [
-        'kodi-addon-checker = addon_checker.__main__:main']},
+    entry_points={'console_scripts': ['kodi-addon-checker = kodi_addon_checker.__main__:main']},
     keywords='kodi add-on add-on_checker',
     classifiers=[
         "Operating System :: POSIX :: Linux",

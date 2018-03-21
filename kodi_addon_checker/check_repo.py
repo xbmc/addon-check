@@ -1,9 +1,9 @@
 import os
 import sys
 import json
-import addon_checker.check_addon as check_addon
-from addon_checker.common import colorPrint
-from addon_checker.git_comments import GithubAPI
+import kodi_addon_checker.check_addon as check_addon
+from kodi_addon_checker.common import colorPrint
+from kodi_addon_checker.git_comments import GithubAPI
 
 
 def _read_config_for_version(repo_path):
