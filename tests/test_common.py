@@ -5,7 +5,7 @@ import os
 import json
 import pytest
 from PIL import Image
-from common import check_config, has_transparency
+from addon_checker.common import check_config, has_transparency
 
 FIXTURE_PATH = os.path.join("tests", "fixtures")
 

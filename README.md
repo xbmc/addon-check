@@ -22,3 +22,22 @@ This tool checks the Kodi repo for best practices and creates problem and warnin
 - Checks for various blacklisted strings
 
 - Check for blacklisted filetypes
+
+## Installation
+
+1. Open Terminal in addon-check folder and execute the following command
+
+```
+python setup.py install
+```
+
+## How to use
+
+1. Open Terminal in addon-repo
+
+2. Execute kodi-addon-checker
+
+```
+kodi-addon-checker
+```
+Above command will run kodi-addon-checker in current working directory

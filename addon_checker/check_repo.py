@@ -1,9 +1,9 @@
 import os
 import sys
 import json
-import check_addon
-from common import colorPrint
-from git_comments import GithubAPI
+import addon_checker.check_addon as check_addon
+from addon_checker.common import colorPrint
+from addon_checker.git_comments import GithubAPI
 
 
 def _read_config_for_version(repo_path):
@@ -17,8 +17,7 @@ def _read_config_for_version(repo_path):
 
 def check_repo():
     error_counter = {"warnings": 0, "problems": 0}
-    repo_path = os.path.abspath(os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), os.pardir))
+    repo_path = os.path.abspath(os.getcwd())
     print("Repo path " + repo_path)
     parameters = sys.argv[1:]
     if len(parameters) == 0:
@@ -54,6 +53,3 @@ def check_repo():
             error_counter["problems"], error_counter["warnings"]), "35")
 
     print("Finished!")
-
-
-check_repo()
