@@ -14,13 +14,12 @@ with open(os.path.join(_ROOT, 'README.md')) as f:
 
 setuptools.setup(
     name="kodi-addon-checker",
-    version="1.0.0",
-    description="Automatic checks for new repository submissions .",
+    version="0.0.1",
+    description="Automatic checks for new repository submissions.",
     long_description=LONG_DESCRIPTION,
-    author="Gobinath Loganathan",
-    author_email="slgobinath@gmail.com",
+    author="Team Kodi",
     url="https://github.com/xbmc/addon-check",
-    download_url="https://github.com/xbmc/addon-check/archive/v1.0.0.tar.gz",
+    download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(),
     install_requires=REQUIRES,
     entry_points={'console_scripts': [
@@ -30,7 +29,6 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
