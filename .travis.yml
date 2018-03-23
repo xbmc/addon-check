@@ -10,5 +10,5 @@ install:
 # command to run tests
 script:
   - py.test -v
-  - pycodestyle .
+  - pycodestyle . --max-line-length=120
 
