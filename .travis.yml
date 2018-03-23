@@ -6,7 +6,9 @@ matrix:
 
 # command to install dependencies
 install:
-  - pip install pytest Pillow
+  - pip install pytest Pillow pycodestyle
 # command to run tests
-script: py.test -v
+script:
+  - py.test -v
+  - pycodestyle .
 
