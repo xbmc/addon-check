@@ -10,7 +10,7 @@ from common import colorPrint, check_config, has_transparency
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
-        if match != None:
+        if match is not None:
             return os.path.join(path, match.string)
     return
 
@@ -50,13 +50,14 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
                     searchfile.close()
     return results
 
-def start(error_counter, addon_path, config = None):
+
+def start(error_counter, addon_path, config=None):
     colorPrint("Checking %s" % os.path.basename(
         os.path.normpath(addon_path)), "34")
 
     error_counter, addon_xml = _check_addon_xml(error_counter, addon_path)
 
-    if addon_xml != None:
+    if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
@@ -80,10 +81,12 @@ def start(error_counter, addon_path, config = None):
             # Kodi 18 Leia + deprecations
             if check_config(config, "check_kodi_leia_deprecations"):
                 error_counter = _find_blacklisted_strings(
-                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
-                                                "ListItem.ChannelNumber", "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
-                                                "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber", "VideoPlayer.SubChannelNumber"],
-                                                [], [".py", ".xml"])
+                    error_counter, addon_path, ["System.HasModalDialog", "StringCompare", "SubString",
+                                                "IntegerGreaterThan", "ListItem.ChannelNumber",
+                                                "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
+                                                "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber",
+                                                "VideoPlayer.SubChannelNumber"],
+                                               [], [".py", ".xml"])
 
             # General blacklist
             error_counter = _find_blacklisted_strings(error_counter, addon_path, [], [], [])
@@ -146,7 +149,7 @@ def _check_artwork(error_counter, addon_path, addon_xml, file_index):
 
     # go through all but the above and try to open the image
     for file in file_index:
-        if re.match("(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) != None:
+        if re.match("(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
             image_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully open it
@@ -193,17 +196,17 @@ def _check_image_type(error_counter, image_type, addon_xml, addon_path):
                             error_counter = _logProblem(error_counter, "Icon.png should be solid. It has transparency.")
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
                             error_counter = _logProblem(
-                                error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (width, height))
+                                error_counter, "Icon should have either 256x256 or 512x512 but it has %sx%s"
+                                % (width, height))
                         else:
-                            print("%s dimensions are fine %sx%s" %
-                                (image_type, width, height))
+                            print("%s dimensions are fine %sx%s" % (image_type, width, height))
                     elif image_type == "fanart":
                         if (width != 1280 and height != 720) and (width != 1920 and height != 1080):
                             error_counter = _logProblem(
-                                error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s" % (width, height))
+                                error_counter, "Fanart should have either 1280x720 or 1920x1080 but it has %sx%s"
+                                % (width, height))
                         else:
-                            print("%s dimensions are fine %sx%s" %
-                                (image_type, width, height))
+                            print("%s dimensions are fine %sx%s" % (image_type, width, height))
                     else:
                         # screenshots have no size definitions
                         pass
@@ -285,7 +288,8 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
+    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g\
+                      |template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")

@@ -13,6 +13,7 @@ def _read_config_for_version(repo_path):
 
     return None
 
+
 def check_repo():
     error_counter = {"warnings": 0, "problems": 0}
     repo_path = os.path.abspath(os.path.join(
@@ -24,9 +25,7 @@ def check_repo():
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
     else:
         toplevel_folders = sorted(parameters)
-        
     print("Toplevel folders " + str(toplevel_folders))
-
     config = _read_config_for_version(repo_path)
 
     for addon_folder in toplevel_folders:
@@ -44,5 +43,6 @@ def check_repo():
             error_counter["problems"], error_counter["warnings"]), "35")
 
     print("Finished!")
+
 
 check_repo()
