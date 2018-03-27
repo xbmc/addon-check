@@ -15,11 +15,9 @@ def _read_config_for_version(repo_path):
     return None
 
 
-def check_repo():
+def check_repo(repo_path, parameters):
     error_counter = {"warnings": 0, "problems": 0}
-    repo_path = os.path.abspath(os.getcwd())
     print("Repo path " + repo_path)
-    parameters = sys.argv[1:]
     if len(parameters) == 0:
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
     else:
