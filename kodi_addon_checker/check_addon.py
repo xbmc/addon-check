@@ -15,6 +15,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
+ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
 
 
 def _find_file(name, path):
@@ -324,6 +325,48 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
                 report.add(Record(WARNING,
                                   "Found non whitelisted file ending in filename %s" %
                                   relative_path(os.path.join(file["path"], file["name"]))))
+
+
+def get_addon_name(xml_path):
+    tree = ET.parse(xml_path).getroot()
+    return (tree.get("id"), tree.get("version"))
+
+
+def check_for_existing_addon(error_counter, addon_xml):
+    addon_xml = os.path.join(addon_xml, "addon.xml")
+
+    current_branch = os.environ.get("TRAVIS_BRANCH")
+
+    branches = ['dharma', 'eden', 'frodo', 'gotham', 'helix',
+                'isengard', 'jarvis', 'krypton', 'leia']
+
+    addon_name, addon_version = get_addon_name(addon_xml)
+
+    for branch in branches:
+
+        if branch >= current_branch:
+            break
+
+        else:
+            repo_addons = get_repo_addons(branch)
+
+            if addon_name in repo_addons:
+                error_counter = _logWarning(error_counter, "%s addon already exist in %s branch with version %s"
+                                            % (addon_name, branch, repo_addons[addon_name]))
+                break
+
+    return error_counter
+
+
+def get_repo_addons(branch):
+    branch_url = ROOT_URL.format(branch=branch)
+    content = requests.get(branch_url).content
+    tree = ET.fromstring(content)
+
+    return {
+        a.get("id"): a.get("version")
+        for a in tree.findall("addon")
+    }
 
 
 def relative_path(file_path):
