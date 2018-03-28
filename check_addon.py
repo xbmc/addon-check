@@ -14,7 +14,7 @@ comments_warning = []
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
-        if match != None:
+        if match is not None:
             return os.path.join(path, match.string)
     return
 
@@ -319,7 +319,11 @@ def _check_file_whitelist(error_counter, file_index, addon_path):
         print("Module skipping whitelist")
         return error_counter
 
-    whitelist = r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
+    whitelist = (
+        r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|"
+        r"rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|"
+        r"help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
+    )
 
     for file in file_index:
         file_parts = file["name"].rsplit(".")
