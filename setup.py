@@ -26,6 +26,7 @@ setuptools.setup(
     keywords='kodi add-on add-on_checker',
     classifiers=[
         "Operating System :: POSIX :: Linux",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
         "Development Status :: 5 - Production/Stable",
