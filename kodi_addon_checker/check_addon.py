@@ -82,6 +82,9 @@ def start(addon_path, repo_addons, config=None):
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
+            if config.is_enabled("check_for_existing_addon"):
+                check_for_existing_addon(addon_report, addon_path)
+
             _check_for_invalid_json_files(addon_report, file_index)
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
@@ -337,8 +340,7 @@ def check_for_existing_addon(error_counter, addon_xml):
 
     current_branch = os.environ.get("TRAVIS_BRANCH")
 
-    branches = ['dharma', 'eden', 'frodo', 'gotham', 'helix',
-                'isengard', 'jarvis', 'krypton', 'leia']
+    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
 
     addon_name, addon_version = get_addon_name(addon_xml)
 
