@@ -28,8 +28,11 @@ def main():
     """The entry point to kodi-addon-checker
     """
     parser = argparse.ArgumentParser(prog="kodi-addon-checker",
-                                     description="""Checks Kodi repo for best practices and creates problem and warning reports.
-                                     If optional add-on directories are provided, check only those add-ons. Otherwise, scan current repository and check all add-ons in the current directory.""")
+                                     description="Checks Kodi repo for best practices and creates \
+                                     problem and warning reports.\r\nIf optional add-on \
+                                     directories are provided, check only those add-ons. \
+                                     Otherwise, scan current repository and check all add-ons in \
+                                     the current directory.")
     parser.add_argument("--version", action="version",
                         version="%(prog)s 0.0.1")
     parser.add_argument("add_on", metavar="add-on", type=dir_type, nargs="*",
