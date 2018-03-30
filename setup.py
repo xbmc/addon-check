@@ -4,7 +4,8 @@ import setuptools
 
 REQUIRES = [
     'Pillow',
-    'requests'
+    'requests',
+    'radon'
 ]
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -15,7 +16,7 @@ with open(os.path.join(_ROOT, 'README.md')) as f:
 setuptools.setup(
     name="kodi-addon-checker",
     version="0.0.1",
-    description="Automatic checks for new repository submissions.",
+    description="Check kodi addons or whole kodi repositories for errors and best practices.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     author="Team Kodi",
