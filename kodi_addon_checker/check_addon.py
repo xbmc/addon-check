@@ -330,17 +330,28 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
                                   relative_path(os.path.join(file["path"], file["name"]))))
 
 
+def get_repo_addons(branch):
+    branch_url = ROOT_URL.format(branch=branch)
+    content = requests.get(branch_url).content
+    tree = ET.fromstring(content)
+
+    return {
+        a.get("id"): (a.get("version"), bool(a.find("extension/broken")))
+        for a in tree.findall("addon")
+    }
+
+
 def get_addon_name(xml_path):
     tree = ET.parse(xml_path).getroot()
     return (tree.get("id"), tree.get("version"))
 
 
-def check_for_existing_addon(error_counter, addon_xml):
+def _check_for_existing_addon(error_counter, addon_xml):
     addon_xml = os.path.join(addon_xml, "addon.xml")
 
-    current_branch = os.environ.get("TRAVIS_BRANCH")
-
     branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
+
+    current_branch = os.environ.get("TRAVIS_BRANCH")
 
     addon_name, addon_version = get_addon_name(addon_xml)
 
@@ -352,23 +363,17 @@ def check_for_existing_addon(error_counter, addon_xml):
         else:
             repo_addons = get_repo_addons(branch)
 
-            if addon_name in repo_addons:
-                error_counter = _logWarning(error_counter, "%s addon already exist in %s branch with version %s"
-                                            % (addon_name, branch, repo_addons[addon_name]))
+            if addon_name not in repo_addons:
+                error_counter = _logWarning(error_counter, "This is a new addon")
+            else:
+                error_counter = _logWarning(error_counter, "%s addon already exist in %s branch with version %s."
+                                            % (addon_name, branch, repo_addons[addon_name][0]))
+                if repo_addons[addon_name][1] is False:
+                    error_counter = _logWarning(error_counter, "%s is broken" % addon_name)
+
                 break
 
     return error_counter
-
-
-def get_repo_addons(branch):
-    branch_url = ROOT_URL.format(branch=branch)
-    content = requests.get(branch_url).content
-    tree = ET.fromstring(content)
-
-    return {
-        a.get("id"): a.get("version")
-        for a in tree.findall("addon")
-    }
 
 
 def relative_path(file_path):
