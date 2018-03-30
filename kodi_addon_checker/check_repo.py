@@ -1,9 +1,9 @@
 import os
 import sys
 import json
-import check_addon
-from common import colorPrint
-from git_comments import GithubAPI
+import kodi_addon_checker.check_addon as check_addon
+from kodi_addon_checker.common import colorPrint
+from kodi_addon_checker.git_comments import GithubAPI
 
 
 def _read_config_for_version(repo_path):
@@ -15,12 +15,9 @@ def _read_config_for_version(repo_path):
     return None
 
 
-def check_repo():
+def check_repo(repo_path, parameters):
     error_counter = {"warnings": 0, "problems": 0}
-    repo_path = os.path.abspath(os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), os.pardir))
     print("Repo path " + repo_path)
-    parameters = sys.argv[1:]
     if len(parameters) == 0:
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
     else:
@@ -54,6 +51,3 @@ def check_repo():
             error_counter["problems"], error_counter["warnings"]), "35")
 
     print("Finished!")
-
-
-check_repo()
