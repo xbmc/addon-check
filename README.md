@@ -1,10 +1,12 @@
 [![Build Status](https://travis-ci.org/xbmc/addon-check.svg?branch=master)](https://travis-ci.org/xbmc/addon-check)
+[![PyPI version](https://badge.fury.io/py/kodi-addon-checker.svg)](https://badge.fury.io/py/kodi-addon-checker)
 
 # Kodi Addon checker
 
 This tool checks the Kodi repo for best practices and creates problem and warning reports
 
 ## Features
+
 - Checks if all images are valid images
 
 - Checks if all xml files are valid
@@ -25,42 +27,11 @@ This tool checks the Kodi repo for best practices and creates problem and warnin
 
 ## Installation
 
-Open Terminal in addon-check folder and execute the following command
-
-### Unix
-```
-sudo -H python setup.py install
-```
-## Windows
-```
-py setup.py install
+```bash
+pip install kodi-addon-checker
 ```
 
 ## How to use
 
-1. Open Terminal in addon-repo
-
-2. Execute kodi-addon-checker
-
-### Unix
-```
-kodi-addon-checker
-```
-
-### Windows
-```
-py -m kodi_addon_checker
-```
-
-Above command will run kodi-addon-checker in current working directory
-
-## Uninstall
-### Unix
-```
-pip unistall kodi-addon-checker
-```
-
-### Windows
-```
-py -m pip uninstall kodi-addon-checker
-```
+1. Open Terminal in add-on repository directory
+2. Execute `kodi-addon-checker`

@@ -10,19 +10,22 @@ REQUIRES = [
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
 with open(os.path.join(_ROOT, 'README.md')) as f:
-    LONG_DESCRIPTION = '\n' + f.read()
+    LONG_DESCRIPTION = f.read()
 
 setuptools.setup(
     name="kodi-addon-checker",
     version="0.0.1",
     description="Automatic checks for new repository submissions.",
     long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     author="Team Kodi",
     url="https://github.com/xbmc/addon-check",
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(),
     install_requires=REQUIRES,
-    entry_points={'console_scripts': ['kodi-addon-checker = kodi_addon_checker.__main__:main']},
+    setup_requires=['setuptools>=38.6.0'],
+    entry_points={'console_scripts': [
+        'kodi-addon-checker = kodi_addon_checker.__main__:main']},
     keywords='kodi add-on add-on_checker',
     classifiers=[
         "Operating System :: POSIX :: Linux",
