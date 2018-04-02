@@ -3,7 +3,6 @@ import sys
 import json
 import kodi_addon_checker.check_addon as check_addon
 from kodi_addon_checker.common import colorPrint
-from kodi_addon_checker.git_comments import GithubAPI
 
 
 def _read_config_for_version(repo_path):
@@ -32,14 +31,6 @@ def check_repo(repo_path, parameters):
             addon_path = os.path.join(repo_path, addon_folder)
             error_counter = check_addon.start(
                 error_counter, addon_path, config)
-
-    if check_addon.check_config(config, "comment_on_pull"):
-        if check_addon.comments_problem or check_addon.comments_warning:
-            GithubAPI().comment_on_pull(check_addon.comments_problem, check_addon.comments_warning)
-            GithubAPI().set_label(["Checks failed"])
-        else:
-            GithubAPI().remove_label(["Checks failed"])
-            GithubAPI().set_label(["Checks passed"])
 
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (

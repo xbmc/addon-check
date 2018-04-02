@@ -7,8 +7,6 @@ from PIL import Image
 from kodi_addon_checker.common import colorPrint, check_config, has_transparency
 
 REL_PATH = ""
-comments_problem = []
-comments_warning = []
 
 
 def _find_file(name, path):
@@ -345,13 +343,11 @@ def relative_path(file_path):
 
 def _logProblem(error_counter, problem_string):
     colorPrint("PROBLEM: %s" % problem_string, "31")
-    comments_problem.append(problem_string)
     error_counter["problems"] = error_counter["problems"] + 1
     return error_counter
 
 
 def _logWarning(error_counter, warning_string):
     colorPrint("WARNING: %s" % warning_string, "35")
-    comments_warning.append(warning_string)
     error_counter["warnings"] = error_counter["warnings"] + 1
     return error_counter
