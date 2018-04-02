@@ -32,7 +32,6 @@ def check_repo(repo_path, parameters):
             error_counter = check_addon.start(
                 error_counter, addon_path, config)
 
-
     if error_counter["problems"] > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (
             error_counter["problems"], error_counter["warnings"]), "31")

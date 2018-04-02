@@ -8,6 +8,7 @@ from kodi_addon_checker.common import colorPrint, check_config, has_transparency
 
 REL_PATH = ""
 
+
 def _find_file(name, path):
     for file_name in os.listdir(path):
         match = re.match(name, file_name, re.IGNORECASE)
