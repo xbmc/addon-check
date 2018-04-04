@@ -2,16 +2,18 @@ import json
 import os
 import pathlib
 import re
-import xml.etree.ElementTree
 from radon.raw import analyze
+from distutils.version import LooseVersion
+import xml.etree.ElementTree as ET
+import requests
 
 from PIL import Image
-
 from kodi_addon_checker.common import has_transparency
 from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
+ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
 
 
 def _find_file(name, path):
@@ -73,7 +75,11 @@ def start(addon_path, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            _check_for_invalid_xml_files(addon_report, file_index)
+            if check_config(config, "check_dependencies"):
+                error_counter = check_dependencies(error_counter, addon_path)
+
+            error_counter = _check_for_invalid_xml_files(
+                error_counter, file_index)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -118,9 +124,12 @@ def _check_for_invalid_xml_files(report: Report, file_index):
             xml_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully parse it
-                xml.etree.ElementTree.parse(xml_path)
-            except xml.etree.ElementTree.ParseError:
-                report.add(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
+                ET.parse(xml_path)
+            except ET.ParseError:
+                error_counter = _logProblem(
+                    error_counter, "Invalid xml found. %s" % relative_path(xml_path))
+
+    return error_counter
 
 
 def _check_for_invalid_json_files(report: Report, file_index):
@@ -141,12 +150,14 @@ def _check_addon_xml(report: Report, addon_path):
     try:
         _addon_file_exists(report, addon_path, r"addon\.xml")
 
-        addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
+        addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
-        _addon_xml_matches_folder(report, addon_path, addon_xml)
-    except xml.etree.ElementTree.ParseError:
-        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
+        colorPrint("created by %s" % addon.attrib.get("provider-name"), "34")
+        error_counter = _addon_xml_matches_folder(
+            error_counter, addon_path, addon_xml)
+    except ET.ParseError:
+        error_counter = _logProblem(
+            error_counter, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path))
 
     return addon_xml
 
@@ -337,3 +348,63 @@ def number_of_lines(filepath):
         data = file.read()
 
     return (analyze(data).lloc)
+
+
+def _logProblem(error_counter, problem_string):
+    colorPrint("PROBLEM: %s" % problem_string, "31")
+    error_counter["problems"] = error_counter["problems"] + 1
+    return error_counter
+
+
+def _logWarning(error_counter, warning_string):
+    colorPrint("WARNING: %s" % warning_string, "35")
+    error_counter["warnings"] = error_counter["warnings"] + 1
+    return error_counter
+
+
+def get_addons(xml_url):
+    """
+        addon.xml for the target Kodi version
+    """
+    content = requests.get(xml_url).content
+    tree = ET.fromstring(content)
+
+    return {
+        a.get("id"): a.get("version")
+        for a in tree.findall("addon")
+    }
+
+
+def get_users_dependencies(xml_file):
+    """
+        User's addon.xml from pull request
+    """
+    addon_xml_path = os.path.join(xml_file, "addon.xml")
+
+    tree = ET.parse(addon_xml_path).getroot()
+
+    return {
+        i.get("addon"): i.get("version")
+        for i in tree.findall("requires/import")
+    }
+
+
+def check_dependencies(error_counter, addon_xml):
+
+    branch_url = ROOT_URL.format(branch=os.environ.get("TRAVIS_BRANCH"))
+
+    repo_addons = get_addons(branch_url)
+    deps = get_users_dependencies(addon_xml)
+
+    for required_addon, required_version in deps.items():
+
+        if required_addon not in repo_addons:
+            error_counter = _logProblem(error_counter, "Unrecognized requirement: %s " % required_addon)
+
+        else:
+            available_version = repo_addons.get(required_addon)
+            if LooseVersion(available_version) < LooseVersion(required_version):
+                error_counter = _logWarning(error_counter, "Version mismatch for addon %s. Required: %s, Available: %s "
+                                            % (required_addon, required_version, available_version))
+
+    return error_counter
