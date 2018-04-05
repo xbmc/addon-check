@@ -1,8 +1,11 @@
+import json
 import os
 import sys
-import json
+
 import kodi_addon_checker.check_addon as check_addon
 from kodi_addon_checker.common import colorPrint
+from kodi_addon_checker.plugins.console_reporter import ConsoleReporter
+from kodi_addon_checker.report import Report
 
 
 def _read_config_for_version(repo_path):
@@ -15,7 +18,7 @@ def _read_config_for_version(repo_path):
 
 
 def check_repo(repo_path, parameters):
-    error_counter = {"warnings": 0, "problems": 0}
+    repo_report = Report(repo_path)
     print("Repo path " + repo_path)
     if len(parameters) == 0:
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
@@ -29,16 +32,20 @@ def check_repo(repo_path, parameters):
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             addon_path = os.path.join(repo_path, addon_folder)
-            error_counter = check_addon.start(
-                error_counter, addon_path, config)
+            addon_report = check_addon.start(addon_path, config)
+            repo_report.log(addon_report)
 
-    if error_counter["problems"] > 0:
-        colorPrint("We found %s problems and %s warnings, please check the logfile." % (
-            error_counter["problems"], error_counter["warnings"]), "31")
+    # Report using ConsoleReporter
+    reporter = ConsoleReporter()
+    reporter.report(repo_report)
+
+    if repo_report.problem > 0:
+        colorPrint("We found %s problem and %s warning, please check the logfile." % (
+            repo_report.problem, repo_report.warning), "31")
         sys.exit(1)
-    elif error_counter["warnings"] > 0:
-        # If we only found warnings, don't mark the build as broken
-        colorPrint("We found %s problems and %s warnings, please check the logfile." % (
-            error_counter["problems"], error_counter["warnings"]), "35")
+    elif repo_report.warning > 0:
+        # If we only found warning, don't mark the build as broken
+        colorPrint("We found %s problem and %s warning, please check the logfile." % (
+            repo_report.problem, repo_report.warning), "35")
 
     print("Finished!")

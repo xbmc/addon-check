@@ -1,5 +1,6 @@
-import os
 import argparse
+import os
+
 from kodi_addon_checker.check_repo import check_repo
 
 
