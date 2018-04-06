@@ -57,7 +57,8 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
 
 
 def start(addon_path, config=None):
-    addon_report = Report()
+    addon_id = os.path.basename(os.path.normpath(addon_path))
+    addon_report = Report(addon_id)
 
     global REL_PATH
     # Extract common path from addon paths

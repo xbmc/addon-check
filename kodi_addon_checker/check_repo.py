@@ -7,7 +7,7 @@ from kodi_addon_checker.report import Report, INFORMATION, Record, ReportManager
 
 
 def check_repo(config, repo_path, parameters):
-    repo_report = Report()
+    repo_report = Report(repo_path)
     repo_report.add(Record(INFORMATION, "Checking repository %s" % repo_path))
     print("Repo path " + repo_path)
     if len(parameters) == 0:

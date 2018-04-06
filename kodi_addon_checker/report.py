@@ -7,7 +7,8 @@ INFORMATION = "INFO"
 
 
 class Report(object):
-    def __init__(self):
+    def __init__(self, log_level):
+        self.log_level = log_level
         self.problem_count = 0
         self.warning_count = 0
         self.information_count = 0
@@ -34,7 +35,7 @@ class Report(object):
 class Record(Report):
     def __init__(self, log_level, message, start_line=-1, end_line=-1, start_char_position=-1,
                  end_char_position=-1):
-        self.log_level = log_level
+        super().__init__(log_level)
         self.message = message
         self.start_line = start_line
         self.end_line = end_line
