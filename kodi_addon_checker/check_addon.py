@@ -13,7 +13,6 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
-ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
 
 
 def _find_file(name, path):
@@ -76,7 +75,7 @@ def start(addon_path, config=None):
             file_index = _create_file_index(addon_path)
 
             if check_config(config, "check_dependencies"):
-                error_counter = check_dependencies(error_counter, addon_path)
+                error_counter = _check_dependencies(error_counter, addon_path, repo_addons)
 
             error_counter = _check_for_invalid_xml_files(
                 error_counter, file_index)
@@ -375,11 +374,11 @@ def get_addons(xml_url):
     }
 
 
-def get_users_dependencies(xml_file):
+def get_users_dependencies(addon_path):
     """
         User's addon.xml from pull request
     """
-    addon_xml_path = os.path.join(xml_file, "addon.xml")
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
 
     tree = ET.parse(addon_xml_path).getroot()
 
@@ -389,21 +388,17 @@ def get_users_dependencies(xml_file):
     }
 
 
-def check_dependencies(error_counter, addon_xml):
-
-    branch_url = ROOT_URL.format(branch=os.environ.get("TRAVIS_BRANCH"))
-
-    repo_addons = get_addons(branch_url)
-    deps = get_users_dependencies(addon_xml)
+def _check_dependencies(error_counter, addon_path, repo_addons):
+    deps = get_users_dependencies(addon_path)
+    ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
 
     for required_addon, required_version in deps.items():
-
-        if required_addon not in repo_addons:
+        if (required_addon not in repo_addons) and (required_addon not in ignore):
             error_counter = _logProblem(error_counter, "Unrecognized requirement: %s " % required_addon)
 
         else:
             available_version = repo_addons.get(required_addon)
-            if LooseVersion(available_version) < LooseVersion(required_version):
+            if LooseVersion(available_version) != LooseVersion(required_version) and (required_addon not in ignore):
                 error_counter = _logWarning(error_counter, "Version mismatch for addon %s. Required: %s, Available: %s "
                                             % (required_addon, required_version, available_version))
 
