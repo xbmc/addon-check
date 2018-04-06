@@ -13,7 +13,7 @@ class Report(object):
         self.information_count = 0
         self.reports = []
 
-    def log(self, report):
+    def add(self, report):
         self.reports.append(report)
         if type(report) is Record:
             if PROBLEM == report.log_level:
@@ -41,7 +41,7 @@ class Record(Report):
         self.start_char_position = start_char_position
         self.end_char_position = end_char_position
 
-    def log(self, record):
+    def add(self, record):
         pass
 
     def __str__(self):

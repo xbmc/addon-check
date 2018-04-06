@@ -8,7 +8,7 @@ from kodi_addon_checker.report import Report, INFORMATION, Record, ReportManager
 
 def check_repo(config, repo_path, parameters):
     repo_report = Report()
-    repo_report.log(Record(INFORMATION, "Checking repository %s" % repo_path))
+    repo_report.add(Record(INFORMATION, "Checking repository %s" % repo_path))
     print("Repo path " + repo_path)
     if len(parameters) == 0:
         toplevel_folders = sorted(next(os.walk(repo_path))[1])
@@ -19,10 +19,10 @@ def check_repo(config, repo_path, parameters):
 
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
-            repo_report.log(Record(INFORMATION, "Checking add-on %s" % addon_folder))
+            repo_report.add(Record(INFORMATION, "Checking add-on %s" % addon_folder))
             addon_path = os.path.join(repo_path, addon_folder)
             addon_report = check_addon.start(addon_path, config)
-            repo_report.log(addon_report)
+            repo_report.add(addon_report)
 
     ReportManager.report(repo_report)
 

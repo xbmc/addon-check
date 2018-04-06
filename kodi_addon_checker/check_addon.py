@@ -101,7 +101,7 @@ def start(addon_path, config=None):
 
             _check_file_whitelist(addon_report, file_index, addon_path)
         else:
-            addon_report.log(Record(INFORMATION, "Addon marked as broken - skipping"))
+            addon_report.add(Record(INFORMATION, "Addon marked as broken - skipping"))
 
     return addon_report
 
@@ -114,7 +114,7 @@ def _check_for_invalid_xml_files(report: Report, file_index):
                 # Just try if we can successfully parse it
                 xml.etree.ElementTree.parse(xml_path)
             except xml.etree.ElementTree.ParseError:
-                report.log(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
+                report.add(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
 
 
 def _check_for_invalid_json_files(report: Report, file_index):
@@ -126,7 +126,7 @@ def _check_for_invalid_json_files(report: Report, file_index):
                 with open(path) as json_data:
                     json.load(json_data)
             except ValueError:
-                report.log(Record(PROBLEM, "Invalid json found. %s" % relative_path(path)))
+                report.add(Record(PROBLEM, "Invalid json found. %s" % relative_path(path)))
 
 
 def _check_addon_xml(report: Report, addon_path):
@@ -137,10 +137,10 @@ def _check_addon_xml(report: Report, addon_path):
 
         addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        report.log(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
+        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
         _addon_xml_matches_folder(report, addon_path, addon_xml)
     except xml.etree.ElementTree.ParseError:
-        report.log(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
+        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
 
     return addon_xml
 
@@ -159,7 +159,7 @@ def _check_artwork(report: Report, addon_path, addon_xml, file_index):
                 # Just try if we can successfully open it
                 Image.open(image_path)
             except IOError:
-                report.log(
+                report.add(
                     Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(image_path)))
 
 
@@ -188,34 +188,34 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
         if image.text:
             filepath = os.path.join(addon_path, image.text)
             if os.path.isfile(filepath):
-                report.log(Record(INFORMATION, "Image %s exists" % image_type))
+                report.add(Record(INFORMATION, "Image %s exists" % image_type))
                 try:
                     im = Image.open(filepath)
                     width, height = im.size
 
                     if image_type == "icon":
                         if has_transparency(im):
-                            report.log(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
+                            report.add(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
-                            report.log(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
+                            report.add(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
                                 width, height)))
                         else:
-                            report.log(
+                            report.add(
                                 Record(INFORMATION, "%s dimensions are fine %sx%s" % (image_type, width, height)))
                     elif image_type == "fanart":
                         fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
                         fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
                         if (width, height) not in fanart_sizes:
-                            report.log(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
+                            report.add(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
                                 fanart_sizes_str, width, height)))
                         else:
-                            report.log(Record(INFORMATION, "%s dimensions are fine %sx%s" %
+                            report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
                                               (image_type, width, height)))
                     else:
                         # screenshots have no size definitions
                         pass
                 except IOError:
-                    report.log(
+                    report.add(
                         Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
 
             else:
@@ -223,43 +223,43 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                 # get build
                 if fanart_fallback or icon_fallback:
                     if icon_fallback:
-                        report.log(Record(INFORMATION, "You might want to add a icon"))
+                        report.add(Record(INFORMATION, "You might want to add a icon"))
                     elif fanart_fallback:
-                        report.log(Record(INFORMATION, "You might want to add a fanart"))
+                        report.add(Record(INFORMATION, "You might want to add a fanart"))
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
-                    report.log(Record(PROBLEM, "%s does not exist at specified path." % image_type))
+                    report.add(Record(PROBLEM, "%s does not exist at specified path." % image_type))
         else:
-            report.log(Record(WARNING, "Empty image tag found for %s" % image_type))
+            report.add(Record(WARNING, "Empty image tag found for %s" % image_type))
 
 
 def _addon_file_exists(report: Report, addon_path, file_name):
     if _find_file(file_name, addon_path) is None:
-        report.log(Record(PROBLEM, "Not found %s in folder %s" % (file_name, relative_path(addon_path))))
+        report.add(Record(PROBLEM, "Not found %s in folder %s" % (file_name, relative_path(addon_path))))
 
 
 def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
     addon = addon_xml.getroot()
     if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
-        report.log(Record(INFORMATION, "Addon id matches folder name"))
+        report.add(Record(INFORMATION, "Addon id matches folder name"))
     else:
-        report.log(Record(PROBLEM, "Addon id and folder name does not match."))
+        report.add(Record(PROBLEM, "Addon id and folder name does not match."))
 
 
 def _check_for_legacy_strings_xml(report: Report, addon_path):
     if _find_file_recursive("strings.xml", addon_path) is not None:
-        report.log(
+        report.add(
             Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
 
 
 def _find_blacklisted_strings(report: Report, addon_path, problem_list, warning_list, whitelisted_file_types):
     for result in _find_in_file(addon_path, problem_list, whitelisted_file_types):
-        report.log(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
+        report.add(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
     for result in _find_in_file(addon_path, warning_list, whitelisted_file_types):
-        report.log(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
+        report.add(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
 
@@ -270,13 +270,13 @@ def _check_for_legacy_language_path(report: Report, addon_path):
         found_warning = False
         for dir in dirs:
             if not found_warning and "resource.language." not in dir:
-                report.log(Record(WARNING, "Using the old language directory structure, please move to the new one."))
+                report.add(Record(WARNING, "Using the old language directory structure, please move to the new one."))
                 found_warning = True
 
 
 def _check_file_whitelist(report: Report, file_index, addon_path):
     if ".module." in addon_path:
-        report.log(Record(INFORMATION, "Module skipping whitelist"))
+        report.add(Record(INFORMATION, "Module skipping whitelist"))
         return
 
     whitelist = (
@@ -292,7 +292,7 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts) - 1]
             if re.match(whitelist, file_ending, re.IGNORECASE) is None:
-                report.log(Record(WARNING,
+                report.add(Record(WARNING,
                                   "Found non whitelisted file ending in filename %s" %
                                   relative_path(os.path.join(file["path"], file["name"]))))
 
