@@ -3,7 +3,7 @@ from kodi_addon_checker.common import colorPrint
 from kodi_addon_checker.report import Reporter, Report, Record, reporter, INFORMATION, WARNING, PROBLEM
 
 
-@reporter(config_property="console-reporter", enabled=True)
+@reporter(name="console", enabled=True)
 class ConsoleReporter(Reporter):
 
     def report(self, report: Report):

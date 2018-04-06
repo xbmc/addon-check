@@ -1,23 +1,12 @@
-import json
 import os
 import sys
 
 import kodi_addon_checker.check_addon as check_addon
 from kodi_addon_checker.common import colorPrint
-from kodi_addon_checker.plugins.console_reporter import ConsoleReporter
-from kodi_addon_checker.report import Report, INFORMATION, Record
+from kodi_addon_checker.report import Report, INFORMATION, Record, ReportManager
 
 
-def _read_config_for_version(repo_path):
-    config_path = os.path.join(repo_path, '.tests-config.json')
-    if os.path.isfile(config_path):
-        with open(config_path) as json_data:
-            return json.load(json_data)
-
-    return None
-
-
-def check_repo(repo_path, parameters):
+def check_repo(config, repo_path, parameters):
     repo_report = Report()
     repo_report.log(Record(INFORMATION, "Checking repository %s" % repo_path))
     print("Repo path " + repo_path)
@@ -28,8 +17,6 @@ def check_repo(repo_path, parameters):
 
     print("Toplevel folders " + str(toplevel_folders))
 
-    config = _read_config_for_version(repo_path)
-
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             repo_report.log(Record(INFORMATION, "Checking add-on %s" % addon_folder))
@@ -37,9 +24,7 @@ def check_repo(repo_path, parameters):
             addon_report = check_addon.start(addon_path, config)
             repo_report.log(addon_report)
 
-    # Report using ConsoleReporter
-    reporter = ConsoleReporter()
-    reporter.report(repo_report)
+    ReportManager.report(repo_report)
 
     if repo_report.problem_count > 0:
         colorPrint("We found %s problems and %s warnings, please check the logfile." % (

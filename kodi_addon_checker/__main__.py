@@ -2,6 +2,8 @@ import argparse
 import os
 
 from kodi_addon_checker.check_repo import check_repo
+from kodi_addon_checker.common import load_plugins
+from kodi_addon_checker.config import ConfigManager, Config
 
 
 def dir_type(dir_path):
@@ -28,6 +30,7 @@ def dir_type(dir_path):
 def main():
     """The entry point to kodi-addon-checker
     """
+    load_plugins()
     parser = argparse.ArgumentParser(prog="kodi-addon-checker",
                                      description="Checks Kodi repo for best practices and creates \
                                      problem and warning reports.\r\nIf optional add-on \
@@ -38,8 +41,13 @@ def main():
                         version="%(prog)s 0.0.1")
     parser.add_argument("add_on", metavar="add-on", type=dir_type, nargs="*",
                         help="optional add-on directories")
+    ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
-    check_repo(os.path.abspath(os.getcwd()), args.add_on)
+
+    repo_path = os.path.abspath(os.getcwd())
+    config = Config(repo_path, args)
+    ConfigManager.process_config(config)
+    check_repo(config, repo_path, args.add_on)
 
 
 if __name__ == "__main__":

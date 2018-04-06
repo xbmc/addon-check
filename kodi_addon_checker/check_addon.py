@@ -6,7 +6,7 @@ import xml.etree.ElementTree
 
 from PIL import Image
 
-from kodi_addon_checker.common import check_config, has_transparency
+from kodi_addon_checker.common import has_transparency
 from kodi_addon_checker.report import Report, PROBLEM, Record, WARNING, INFORMATION
 
 REL_PATH = ""
@@ -76,18 +76,18 @@ def start(addon_path, config=None):
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
-            if check_config(config, "check_license_file_exists"):
+            if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
                 _addon_file_exists(addon_report, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
 
-            if check_config(config, "check_legacy_strings_xml"):
+            if config.is_enabled("check_legacy_strings_xml"):
                 _check_for_legacy_strings_xml(addon_report, addon_path)
 
-            if check_config(config, "check_legacy_language_path"):
+            if config.is_enabled("check_legacy_language_path"):
                 _check_for_legacy_language_path(addon_report, addon_path)
 
             # Kodi 18 Leia + deprecations
-            if check_config(config, "check_kodi_leia_deprecations"):
+            if config.is_enabled("check_kodi_leia_deprecations"):
                 _find_blacklisted_strings(addon_report, addon_path,
                                           ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
                                            "ListItem.ChannelNumber", "ListItem.SubChannelNumber",

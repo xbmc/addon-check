@@ -1,14 +1,11 @@
+import importlib
+import os
+import pkgutil
+import sys
+
+
 def colorPrint(string, color):
     print("\033[%sm%s\033[0m" % (color, string))
-
-
-def check_config(config, value):
-    if config is None:
-        return False
-    elif value in config and config[value]:
-        return True
-    else:
-        return False
 
 
 def has_transparency(im):
@@ -24,3 +21,11 @@ def has_transparency(im):
             return False
     except StopIteration:
         return False
+
+
+def load_plugins():
+    plugins_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plugins")
+    sys.path.append(plugins_dir)
+    for importer, package_name, _ in pkgutil.iter_modules([plugins_dir]):
+        if "test_" not in package_name:
+            importlib.import_module(package_name)
