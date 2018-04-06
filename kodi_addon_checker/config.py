@@ -39,7 +39,7 @@ class ConfigManager(object):
     def fill_cmd_args(cls, parser: ArgumentParser):
         # Add --reporter
         parser.add_argument("--reporter", action="append", choices=list(ReportManager.reporters.keys()),
-                            help="""enable a reporter with the given id(s).
+                            help="""enable a reporter with the given name(s).
                             You can put this option multiple time""")
 
     @classmethod
