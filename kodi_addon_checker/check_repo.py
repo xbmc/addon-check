@@ -27,5 +27,7 @@ def check_repo(config, repo_path, parameters):
     elif repo_report.warning_count > 0:
         repo_report.add(Record(WARNING, "We found %s problems and %s warnings, please check the logfile." %
                                (repo_report.problem_count, repo_report.warning_count)))
+    else:
+        repo_report.add(Record(INFORMATION, "We found no problems and no warnings, please enjoy your day."))
 
     ReportManager.report(repo_report)
