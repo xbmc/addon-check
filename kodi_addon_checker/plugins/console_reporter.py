@@ -6,7 +6,7 @@ from kodi_addon_checker.report import Reporter, Report, Record, reporter, INFORM
 @reporter(name="console", enabled=True)
 class ConsoleReporter(Reporter):
 
-    def report(self, report: Report):
+    def report(self, report):
         if type(report) is Record:
             if report.log_level == INFORMATION:
                 colorPrint(report, "34")
