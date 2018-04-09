@@ -16,6 +16,8 @@ class Config(object):
         self._load_config(repo_path)
 
     def _load_config(self, repo_path):
+        if repo_path is None:
+            return
         config_path = os.path.join(repo_path, '.tests-config.json')
         if os.path.isfile(config_path):
             with open(config_path) as json_data:

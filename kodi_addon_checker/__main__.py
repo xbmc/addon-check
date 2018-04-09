@@ -61,9 +61,17 @@ def main():
                 repo_report = check_repo(repo_path, config)
                 report.add(repo_report)
     else:
-        # Treat current directory as repo
-        config = Config(current_dir, args)
-        report = check_repo(current_dir, config)
+        if os.path.isfile(os.path.join(current_dir, "addon.xml")):
+            # Current directory is an add-on
+            report = Report(current_dir)
+            report.add(Record(INFORMATION, "Checking add-on %s" % current_dir))
+            config = Config(None, args)
+            addon_report = check_addon.start(os.path.abspath(current_dir), config)
+            report.add(addon_report)
+        else:
+            # Treat current directory as repo
+            config = Config(current_dir, args)
+            report = check_repo(current_dir, config)
 
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
