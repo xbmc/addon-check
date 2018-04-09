@@ -7,6 +7,11 @@ from kodi_addon_checker.reporter import ReportManager
 
 class Config(object):
     def __init__(self, repo_path, cmd_args=None):
+        """
+        Create Config object using .tests-config.json and command line arguments.
+        :param repo_path: the repo path which contains .tests-config.json.
+        :param cmd_args: argparse object
+        """
         self.configs = {} if cmd_args is None else vars(cmd_args)
         self._load_config(repo_path)
 
