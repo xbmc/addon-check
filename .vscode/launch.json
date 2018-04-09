@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug repo (not supported atm)",
+            "type": "python",
+            "request": "launch",
+            "module": "kodi_addon_checker.__main__",
+            "args": [
+                "REPO_DIRECTORY"
+            ]
+        },
+        {
+            "name": "Debug single addon",
+            "type": "python",
+            "request": "launch",
+            "module": "kodi_addon_checker.__main__",
+            "args": [
+                "ADDON_DIR_TO_CHECK"
+            ]
+        }
+    ]
+}
