@@ -7,7 +7,8 @@ import xml.etree.ElementTree
 from PIL import Image
 
 from kodi_addon_checker.common import has_transparency
-from kodi_addon_checker.report import Report, PROBLEM, Record, WARNING, INFORMATION
+from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
+from kodi_addon_checker.report import Report
 
 REL_PATH = ""
 

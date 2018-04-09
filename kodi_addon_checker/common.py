@@ -4,10 +4,6 @@ import pkgutil
 import sys
 
 
-def colorPrint(string, color):
-    print("\033[%sm%s\033[0m" % (color, string))
-
-
 def has_transparency(im):
     try:
         if im.mode == "RGBA":

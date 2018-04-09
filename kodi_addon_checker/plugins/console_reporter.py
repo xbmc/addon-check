@@ -1,6 +1,16 @@
-from kodi_addon_checker.common import colorPrint
+from kodi_addon_checker.record import INFORMATION, WARNING, PROBLEM
+from kodi_addon_checker.report import Record
+from kodi_addon_checker.reporter import Reporter, reporter
 
-from kodi_addon_checker.report import Reporter, Report, Record, reporter, INFORMATION, WARNING, PROBLEM
+
+def colorPrint(string, color):
+    """
+    Utility function to print message to console.
+    :param string: the message to print
+    :param color: message color
+    :return:
+    """
+    print("\033[%sm%s\033[0m" % (color, string))
 
 
 @reporter(name="console", enabled=True)

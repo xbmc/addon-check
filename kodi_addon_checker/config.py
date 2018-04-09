@@ -2,7 +2,7 @@ import json
 import os
 from argparse import ArgumentParser
 
-from kodi_addon_checker.report import ReportManager
+from kodi_addon_checker.reporter import ReportManager
 
 
 class Config(object):
@@ -44,7 +44,6 @@ class ConfigManager(object):
 
     @classmethod
     def process_config(cls, config):
-        print(config.configs)
         reporters = config["reporter"]
         if reporters is not None:
             # To disable all, pass empty array in .tests-config.json
