@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import requests
 
 from PIL import Image
+
 from kodi_addon_checker.common import has_transparency
 from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
@@ -59,7 +60,7 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
     return results
 
 
-def start(addon_path, config=None):
+def start(addon_path, repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
@@ -74,11 +75,10 @@ def start(addon_path, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            if check_config(config, "check_dependencies"):
-                error_counter = _check_dependencies(error_counter, addon_path, repo_addons)
+            if config.is_enabled("check_dependencies"):
+                _check_dependencies(addon_path, repo_addons)
 
-            error_counter = _check_for_invalid_xml_files(
-                error_counter, file_index)
+            _check_for_invalid_xml_files(addon_report, file_index)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -125,10 +125,7 @@ def _check_for_invalid_xml_files(report: Report, file_index):
                 # Just try if we can successfully parse it
                 ET.parse(xml_path)
             except ET.ParseError:
-                error_counter = _logProblem(
-                    error_counter, "Invalid xml found. %s" % relative_path(xml_path))
-
-    return error_counter
+                report.add(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
 
 
 def _check_for_invalid_json_files(report: Report, file_index):
@@ -151,12 +148,11 @@ def _check_addon_xml(report: Report, addon_path):
 
         addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        colorPrint("created by %s" % addon.attrib.get("provider-name"), "34")
-        error_counter = _addon_xml_matches_folder(
-            error_counter, addon_path, addon_xml)
+        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
+        _addon_xml_matches_folder(report, addon_path, addon_xml)
+
     except ET.ParseError:
-        error_counter = _logProblem(
-            error_counter, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path))
+        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
 
     return addon_xml
 
@@ -361,7 +357,7 @@ def _logWarning(error_counter, warning_string):
     return error_counter
 
 
-def get_addons(xml_url):
+def _get_addons(xml_url):
     """
         addon.xml for the target Kodi version
     """
@@ -374,7 +370,7 @@ def get_addons(xml_url):
     }
 
 
-def get_users_dependencies(addon_path):
+def _get_users_dependencies(addon_path):
     """
         User's addon.xml from pull request
     """
@@ -388,18 +384,16 @@ def get_users_dependencies(addon_path):
     }
 
 
-def _check_dependencies(error_counter, addon_path, repo_addons):
-    deps = get_users_dependencies(addon_path)
+def _check_dependencies(addon_path, repo_addons):
+    deps = _get_users_dependencies(addon_path)
     ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
 
     for required_addon, required_version in deps.items():
         if (required_addon not in repo_addons) and (required_addon not in ignore):
-            error_counter = _logProblem(error_counter, "Unrecognized requirement: %s " % required_addon)
+            report.add(Record("Required addon %s not available in current repository." % required_addon))
 
         else:
             available_version = repo_addons.get(required_addon)
             if LooseVersion(available_version) != LooseVersion(required_version) and (required_addon not in ignore):
-                error_counter = _logWarning(error_counter, "Version mismatch for addon %s. Required: %s, Available: %s "
-                                            % (required_addon, required_version, available_version))
-
-    return error_counter
+                report.add(Record("Version mismatch for addon %s. Required: %s, Available: %s "
+                                  % (required_addon, required_version, available_version)))

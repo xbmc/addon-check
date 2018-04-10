@@ -1,7 +1,10 @@
 import argparse
 import os
+<< << << < bd3a378e9ef84d4cc5f261cd31adeba0328a3a72
 
 from kodi_addon_checker import check_addon
+== == == =
+>>>>>> > Add command line option for branch name
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import ConfigManager, Config
@@ -57,6 +60,8 @@ def main():
     parser.add_argument("--version", action="version",
                         version="%(prog)s 0.0.1")
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
+    parser.add_argument("--branch", help="Branch name on which checker is to run")
+
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 
@@ -66,7 +71,7 @@ def main():
         for directory in args.dir:
             report.add(check_artifact(directory, args))
     else:
-        report = check_artifact(os.getcwd(), args)
+        report = check_artifact(os.getcwd(), args, args.branch)
 
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
