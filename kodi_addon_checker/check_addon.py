@@ -80,7 +80,7 @@ def start(addon_path, config=None):
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
-                _addon_file_exists(addon_report, addon_path, "LICENSE\.txt|LICENSE\.md|LICENSE")
+                _addon_file_exists(addon_report, addon_path, r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
             if config.is_enabled("check_legacy_strings_xml"):
                 _check_for_legacy_strings_xml(addon_report, addon_path)
@@ -135,7 +135,7 @@ def _check_addon_xml(report: Report, addon_path):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     addon_xml = None
     try:
-        _addon_file_exists(report, addon_path, "addon\.xml")
+        _addon_file_exists(report, addon_path, r"addon\.xml")
 
         addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
         addon = addon_xml.getroot()
@@ -155,7 +155,7 @@ def _check_artwork(report: Report, addon_path, addon_xml, file_index):
 
     # go through all but the above and try to open the image
     for file in file_index:
-        if re.match("(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
+        if re.match(r"(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
             image_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully open it
