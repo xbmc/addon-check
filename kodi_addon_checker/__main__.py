@@ -5,7 +5,7 @@ from kodi_addon_checker import check_addon
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import ConfigManager, Config
-from kodi_addon_checker.record import Record, INFORMATION, PROBLEM, WARNING
+from kodi_addon_checker.record import Record, PROBLEM, WARNING
 from kodi_addon_checker.report import Report
 from kodi_addon_checker.reporter import ReportManager
 
@@ -28,6 +28,22 @@ def dir_type(dir_path):
     return os.path.abspath(dir_path)
 
 
+def check_artifact(artifact_path, args):
+    """
+    Check given artifact and return its report. The artifact can be either an add-on or a repository.
+    :param artifact_path: the path of add-on or repo
+    :param args: argparse object
+    :return: report
+    """
+    artifact_path = os.path.abspath(artifact_path)
+    config = Config(artifact_path, args)
+    ConfigManager.process_config(config)
+    if os.path.isfile(os.path.join(artifact_path, "addon.xml")):
+        return check_addon.start(artifact_path, config)
+    else:
+        return check_repo(artifact_path, config)
+
+
 def main():
     """The entry point to kodi-addon-checker
     """
@@ -44,34 +60,13 @@ def main():
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 
-    current_dir = os.path.abspath(os.getcwd())
     if args.dir:
-        report = Report(current_dir)
+        # Following report is a wrapper for all sub reports
+        report = Report("")
         for directory in args.dir:
-            if os.path.isfile(os.path.join(directory, "addon.xml")):
-                report.add(Record(INFORMATION, "Checking add-on %s" % directory))
-                # For add-ons try to load .tests-config.json from current directory
-                config = Config(current_dir, args)
-                addon_report = check_addon.start(os.path.abspath(directory), config)
-                report.add(addon_report)
-            else:
-                repo_path = os.path.abspath(directory)
-                # Load .tests-config.json from repo directory
-                config = Config(repo_path, args)
-                repo_report = check_repo(repo_path, config)
-                report.add(repo_report)
+            report.add(check_artifact(directory, args))
     else:
-        if os.path.isfile(os.path.join(current_dir, "addon.xml")):
-            # Current directory is an add-on
-            report = Report(current_dir)
-            report.add(Record(INFORMATION, "Checking add-on %s" % current_dir))
-            config = Config(None, args)
-            addon_report = check_addon.start(os.path.abspath(current_dir), config)
-            report.add(addon_report)
-        else:
-            # Treat current directory as repo
-            config = Config(current_dir, args)
-            report = check_repo(current_dir, config)
+        report = check_artifact(os.getcwd(), args)
 
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %

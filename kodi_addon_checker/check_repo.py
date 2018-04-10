@@ -12,7 +12,6 @@ def check_repo(repo_path, config):
 
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
-            repo_report.add(Record(INFORMATION, "Checking add-on %s" % addon_folder))
             addon_path = os.path.join(repo_path, addon_folder)
             addon_report = check_addon.start(addon_path, config)
             repo_report.add(addon_report)
