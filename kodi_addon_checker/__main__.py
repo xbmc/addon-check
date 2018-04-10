@@ -72,8 +72,8 @@ def main():
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
                           (report.problem_count, report.warning_count)))
     elif report.warning_count > 0:
-        report.add(Record(WARNING, "We found %s problems and %s warnings, please check the logfile." %
-                          (report.problem_count, report.warning_count)))
+        report.add(Record(WARNING, "We found no problems and %s warnings, please check the logfile." %
+                          report.warning_count))
     else:
         report.add(Record(INFORMATION, "We found no problems and no warnings, please enjoy your day."))
 
