@@ -1,10 +1,6 @@
 import argparse
 import os
-<< << << < bd3a378e9ef84d4cc5f261cd31adeba0328a3a72
-
 from kodi_addon_checker import check_addon
-== == == =
->>>>>> > Add command line option for branch name
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import ConfigManager, Config
