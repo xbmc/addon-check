@@ -78,6 +78,10 @@ def start(addon_path, config=None):
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
+            if config.is_enabled("check_complex_files"):
+                max_line_count = config.configs.get("max_line_count", 80)
+                _check_complex_files(addon_report, addon_path, max_line_count)
+
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
                 _addon_file_exists(addon_report, addon_path, r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
@@ -302,3 +306,19 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
 def relative_path(file_path):
     path_to_print = file_path[len(REL_PATH):]
     return ".{}".format(path_to_print)
+
+
+def _check_complex_files(report: Report, addon_path, max_line_count):
+
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    tree = xml.etree.ElementTree.parse(addon_xml_path).getroot()
+    complex_files = []
+
+    for i in tree.findall("extension"):
+        library = i.get("library")
+        if library:
+            filepath = os.path.join(addon_path, library)
+            num_line = sum(1 for line in open(filepath))
+
+            if num_line > max_line_count:
+                report.add(Record(WARNING, "Entry point for the addon is complex. please check %s" % filepath))
