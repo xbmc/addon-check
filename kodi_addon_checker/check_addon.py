@@ -78,9 +78,9 @@ def start(addon_path, config=None):
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
-            if config.is_enabled("check_complex_files"):
-                max_line_count = config.configs.get("max_line_count", 80)
-                _check_complex_files(addon_report, addon_path, max_line_count)
+            max_entrypoint_line_count = config.configs.get("max_entrypoint_line_count", 10)
+            print(max_entrypoint_line_count)
+            _check_complex_addon_entrypoint(addon_report, addon_path, max_entrypoint_line_count)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
@@ -308,17 +308,41 @@ def relative_path(file_path):
     return ".{}".format(path_to_print)
 
 
-def _check_complex_files(report: Report, addon_path, max_line_count):
+def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_line_count):
 
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     tree = xml.etree.ElementTree.parse(addon_xml_path).getroot()
-    complex_files = []
 
     for i in tree.findall("extension"):
         library = i.get("library")
+
         if library:
             filepath = os.path.join(addon_path, library)
-            num_line = sum(1 for line in open(filepath))
 
-            if num_line > max_line_count:
-                report.add(Record(WARNING, "Entry point for the addon is complex. please check %s" % filepath))
+            if not os.path.isdir(filepath):
+
+                if os.path.exists(filepath):
+                    if number_of_lines(filepath) > max_entrypoint_line_count:
+                        report.add(Record(WARNING, "Entry point for the addon is complex. please check %s" % library))
+                else:
+                    report.add(Record(PROBLEM, "%s Entry point does not exists" % library))
+
+
+def number_of_lines(filepath):
+    lineno = 0
+    skip = False
+
+    with open(filepath) as fp:
+
+        for line in fp:
+            line = line.strip()
+
+            if line:
+                if line.startswith('#'):
+                    continue
+                if line.startswith('"""'):
+                    skip = not skip
+                    continue
+                if not skip:
+                    lineno += 1
+    return lineno
