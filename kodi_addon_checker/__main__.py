@@ -51,6 +51,7 @@ def check_artifact(artifact_path, args, branch_name):
 def main():
     """The entry point to kodi-addon-checker
     """
+    choice = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
     load_plugins()
     parser = argparse.ArgumentParser(prog="kodi-addon-checker",
                                      description="Checks Kodi repo for best practices and creates \
@@ -61,7 +62,8 @@ def main():
     parser.add_argument("--version", action="version",
                         version="%(prog)s 0.0.1")
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
-    parser.add_argument("--branch", help="Branch name on which checker is to run")
+    parser.add_argument("--branch", choices=choice, required=True,
+                        help="Target branch name where the checker will resolve dependencies")
 
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()

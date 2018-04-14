@@ -76,7 +76,7 @@ def start(addon_path, repo_addons, config=None):
             file_index = _create_file_index(addon_path)
 
             if config.is_enabled("check_dependencies"):
-                _check_dependencies(addon_path, repo_addons)
+                _check_dependencies(addon_report, addon_path, repo_addons)
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
@@ -384,16 +384,17 @@ def _get_users_dependencies(addon_path):
     }
 
 
-def _check_dependencies(addon_path, repo_addons):
+def _check_dependencies(report: Report, addon_path, repo_addons):
     deps = _get_users_dependencies(addon_path)
     ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
 
     for required_addon, required_version in deps.items():
-        if (required_addon not in repo_addons) and (required_addon not in ignore):
-            report.add(Record("Required addon %s not available in current repository." % required_addon))
-
+        if required_addon not in repo_addons:
+            if required_addon not in ignore:
+                report.add(Record(WARNING, "Required addon %s not available in current repository." % required_addon))
         else:
-            available_version = repo_addons.get(required_addon)
+            available_version = repo_addons[required_addon]
+
             if LooseVersion(available_version) != LooseVersion(required_version) and (required_addon not in ignore):
-                report.add(Record("Version mismatch for addon %s. Required: %s, Available: %s "
+                report.add(Record(WARNING, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
