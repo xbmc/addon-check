@@ -147,9 +147,8 @@ def _check_addon_xml(report: Report, addon_path):
 
         addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
+        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
         _addon_xml_matches_folder(report, addon_path, addon_xml)
-
     except ET.ParseError:
         report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
 
