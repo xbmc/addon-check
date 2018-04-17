@@ -75,8 +75,7 @@ def start(addon_path, repo_addons, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            if config.is_enabled("check_dependencies"):
-                _check_dependencies(addon_report, addon_path, repo_addons)
+            _check_dependencies(addon_report, addon_path, repo_addons)
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
@@ -148,11 +147,11 @@ def _check_addon_xml(report: Report, addon_path):
 
         addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
+        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
         _addon_xml_matches_folder(report, addon_path, addon_xml)
 
     except ET.ParseError:
-        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
+        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
 
     return addon_xml
 
@@ -391,10 +390,10 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
             if required_addon not in ignore:
-                report.add(Record(WARNING, "Required addon %s not available in current repository." % required_addon))
+                report.add(Record(PROBLEM, "Required addon %s not available in current repository." % required_addon))
         else:
             available_version = repo_addons[required_addon]
 
-            if LooseVersion(available_version) != LooseVersion(required_version) and (required_addon not in ignore):
-                report.add(Record(WARNING, "Version mismatch for addon %s. Required: %s, Available: %s "
+            if LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
+                report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
