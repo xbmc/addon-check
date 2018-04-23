@@ -3,6 +3,7 @@ import os
 import pathlib
 import re
 import xml.etree.ElementTree
+from radon.raw import analyze
 
 from PIL import Image
 
@@ -79,7 +80,6 @@ def start(addon_path, config=None):
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
             max_entrypoint_line_count = config.configs.get("max_entrypoint_line_count", 10)
-            print(max_entrypoint_line_count)
             _check_complex_addon_entrypoint(addon_report, addon_path, max_entrypoint_line_count)
 
             if config.is_enabled("check_license_file_exists"):
@@ -329,20 +329,7 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_l
 
 
 def number_of_lines(filepath):
-    lineno = 0
-    skip = False
+    with open(filepath, 'r') as file:
+        data = file.read()
 
-    with open(filepath) as fp:
-
-        for line in fp:
-            line = line.strip()
-
-            if line:
-                if line.startswith('#'):
-                    continue
-                if line.startswith('"""'):
-                    skip = not skip
-                    continue
-                if not skip:
-                    lineno += 1
-    return lineno
+    return(analyze(data).lloc)
