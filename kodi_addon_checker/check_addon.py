@@ -332,4 +332,4 @@ def number_of_lines(filepath):
     with open(filepath, 'r') as file:
         data = file.read()
 
-    return(analyze(data).lloc)
+    return (analyze(data).lloc)
