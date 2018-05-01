@@ -322,8 +322,12 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_l
             if not os.path.isdir(filepath):
 
                 if os.path.exists(filepath):
-                    if number_of_lines(filepath) > max_entrypoint_line_count:
-                        report.add(Record(WARNING, "Entry point for the addon is complex. please check %s" % library))
+                    lineno = number_of_lines(filepath)
+                    if lineno >= max_entrypoint_line_count:
+                        report.add(Record(WARNING,
+                                          "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
+                                          % (library, lineno, max_entrypoint_line_count)))
+
                 else:
                     report.add(Record(PROBLEM, "%s Entry point does not exists" % library))
 
