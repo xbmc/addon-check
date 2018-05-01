@@ -79,7 +79,7 @@ def start(addon_path, config=None):
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
-            max_entrypoint_line_count = config.configs.get("max_entrypoint_line_count", 10)
+            max_entrypoint_line_count = config.configs.get("max_entrypoint_line_count", 15)
             _check_complex_addon_entrypoint(addon_report, addon_path, max_entrypoint_line_count)
 
             if config.is_enabled("check_license_file_exists"):
