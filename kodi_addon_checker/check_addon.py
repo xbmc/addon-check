@@ -315,7 +315,7 @@ def relative_path(file_path):
 def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_line_count):
 
     addon_xml_path = os.path.join(addon_path, "addon.xml")
-    tree = xml.etree.ElementTree.parse(addon_xml_path).getroot()
+    tree = ET.parse(addon_xml_path).getroot()
 
     for i in tree.findall("extension"):
         library = i.get("library")
@@ -341,18 +341,6 @@ def number_of_lines(filepath):
         data = file.read()
 
     return (analyze(data).lloc)
-
-
-def _logProblem(error_counter, problem_string):
-    colorPrint("PROBLEM: %s" % problem_string, "31")
-    error_counter["problems"] = error_counter["problems"] + 1
-    return error_counter
-
-
-def _logWarning(error_counter, warning_string):
-    colorPrint("WARNING: %s" % warning_string, "35")
-    error_counter["warnings"] = error_counter["warnings"] + 1
-    return error_counter
 
 
 def _get_addons(xml_url):
