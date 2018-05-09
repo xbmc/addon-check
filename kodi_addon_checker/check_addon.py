@@ -2,8 +2,10 @@ import json
 import os
 import pathlib
 import re
-import xml.etree.ElementTree
 from radon.raw import analyze
+from distutils.version import LooseVersion
+import xml.etree.ElementTree as ET
+import requests
 
 from PIL import Image
 
@@ -58,7 +60,7 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
     return results
 
 
-def start(addon_path, config=None):
+def start(addon_path, repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
@@ -72,6 +74,8 @@ def start(addon_path, config=None):
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
+
+            _check_dependencies(addon_report, addon_path, repo_addons)
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
@@ -118,8 +122,8 @@ def _check_for_invalid_xml_files(report: Report, file_index):
             xml_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully parse it
-                xml.etree.ElementTree.parse(xml_path)
-            except xml.etree.ElementTree.ParseError:
+                ET.parse(xml_path)
+            except ET.ParseError:
                 report.add(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
 
 
@@ -141,11 +145,11 @@ def _check_addon_xml(report: Report, addon_path):
     try:
         _addon_file_exists(report, addon_path, r"addon\.xml")
 
-        addon_xml = xml.etree.ElementTree.parse(addon_xml_path)
+        addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
         report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
         _addon_xml_matches_folder(report, addon_path, addon_xml)
-    except xml.etree.ElementTree.ParseError:
+    except ET.ParseError:
         report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
 
     return addon_xml
@@ -311,7 +315,7 @@ def relative_path(file_path):
 def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_line_count):
 
     addon_xml_path = os.path.join(addon_path, "addon.xml")
-    tree = xml.etree.ElementTree.parse(addon_xml_path).getroot()
+    tree = ET.parse(addon_xml_path).getroot()
 
     for i in tree.findall("extension"):
         library = i.get("library")
@@ -337,3 +341,46 @@ def number_of_lines(filepath):
         data = file.read()
 
     return (analyze(data).lloc)
+
+
+def _get_addons(xml_url):
+    """
+        addon.xml for the target Kodi version
+    """
+    content = requests.get(xml_url).content
+    tree = ET.fromstring(content)
+
+    return {
+        a.get("id"): a.get("version")
+        for a in tree.findall("addon")
+    }
+
+
+def _get_users_dependencies(addon_path):
+    """
+        User's addon.xml from pull request
+    """
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+
+    tree = ET.parse(addon_xml_path).getroot()
+
+    return {
+        i.get("addon"): i.get("version")
+        for i in tree.findall("requires/import")
+    }
+
+
+def _check_dependencies(report: Report, addon_path, repo_addons):
+    deps = _get_users_dependencies(addon_path)
+    ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
+
+    for required_addon, required_version in deps.items():
+        if required_addon not in repo_addons:
+            if required_addon not in ignore:
+                report.add(Record(PROBLEM, "Required addon %s not available in current repository." % required_addon))
+        else:
+            available_version = repo_addons[required_addon]
+
+            if LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
+                report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
+                                  % (required_addon, required_version, available_version)))
