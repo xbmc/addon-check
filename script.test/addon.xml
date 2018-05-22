@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.test" name="kodi test addon" version="0.0.1" provider-name="mzfr">
+    <requires>
+        <import addon="xbmc.python" version="2.25.0"/>
+        <import addon="script.module.requests" version="2.9.1"/>
+        <import addon="script.module.requests" version="1.9.1"/>
+        <import addon="script.module.kodi65" version="1.0.0"/>
+    </requires>
+    <extension point="xbmc.python.script" library="main.py">
+        <provides>executable</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en_GB">Test kodi's addon-checker tool </summary>
+        <description lang="en_GB">This addon will be used for testing the working of addon checker tool. It will help in implementing the integration test in the tool.</description>
+        <language></language>
+        <platform>all</platform>
+        <license>MIT</license>
+        <forum>https://forum.kodi.tv/showthread.php?tid=328798</forum>
+        <website>www.kodi.tv</website>
+        <email>mehtab.zafar98@gmail.com</email>
+        <source></source>
+        <news></news>
+        <disclaimer></disclaimer>
+        <assets>
+            <icon>resources/icon.png</icon>
+            <icon>resources/icon2.png</icon>
+            <fanart>resources/fanart.jpg</fanart>
+        </assets>
+    </extension>
+</addon>
