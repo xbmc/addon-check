@@ -68,6 +68,9 @@ def start(addon_path, repo_addons, config=None):
     addon_report = Report(addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
+    branch_url = ROOT_URL.format(branch=branch_name)
+    repo_addons = _get_addons(branch_url)
+
     global REL_PATH
     # Extract common path from addon paths
     # All paths will be printed relative to this path
@@ -82,8 +85,8 @@ def start(addon_path, repo_addons, config=None):
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
-            # if config.is_enabled("check_for_existing_addon"):
-            _check_for_existing_addon(addon_report, addon_path, repo_addons)
+            if config.is_enabled("check_for_existing_addon"):
+                _check_for_existing_addon(addon_report, addon_path, repo_addons, branch_name)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -435,16 +438,16 @@ def get_addon_name(xml_path):
     return (tree.get("id"), tree.get("version"))
 
 
-def _check_for_existing_addon(report: Report, addon_xml, repo_addons):
+def _check_for_existing_addon(report: Report, addon_xml, repo_addons, branch_name):
     """Check if addon submitted already exists or not"""
     addon_xml = os.path.join(addon_xml, "addon.xml")
     addon_name, addon_version = get_addon_name(addon_xml)
 
     if addon_name not in repo_addons:
-        report.add(Record(WARNING, "This is a new addon"))
+        report.add(Record(INFORMATION, "This is a new addon"))
     else:
-        report.add(Record(WARNING, "%s addon already exist with version %s."
-                          % (addon_name, repo_addons[addon_name][0])))
+        report.add(Record(INFORMATION, "%s addon already exist in branch %s with version %s."
+                          % (addon_name, branch_name, repo_addons[addon_name][0])))
 
         if repo_addons[addon_name][1] is False:
             report.add(Record(WARNING, "%s is broken" % addon_name))

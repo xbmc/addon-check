@@ -10,8 +10,6 @@ from kodi_addon_checker.record import Record, PROBLEM, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker.reporter import ReportManager
 
-ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
-
 
 def dir_type(dir_path):
     """ArgParse callable to validate positional add-on arguments
@@ -38,16 +36,14 @@ def check_artifact(artifact_path, args, branch_name):
     :param args: argparse object
     :return: report
     """
-    branch_url = ROOT_URL.format(branch=branch_name)
-    repo_addons = check_addon._get_addons(branch_url)
 
     artifact_path = os.path.abspath(artifact_path)
     config = Config(artifact_path, args)
     ConfigManager.process_config(config)
     if os.path.isfile(os.path.join(artifact_path, "addon.xml")):
-        return check_addon.start(artifact_path, repo_addons, config)
+        return check_addon.start(artifact_path, branch_name, config)
     else:
-        return check_repo(artifact_path, config, repo_addons)
+        return check_repo(artifact_path, branch_name, config)
 
 
 def main():
