@@ -1,4 +1,5 @@
 import unittest
+from kodi_addon_checker import _all_repo_addons
 from kodi_addon_checker.check_addon import start
 from kodi_addon_checker.record import Record
 from kodi_addon_checker.config import Config
@@ -8,14 +9,26 @@ class TestCheckAddon(unittest.TestCase):
     """Integration tests for Start function present in check_addon.py"""
 
     def setUp(self):
-        self.path = "/home/mzfr/dev/Addon-check/addons/plugin.video.twitch/"
-        self.whitelist = ["INFO: checking addon", "INFO: created by",
-                          "Image icon", "Icon dimensions are fine", "fanart",
-                          "WARN: Complex entry point", "WARN: We found"]
+        self.path = "script.test/"
+        self.whitelist = ["INFO: checking add-on", "INFO: created by",
+                          "Image icon", "Icon dimensions are fine", "INFO: Image fanart",
+                          "WARN: Complex entry point", "WARN: We found", "please check the logfile"]
         self.config = Config(self.path)
+        self.branch_name = "krypton"
+        self.all_repo_addons = _all_repo_addons()
 
     def test_start(self):
+        result = start(self.path, self.branch_name, self.all_repo_addons, self.config)
+        records = [Record.__str__(r) for r in result]
 
-        result = start(self.path, self.config)
-        values = [Record.__str__(r) for r in result]
-        self.assertTrue(any(any(x in z for z in values) for x in self.whitelist))
+        # Comparing the whitelist with the list of output we get from addon-checker tool
+        for white_str in self.whitelist:
+            for value in records:
+                if white_str.lower() == value.lower():
+                    break
+            else:
+                flag = False
+        else:
+            flag = True
+
+        self.assertTrue(flag)
