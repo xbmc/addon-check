@@ -18,7 +18,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def _find_file(name, path):
@@ -68,22 +68,24 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
 def start(addon_path, branch_name, all_repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
-    logger.info("Checking add-on %s" % addon_id)
+    LOGGER.info("Checking add-on %s" % addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
     repo_addons = all_repo_addons[branch_name]
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    parsed_xml = ET.parse(addon_xml_path).getroot()
 
     global REL_PATH
     # Extract common path from addon paths
     # All paths will be printed relative to this path
     REL_PATH = os.path.split(addon_path[:-1])[0]
-    addon_xml = _check_addon_xml(addon_report, addon_path)
+    addon_xml = _check_addon_xml(addon_report, addon_path, parsed_xml)
 
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            _check_dependencies(addon_report, addon_path, repo_addons)
+            _check_dependencies(addon_report, repo_addons, parsed_xml)
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
@@ -96,7 +98,7 @@ def start(addon_path, branch_name, all_repo_addons, config=None):
             max_entrypoint_line_count = config.configs.get(
                 "max_entrypoint_line_count", 15)
             _check_complex_addon_entrypoint(
-                addon_report, addon_path, max_entrypoint_line_count)
+                addon_report, addon_path, parsed_xml, max_entrypoint_line_count)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
@@ -155,22 +157,19 @@ def _check_for_invalid_json_files(report: Report, file_index):
                                   relative_path(path)))
 
 
-def _check_addon_xml(report: Report, addon_path):
+def _check_addon_xml(report: Report, addon_path, parsed_xml):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
-    addon_xml = None
     try:
         _addon_file_exists(report, addon_path, r"addon\.xml")
 
-        addon_xml = ET.parse(addon_xml_path)
-        addon = addon_xml.getroot()
         report.add(Record(INFORMATION, "Created by %s" %
-                          addon.attrib.get("provider-name")))
-        _addon_xml_matches_folder(report, addon_path, addon_xml)
+                          parsed_xml.attrib.get("provider-name")))
+        _addon_xml_matches_folder(report, addon_path, parsed_xml)
     except ET.ParseError:
         report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" %
                           relative_path(addon_xml_path)))
 
-    return addon_xml
+    return parsed_xml
 
 
 def _check_artwork(report: Report, addon_path, addon_xml, file_index):
@@ -244,7 +243,7 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                                               (image_type, width, height)))
                     else:
                         # screenshots have no size definitions
-                        logger.info("Artwork was a screenshot")
+                        LOGGER.info("Artwork was a screenshot")
                         pass
                 except IOError:
                     report.add(
@@ -277,8 +276,7 @@ def _addon_file_exists(report: Report, addon_path, file_name):
 
 
 def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
-    addon = addon_xml.getroot()
-    if os.path.basename(os.path.normpath(addon_path)) == addon.attrib.get("id"):
+    if os.path.basename(os.path.normpath(addon_path)) == addon_xml.attrib.get("id"):
         report.add(Record(INFORMATION, "Addon id matches folder name"))
     else:
         report.add(Record(PROBLEM, "Addon id and folder name does not match."))
@@ -340,12 +338,9 @@ def relative_path(file_path):
     return ".{}".format(path_to_print)
 
 
-def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_line_count):
+def _check_complex_addon_entrypoint(report: Report, addon_path, parsed_xml, max_entrypoint_line_count):
 
-    addon_xml_path = os.path.join(addon_path, "addon.xml")
-    tree = ET.parse(addon_xml_path).getroot()
-
-    for i in tree.findall("extension"):
+    for i in parsed_xml.findall("extension"):
         library = i.get("library")
 
         if library:
@@ -398,28 +393,24 @@ def _get_addons(xml_url):
             for a in tree.findall("addon")
         }
     except requests.exceptions.ReadTimeout as errrt:
-        logger.error(errrt)
+        LOGGER.error(errrt)
     except requests.exceptions.ConnectionTimeout as errct:
-        logger.error(errct)
+        LOGGER.error(errct)
 
 
-def _get_users_dependencies(addon_path):
+def _get_users_dependencies(parsed_xml):
     """
         User's addon.xml from pull request
     """
-    addon_xml_path = os.path.join(addon_path, "addon.xml")
-
-    tree = ET.parse(addon_xml_path).getroot()
-
     return {
         i.get("addon"): i.get("version")
-        for i in tree.findall("requires/import")
+        for i in parsed_xml.findall("requires/import")
     }
 
 
-def _check_dependencies(report: Report, addon_path, repo_addons):
+def _check_dependencies(report: Report, repo_addons, parsed_xml):
     """Check for any new dependencies in addon.xml file"""
-    deps = _get_users_dependencies(addon_path)
+    deps = _get_users_dependencies(parsed_xml)
     ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json',
               'xbmc.metadata', 'xbmc.python']
 
