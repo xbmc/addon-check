@@ -85,8 +85,7 @@ def start(addon_path, repo_addons, config=None):
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
-            if config.is_enabled("check_for_existing_addon"):
-                _check_for_existing_addon(addon_report, addon_path, repo_addons, branch_name)
+            _check_for_existing_addon(addon_report, addon_path, branch_name)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -438,16 +437,26 @@ def get_addon_name(xml_path):
     return (tree.get("id"), tree.get("version"))
 
 
-def _check_for_existing_addon(report: Report, addon_xml, repo_addons, branch_name):
+def _check_for_existing_addon(report: Report, addon_path, addon_branch):
     """Check if addon submitted already exists or not"""
-    addon_xml = os.path.join(addon_xml, "addon.xml")
+    addon_xml = os.path.join(addon_path, "addon.xml")
     addon_name, addon_version = get_addon_name(addon_xml)
 
-    if addon_name not in repo_addons:
-        report.add(Record(INFORMATION, "This is a new addon"))
-    else:
-        report.add(Record(INFORMATION, "%s addon already exist in branch %s with version %s."
-                          % (addon_name, branch_name, repo_addons[addon_name][0])))
+    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
 
-        if repo_addons[addon_name][1] is False:
-            report.add(Record(WARNING, "%s is broken" % addon_name))
+    for branch in branches:
+
+        branch_url = ROOT_URL.format(branch=branch)
+        repo_addons = _get_addons(branch_url)
+
+        if addon_name in repo_addons:
+            if LooseVersion(addon_version) == LooseVersion(repo_addons[addon_name]):
+                report.add(Record(PROBLEM, "%s addon already exist with current version in lower branch"
+                                  % addon_name))
+
+            else:
+                report.add(Record(INFORMATION, "%s addon also exists in %s branch but with lower version"
+                                  % (addon_name, branch)))
+                break
+        else:
+            report.add(Record(INFORMATION, "This is a new addon"))
