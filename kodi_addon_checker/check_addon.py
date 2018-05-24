@@ -15,7 +15,6 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
-ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
 
 
 def _find_file(name, path):
@@ -68,8 +67,7 @@ def start(addon_path, repo_addons, config=None):
     addon_report = Report(addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
-    branch_url = ROOT_URL.format(branch=branch_name)
-    repo_addons = _get_addons(branch_url)
+    repo_addons = all_repo_addons[branch_name]
 
     global REL_PATH
     # Extract common path from addon paths
@@ -85,7 +83,7 @@ def start(addon_path, repo_addons, config=None):
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
-            _check_for_existing_addon(addon_report, addon_path, branch_name)
+            _check_for_existing_addon(addon_report, addon_path, all_repo_addons)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -432,31 +430,27 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
                                   % (required_addon, required_version, available_version)))
 
 
-def get_addon_name(xml_path):
+def _get_addon_name(xml_path):
     tree = ET.parse(xml_path).getroot()
     return (tree.get("id"), tree.get("version"))
 
 
-def _check_for_existing_addon(report: Report, addon_path, addon_branch):
+def _check_for_existing_addon(report: Report, addon_path, all_repo_addons):
     """Check if addon submitted already exists or not"""
     addon_xml = os.path.join(addon_path, "addon.xml")
-    addon_name, addon_version = get_addon_name(addon_xml)
+    addon_name, addon_version = _get_addon_name(addon_xml)
 
-    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
-
-    for branch in branches:
-
-        branch_url = ROOT_URL.format(branch=branch)
-        repo_addons = _get_addons(branch_url)
+    for branch in sorted(all_repo_addons):
+        repo_addons = all_repo_addons[branch]
 
         if addon_name in repo_addons:
-            if LooseVersion(addon_version) == LooseVersion(repo_addons[addon_name]):
-                report.add(Record(PROBLEM, "%s addon already exist with current version in lower branch"
-                                  % addon_name))
-
+            if LooseVersion(addon_version) <= LooseVersion(repo_addons[addon_name]):
+                report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
+                                  % (addon_name, repo_addons[addon_name], branch)))
+                return
             else:
-                report.add(Record(INFORMATION, "%s addon also exists in %s branch but with lower version"
-                                  % (addon_name, branch)))
-                break
-        else:
-            report.add(Record(INFORMATION, "This is a new addon"))
+                report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"
+                                  % (addon_name, branch, repo_addons[addon_name])))
+                return
+
+    report.add(Record(INFORMATION, "This is a new addon"))
