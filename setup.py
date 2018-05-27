@@ -15,14 +15,14 @@ with open(os.path.join(_ROOT, 'README.md')) as f:
 
 setuptools.setup(
     name="kodi-addon-checker",
-    version="0.0.1",
+    version="0.0.2",
     description="Check kodi addons or whole kodi repositories for errors and best practices.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     author="Team Kodi",
     url="https://github.com/xbmc/addon-check",
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     install_requires=REQUIRES,
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [
