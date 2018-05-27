@@ -2,12 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug repo (not supported atm)",
+            "name": "Debug repo",
             "type": "python",
             "request": "launch",
             "module": "kodi_addon_checker.__main__",
             "args": [
-                "REPO_DIRECTORY"
+                "--branch=BRANCH_NAME",
+                "REPO_DIRECTORY",
             ]
         },
         {
@@ -16,7 +17,8 @@
             "request": "launch",
             "module": "kodi_addon_checker.__main__",
             "args": [
-                "ADDON_DIR_TO_CHECK"
+                "--branch=BRANCH_NAME",
+                "ADDON_DIR_TO_CHECK",
             ]
         }
     ]
