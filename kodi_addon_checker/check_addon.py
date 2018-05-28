@@ -193,6 +193,10 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
             image = type('image', (object,),
                          {'text': 'fanart.jpg'})()
             images.append(image)
+    if image_type == "icon" and multiple_artwork(1, addon_path) > 1:
+        report.add(Record(PROBLEM, "Multiple icons are not allowed"))
+    if image_type == "fanart" and multiple_artwork(0, addon_path) > 1:
+        report.add(Record(PROBLEM, "Multiple fanarts are not allowed"))
 
     for image in images:
         if image.text:
@@ -384,3 +388,16 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
             if LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
                 report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
+
+
+def multiple_artwork(flag, addon_path):
+
+    addon_xml_path = os.path.join(addon_path, "addon.xml")
+    tree = ET.parse(addon_xml_path).getroot()
+
+    icon = tree.findall("extension/assets/icon")
+    fanart = tree.findall("extension/assets/fanart")
+    if flag == 1:
+        return(len(icon))
+    else:
+        return(len(fanart))
