@@ -10,7 +10,7 @@ from kodi_addon_checker.record import Record, PROBLEM, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker.reporter import ReportManager
 
-ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml"
+ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 
 
 def _all_repo_addons():

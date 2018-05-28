@@ -8,6 +8,9 @@ import xml.etree.ElementTree as ET
 import requests
 import logging
 from kodi_addon_checker import logger
+import gzip
+from io import BytesIO
+
 from PIL import Image
 
 from kodi_addon_checker.common import has_transparency
@@ -382,7 +385,9 @@ def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_
 
 def _get_addons(xml_url):
     """addon.xml for the target Kodi version"""
-    content = requests.get(xml_url).content
+    gz_file = requests.get(xml_url).content
+    with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
+        content = xml_file.read()
     tree = ET.fromstring(content)
 
     return {
