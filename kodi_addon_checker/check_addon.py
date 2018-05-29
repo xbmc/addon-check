@@ -381,6 +381,12 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
         else:
             available_version = repo_addons[required_addon]
 
-            if LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
+            if required_version == None:
+                report.add(Record(WARNING, "Required addon %s does not require a fixed version Available: %s "
+                                  % (required_addon available_version)))
+            elif available_version == None:
+                report.add(Record(PROBLEM, "Version of %s in required version %s not available"
+                                  % (required_addon, required_version)))
+            elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
                 report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
