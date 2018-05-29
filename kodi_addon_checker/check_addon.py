@@ -3,7 +3,7 @@ import os
 import pathlib
 import re
 from radon.raw import analyze
-from distutils.version import LooseVersion
+from libversion import Version
 import xml.etree.ElementTree as ET
 import requests
 
@@ -381,6 +381,6 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
         else:
             available_version = repo_addons[required_addon]
 
-            if LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
+            if Version(available_version) < Version(required_version) and (required_addon not in ignore):
                 report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))

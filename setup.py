@@ -5,7 +5,8 @@ import setuptools
 REQUIRES = [
     'Pillow',
     'requests',
-    'radon'
+    'radon',
+    'libversion'
 ]
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
