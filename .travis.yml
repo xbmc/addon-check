@@ -1,8 +1,7 @@
 language: python
 matrix:
   include:
-    - python: "3.5"
-    - python: "nightly"
+    - python: "3.6"
 
 # command to install dependencies
 install:
