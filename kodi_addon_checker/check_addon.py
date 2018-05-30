@@ -383,7 +383,7 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
 
             if required_version is None:
                 report.add(Record(WARNING, "Required addon %s does not require a fixed version Available: %s "
-                                  % (required_addon available_version)))
+                                  % (required_addon, available_version)))
             elif available_version is None:
                 report.add(Record(PROBLEM, "Version of %s in required version %s not available"
                                   % (required_addon, required_version)))
