@@ -326,22 +326,31 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_l
             if not os.path.isdir(filepath):
 
                 if os.path.exists(filepath):
-                    lineno = number_of_lines(filepath)
-                    if lineno >= max_entrypoint_line_count:
-                        report.add(Record(WARNING,
-                                          "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
-                                          % (library, lineno, max_entrypoint_line_count)))
+                    number_of_lines(report, filepath, library, max_entrypoint_line_count)
 
                 else:
                     report.add(Record(PROBLEM, "%s Entry point does not exists" % library))
 
 
-def number_of_lines(filepath):
+def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_line_count: int):
     with open(filepath, 'r') as file:
         data = file.read()
 
-    return (analyze(data).lloc)
-
+    try:
+        lineno = analyze(data).lloc
+        if lineno >= max_entrypoint_line_count:
+            report.add(Record(WARNING,
+                            "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
+                            % (library, lineno, max_entrypoint_line_count)))
+    except SyntaxError as e:
+        if e.msg == 'SyntaxError at line: 1':
+            report.add(Record(PROBLEM,
+                            "Error parsing file, is your file saved with UTF-8 encoding? Make sure it has no BOM. Check: %s"
+                            % (library)))
+        else:
+            report.add(Record(PROBLEM,
+                            "Error parsing file, is there a syntax error in your file? Check: %s"
+                            % (library)))
 
 def _get_addons(xml_url):
     """
