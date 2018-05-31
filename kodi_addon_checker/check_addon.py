@@ -6,7 +6,8 @@ from radon.raw import analyze
 from distutils.version import LooseVersion
 import xml.etree.ElementTree as ET
 import requests
-
+import logging
+from kodi_addon_checker import logger
 from PIL import Image
 
 from kodi_addon_checker.common import has_transparency
@@ -61,6 +62,7 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
 
 
 def start(addon_path, repo_addons, config=None):
+    logger = logging.getLogger(__name__)
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
