@@ -83,12 +83,15 @@ def start(addon_path, repo_addons, config=None):
 
             _check_artwork(addon_report, addon_path, addon_xml, file_index)
 
-            max_entrypoint_line_count = config.configs.get("max_entrypoint_line_count", 15)
-            _check_complex_addon_entrypoint(addon_report, addon_path, max_entrypoint_line_count)
+            max_entrypoint_line_count = config.configs.get(
+                "max_entrypoint_line_count", 15)
+            _check_complex_addon_entrypoint(
+                addon_report, addon_path, max_entrypoint_line_count)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
-                _addon_file_exists(addon_report, addon_path, r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
+                _addon_file_exists(addon_report, addon_path,
+                                   r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
             if config.is_enabled("check_legacy_strings_xml"):
                 _check_for_legacy_strings_xml(addon_report, addon_path)
@@ -111,7 +114,8 @@ def start(addon_path, repo_addons, config=None):
 
             _check_file_whitelist(addon_report, file_index, addon_path)
         else:
-            addon_report.add(Record(INFORMATION, "Addon marked as broken - skipping"))
+            addon_report.add(
+                Record(INFORMATION, "Addon marked as broken - skipping"))
 
     return addon_report
 
@@ -124,7 +128,8 @@ def _check_for_invalid_xml_files(report: Report, file_index):
                 # Just try if we can successfully parse it
                 ET.parse(xml_path)
             except ET.ParseError:
-                report.add(Record(PROBLEM, "Invalid xml found. %s" % relative_path(xml_path)))
+                report.add(Record(PROBLEM, "Invalid xml found. %s" %
+                                  relative_path(xml_path)))
 
 
 def _check_for_invalid_json_files(report: Report, file_index):
@@ -136,7 +141,8 @@ def _check_for_invalid_json_files(report: Report, file_index):
                 with open(path) as json_data:
                     json.load(json_data)
             except ValueError:
-                report.add(Record(PROBLEM, "Invalid json found. %s" % relative_path(path)))
+                report.add(Record(PROBLEM, "Invalid json found. %s" %
+                                  relative_path(path)))
 
 
 def _check_addon_xml(report: Report, addon_path):
@@ -147,10 +153,12 @@ def _check_addon_xml(report: Report, addon_path):
 
         addon_xml = ET.parse(addon_xml_path)
         addon = addon_xml.getroot()
-        report.add(Record(INFORMATION, "Created by %s" % addon.attrib.get("provider-name")))
+        report.add(Record(INFORMATION, "Created by %s" %
+                          addon.attrib.get("provider-name")))
         _addon_xml_matches_folder(report, addon_path, addon_xml)
     except ET.ParseError:
-        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" % relative_path(addon_xml_path)))
+        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" %
+                          relative_path(addon_xml_path)))
 
     return addon_xml
 
@@ -205,7 +213,8 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
 
                     if image_type == "icon":
                         if has_transparency(im):
-                            report.add(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
+                            report.add(
+                                Record(PROBLEM, "Icon.png should be solid. It has transparency."))
                         if (width != 256 and height != 256) and (width != 512 and height != 512):
                             report.add(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
                                 width, height)))
@@ -213,8 +222,10 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                             report.add(
                                 Record(INFORMATION, "%s dimensions are fine %sx%s" % (image_type, width, height)))
                     elif image_type == "fanart":
-                        fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
-                        fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
+                        fanart_sizes = [
+                            (1280, 720), (1920, 1080), (3840, 2160)]
+                        fanart_sizes_str = " or ".join(
+                            ["%dx%d" % (w, h) for w, h in fanart_sizes])
                         if (width, height) not in fanart_sizes:
                             report.add(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
                                 fanart_sizes_str, width, height)))
@@ -233,20 +244,25 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                 # get build
                 if fanart_fallback or icon_fallback:
                     if icon_fallback:
-                        report.add(Record(INFORMATION, "You might want to add a icon"))
+                        report.add(
+                            Record(INFORMATION, "You might want to add a icon"))
                     elif fanart_fallback:
-                        report.add(Record(INFORMATION, "You might want to add a fanart"))
+                        report.add(
+                            Record(INFORMATION, "You might want to add a fanart"))
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
-                    report.add(Record(PROBLEM, "%s does not exist at specified path." % image_type))
+                    report.add(
+                        Record(PROBLEM, "%s does not exist at specified path." % image_type))
         else:
-            report.add(Record(WARNING, "Empty image tag found for %s" % image_type))
+            report.add(
+                Record(WARNING, "Empty image tag found for %s" % image_type))
 
 
 def _addon_file_exists(report: Report, addon_path, file_name):
     if _find_file(file_name, addon_path) is None:
-        report.add(Record(PROBLEM, "Not found %s in folder %s" % (file_name, relative_path(addon_path))))
+        report.add(Record(PROBLEM, "Not found %s in folder %s" %
+                          (file_name, relative_path(addon_path))))
 
 
 def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
@@ -280,7 +296,8 @@ def _check_for_legacy_language_path(report: Report, addon_path):
         found_warning = False
         for dir in dirs:
             if not found_warning and "resource.language." not in dir:
-                report.add(Record(WARNING, "Using the old language directory structure, please move to the new one."))
+                report.add(Record(
+                    WARNING, "Using the old language directory structure, please move to the new one."))
                 found_warning = True
 
 
@@ -326,21 +343,34 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_l
             if not os.path.isdir(filepath):
 
                 if os.path.exists(filepath):
-                    lineno = number_of_lines(filepath)
-                    if lineno >= max_entrypoint_line_count:
-                        report.add(Record(WARNING,
-                                          "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
-                                          % (library, lineno, max_entrypoint_line_count)))
+                    number_of_lines(report, filepath, library,
+                                    max_entrypoint_line_count)
 
                 else:
-                    report.add(Record(PROBLEM, "%s Entry point does not exists" % library))
+                    report.add(
+                        Record(PROBLEM, "%s Entry point does not exists" % library))
 
 
-def number_of_lines(filepath):
+def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_line_count: int):
     with open(filepath, 'r') as file:
         data = file.read()
 
-    return (analyze(data).lloc)
+    try:
+        lineno = analyze(data).lloc
+        if lineno >= max_entrypoint_line_count:
+            report.add(Record(WARNING,
+                              "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
+                              % (library, lineno, max_entrypoint_line_count)))
+    except SyntaxError as e:
+        if e.msg == 'SyntaxError at line: 1':
+            report.add(Record(PROBLEM,
+                              ("Error parsing file, is your file saved with UTF-8 encoding? "
+                               "Make sure it has no BOM. Check: %s")
+                              % library))
+        else:
+            report.add(Record(PROBLEM,
+                              "Error parsing file, is there a syntax error in your file? Check: %s"
+                              % library))
 
 
 def _get_addons(xml_url):
@@ -372,12 +402,14 @@ def _get_users_dependencies(addon_path):
 
 def _check_dependencies(report: Report, addon_path, repo_addons):
     deps = _get_users_dependencies(addon_path)
-    ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
+    ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json',
+              'xbmc.metadata', 'xbmc.python']
 
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
             if required_addon not in ignore:
-                report.add(Record(PROBLEM, "Required addon %s not available in current repository." % required_addon))
+                report.add(Record(
+                    PROBLEM, "Required addon %s not available in current repository." % required_addon))
         else:
             available_version = repo_addons[required_addon]
 
