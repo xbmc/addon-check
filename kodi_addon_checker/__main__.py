@@ -1,5 +1,7 @@
 import argparse
 import os
+import logging
+from kodi_addon_checker import logger
 from kodi_addon_checker import check_addon
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
@@ -64,9 +66,11 @@ def main():
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
     parser.add_argument("--branch", choices=choice, required=True,
                         help="Target branch name where the checker will resolve dependencies")
-
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
+
+    log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker.log")
+    logger.Logger.create_logger(log_file_name, __package__)
 
     if args.dir:
         # Following report is a wrapper for all sub reports
