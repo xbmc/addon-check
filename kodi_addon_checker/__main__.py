@@ -49,7 +49,10 @@ def check_artifact(artifact_path, args, branch_name):
     :param args: argparse object
     :return: report
     """
+    logger = logging.getLogger(__package__)
+    logger.info("Downloading all repo addon list")
     all_repo_addons = _all_repo_addons()
+    logger.info("Download completed")
     artifact_path = os.path.abspath(artifact_path)
     config = Config(artifact_path, args)
     ConfigManager.process_config(config)

@@ -18,6 +18,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
+logger = logging.getLogger(__name__)
 
 
 def _find_file(name, path):
@@ -64,10 +65,10 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
     return results
 
 
-def start(addon_path, repo_addons, config=None):
-    logger = logging.getLogger(__name__)
+def start(addon_path, branch_name, all_repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
+    logger.info("Checking add-on %s" % addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
     repo_addons = all_repo_addons[branch_name]
@@ -243,6 +244,7 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                                               (image_type, width, height)))
                     else:
                         # screenshots have no size definitions
+                        logger.info("Artwork was a screenshot")
                         pass
                 except IOError:
                     report.add(
@@ -385,15 +387,20 @@ def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_
 
 def _get_addons(xml_url):
     """addon.xml for the target Kodi version"""
-    gz_file = requests.get(xml_url).content
-    with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
-        content = xml_file.read()
-    tree = ET.fromstring(content)
+    try:
+        gz_file = requests.get(xml_url, timeout=(10, 10)).content
+        with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
+            content = xml_file.read()
+        tree = ET.fromstring(content)
 
-    return {
-        a.get("id"): a.get("version")
-        for a in tree.findall("addon")
-    }
+        return {
+            a.get("id"): a.get("version")
+            for a in tree.findall("addon")
+        }
+    except requests.exceptions.ReadTimeout as errrt:
+        logger.error(errrt)
+    except requests.exceptions.ConnectionTimeout as errct:
+        logger.error(errct)
 
 
 def _get_users_dependencies(addon_path):
