@@ -8,6 +8,9 @@ import xml.etree.ElementTree as ET
 import requests
 import logging
 from kodi_addon_checker import logger
+import gzip
+from io import BytesIO
+
 from PIL import Image
 
 from kodi_addon_checker.common import has_transparency
@@ -15,6 +18,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
+logger = logging.getLogger(__name__)
 
 
 def _find_file(name, path):
@@ -61,11 +65,13 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
     return results
 
 
-def start(addon_path, repo_addons, config=None):
-    logger = logging.getLogger(__name__)
+def start(addon_path, branch_name, all_repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
+    logger.info("Checking add-on %s" % addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
+
+    repo_addons = all_repo_addons[branch_name]
 
     global REL_PATH
     # Extract common path from addon paths
@@ -80,6 +86,8 @@ def start(addon_path, repo_addons, config=None):
             _check_dependencies(addon_report, addon_path, repo_addons)
 
             _check_for_invalid_xml_files(addon_report, file_index)
+
+            _check_for_existing_addon(addon_report, addon_path, all_repo_addons)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -236,6 +244,7 @@ def _check_image_type(report: Report, image_type, addon_xml, addon_path):
                                               (image_type, width, height)))
                     else:
                         # screenshots have no size definitions
+                        logger.info("Artwork was a screenshot")
                         pass
                 except IOError:
                     report.add(
@@ -354,6 +363,7 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, max_entrypoint_l
 
 
 def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_line_count: int):
+
     with open(filepath, 'r') as file:
         data = file.read()
 
@@ -376,16 +386,21 @@ def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_
 
 
 def _get_addons(xml_url):
-    """
-        addon.xml for the target Kodi version
-    """
-    content = requests.get(xml_url).content
-    tree = ET.fromstring(content)
+    """addon.xml for the target Kodi version"""
+    try:
+        gz_file = requests.get(xml_url, timeout=(10, 10)).content
+        with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
+            content = xml_file.read()
+        tree = ET.fromstring(content)
 
-    return {
-        a.get("id"): a.get("version")
-        for a in tree.findall("addon")
-    }
+        return {
+            a.get("id"): a.get("version")
+            for a in tree.findall("addon")
+        }
+    except requests.exceptions.ReadTimeout as errrt:
+        logger.error(errrt)
+    except requests.exceptions.ConnectionTimeout as errct:
+        logger.error(errct)
 
 
 def _get_users_dependencies(addon_path):
@@ -403,6 +418,7 @@ def _get_users_dependencies(addon_path):
 
 
 def _check_dependencies(report: Report, addon_path, repo_addons):
+    """Check for any new dependencies in addon.xml file"""
     deps = _get_users_dependencies(addon_path)
     ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json',
               'xbmc.metadata', 'xbmc.python']
@@ -424,3 +440,29 @@ def _check_dependencies(report: Report, addon_path, repo_addons):
             elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
                 report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
+
+
+def _get_addon_name(xml_path):
+    tree = ET.parse(xml_path).getroot()
+    return (tree.get("id"), tree.get("version"))
+
+
+def _check_for_existing_addon(report: Report, addon_path, all_repo_addons):
+    """Check if addon submitted already exists or not"""
+    addon_xml = os.path.join(addon_path, "addon.xml")
+    addon_name, addon_version = _get_addon_name(addon_xml)
+
+    for branch in sorted(all_repo_addons):
+        repo_addons = all_repo_addons[branch]
+
+        if addon_name in repo_addons:
+            if LooseVersion(addon_version) <= LooseVersion(repo_addons[addon_name]):
+                report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
+                                  % (addon_name, repo_addons[addon_name], branch)))
+                return
+            else:
+                report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"
+                                  % (addon_name, branch, repo_addons[addon_name])))
+                return
+
+    report.add(Record(INFORMATION, "This is a new addon"))
