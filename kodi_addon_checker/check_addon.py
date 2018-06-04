@@ -18,6 +18,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
 REL_PATH = ""
+ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
 
 
@@ -457,3 +458,14 @@ def _check_for_existing_addon(report: Report, addon_path, all_repo_addons):
                 return
 
     report.add(Record(INFORMATION, "This is a new addon"))
+
+
+def all_repo_addons():
+    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
+    repo_addons = {}
+
+    for branch in branches:
+        branch_url = ROOT_URL.format(branch=branch)
+        repo_addons[branch] = _get_addons(branch_url)
+
+    return repo_addons

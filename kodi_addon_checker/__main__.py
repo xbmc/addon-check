@@ -10,19 +10,6 @@ from kodi_addon_checker.record import Record, PROBLEM, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker.reporter import ReportManager
 
-ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
-
-
-def _all_repo_addons():
-    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
-    repo_addons = {}
-
-    for branch in branches:
-        branch_url = ROOT_URL.format(branch=branch)
-        repo_addons[branch] = check_addon._get_addons(branch_url)
-
-    return repo_addons
-
 
 def dir_type(dir_path):
     """ArgParse callable to validate positional add-on arguments
@@ -51,7 +38,7 @@ def check_artifact(artifact_path, args, branch_name):
     """
     logger = logging.getLogger(__package__)
     logger.info("Downloading all repo addon list")
-    all_repo_addons = _all_repo_addons()
+    all_repo_addons = check_addon.all_repo_addons()
     logger.info("Download completed")
     artifact_path = os.path.abspath(artifact_path)
     config = Config(artifact_path, args)
