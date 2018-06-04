@@ -10,8 +10,8 @@ class TestCheckAddon(unittest.TestCase):
 
     def setUp(self):
         self.path = "script.test/"
-        self.whitelist = ["INFO: checking add-on", "INFO: created by",
-                          "Image icon", "Icon dimensions are fine", "INFO: Image fanart",
+        self.whitelist = ["INFO: Checking add-on script.test", "INFO: Created by mzfr","INFO: This is a new addon"
+                          "INFO: Image icon exists", "Icon dimensions are fine", "INFO: Image fanart exists",
                           "WARN: Complex entry point", "WARN: We found", "please check the logfile"]
         self.config = Config(self.path)
         self.branch_name = "krypton"
