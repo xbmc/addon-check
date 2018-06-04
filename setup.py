@@ -2,11 +2,8 @@ import os
 import setuptools
 
 
-REQUIRES = [
-    'Pillow',
-    'requests',
-    'radon'
-]
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,7 +20,7 @@ setuptools.setup(
     url="https://github.com/xbmc/addon-check",
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
-    install_requires=REQUIRES,
+    install_requires=requirements,
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [
         'kodi-addon-checker = kodi_addon_checker.__main__:main']},
