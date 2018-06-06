@@ -413,8 +413,17 @@ def _get_users_dependencies(parsed_xml):
 def _check_dependencies(report: Report, repo_addons, parsed_xml):
     """Check for any new dependencies in addon.xml file"""
     deps = _get_users_dependencies(parsed_xml)
-    ignore = ['xbmc.json', 'xbmc.gui', 'xbmc.json',
-              'xbmc.metadata', 'xbmc.python']
+    ignore = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
+              'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows', 'xbmc.metadata.scraper.library',
+              'xbmc.ui.screensaver', 'xbmc.player.musicviz', 'xbmc.python.pluginsource', 'xbmc.python.script',
+              'xbmc.python.weather', 'xbmc.python.lyrics', 'xbmc.python.library', 'xbmc.python.module',
+              'xbmc.subtitle.module', 'kodi.context.item', 'kodi.game.controller', 'xbmc.gui.skin',
+              'xbmc.webinterface', 'xbmc.addon.repository', 'xbmc.pvrclient', 'kodi.gameclient',
+              'kodi.peripheral', 'xbmc.addon.video', 'xbmc.addon.audio', 'xbmc.addon.image',
+              'xbmc.addon.executable', 'kodi.addon.game', 'kodi.audioencoder', 'kodi.audiodecoder',
+              'xbmc.service', 'kodi.resource.images', 'kodi.resource.language', 'kodi.resource.uisounds',
+              'kodi.resource.games', 'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
+              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
 
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
