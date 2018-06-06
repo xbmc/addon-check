@@ -347,11 +347,12 @@ def _check_complex_addon_entrypoint(report: Report, addon_path, parsed_xml, max_
             filepath = os.path.join(addon_path, library)
 
             if not os.path.isdir(filepath):
+                name, ext = os.path.splitext(filepath)
 
                 if os.path.exists(filepath):
-                    number_of_lines(report, filepath, library,
-                                    max_entrypoint_line_count)
-
+                    if ext == '.py':
+                        number_of_lines(report, filepath, library,
+                                        max_entrypoint_line_count)
                 else:
                     report.add(
                         Record(PROBLEM, "%s Entry point does not exists" % library))
