@@ -1,5 +1,5 @@
 import unittest
-from kodi_addon_checker import _all_repo_addons
+from kodi_addon_checker.check_addon import all_repo_addons
 from kodi_addon_checker.check_addon import start
 from kodi_addon_checker.record import Record
 from kodi_addon_checker.config import Config
@@ -10,12 +10,12 @@ class TestCheckAddon(unittest.TestCase):
 
     def setUp(self):
         self.path = "script.test/"
-        self.whitelist = ["INFO: Checking add-on script.test", "INFO: Created by mzfr","INFO: This is a new addon"
+        self.whitelist = ["INFO: Checking add-on script.test", "INFO: Created by mzfr", "INFO: This is a new addon"
                           "INFO: Image icon exists", "Icon dimensions are fine", "INFO: Image fanart exists",
                           "WARN: Complex entry point", "WARN: We found", "please check the logfile"]
         self.config = Config(self.path)
         self.branch_name = "krypton"
-        self.all_repo_addons = _all_repo_addons()
+        self.all_repo_addons = all_repo_addons()
 
     def test_start(self):
         result = start(self.path, self.branch_name, self.all_repo_addons, self.config)
