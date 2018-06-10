@@ -18,6 +18,7 @@
             "module": "kodi_addon_checker.__main__",
             "args": [
                 "--branch=BRANCH_NAME",
+                "--PR",
                 "ADDON_DIR_TO_CHECK",
             ]
         }

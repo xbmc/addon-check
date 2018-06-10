@@ -66,7 +66,7 @@ def _find_in_file(path, search_terms, whitelisted_file_types):
     return results
 
 
-def start(addon_path, branch_name, all_repo_addons, config=None):
+def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s" % addon_id)
@@ -90,7 +90,7 @@ def start(addon_path, branch_name, all_repo_addons, config=None):
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
-            _check_for_existing_addon(addon_report, addon_path, all_repo_addons)
+            _check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
 
             _check_for_invalid_json_files(addon_report, file_index)
 
@@ -449,7 +449,7 @@ def _get_addon_name(xml_path):
     return (tree.get("id"), tree.get("version"))
 
 
-def _check_for_existing_addon(report: Report, addon_path, all_repo_addons):
+def _check_for_existing_addon(report: Report, addon_path, all_repo_addons, pr):
     """Check if addon submitted already exists or not"""
     addon_xml = os.path.join(addon_path, "addon.xml")
     addon_name, addon_version = _get_addon_name(addon_xml)
@@ -458,16 +458,27 @@ def _check_for_existing_addon(report: Report, addon_path, all_repo_addons):
         repo_addons = all_repo_addons[branch]
 
         if addon_name in repo_addons:
-            if LooseVersion(addon_version) <= LooseVersion(repo_addons[addon_name]):
-                report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
-                                  % (addon_name, repo_addons[addon_name], branch)))
-                return
-            else:
-                report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"
-                                  % (addon_name, branch, repo_addons[addon_name])))
-                return
+            _check_versions(report, addon_name, branch, addon_version, repo_addons[addon_name], pr)
+            return
 
     report.add(Record(INFORMATION, "This is a new addon"))
+
+
+def _check_versions(report: Report, addon_name, branch, addon_version, repo_addons_version, pr):
+    if pr:
+        if LooseVersion(addon_version) > LooseVersion(repo_addons_version):
+            LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s"
+                        % (addon_name, addon_version, repo_addons_version, branch))
+        else:
+            report.add(Record(PROBLEM, "%s addon already exists with version: %s in %s branch")
+                       % (addon_name, repo_addons_version, branch))
+    else:
+        if LooseVersion(addon_version) < LooseVersion(repo_addons_version):
+            report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
+                              % (addon_name, repo_addons_version, branch)))
+        else:
+            report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"
+                              % (addon_name, branch, repo_addons_version)))
 
 
 def all_repo_addons():

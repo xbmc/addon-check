@@ -16,9 +16,10 @@ class TestCheckAddon(unittest.TestCase):
         self.config = Config(self.path)
         self.branch_name = "krypton"
         self.all_repo_addons = all_repo_addons()
+        self.pr = False
 
     def test_start(self):
-        result = start(self.path, self.branch_name, self.all_repo_addons, self.config)
+        result = start(self.path, self.branch_name, self.all_repo_addons, self.pr, self.config)
         records = [Record.__str__(r) for r in result]
 
         # Comparing the whitelist with the list of output we get from addon-checker tool
