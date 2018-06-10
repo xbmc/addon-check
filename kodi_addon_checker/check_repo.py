@@ -1,6 +1,6 @@
 import os
 import kodi_addon_checker.check_addon as check_addon
-from kodi_addon_checker.record import INFORMATION, Record
+from kodi_addon_checker.record import INFORMATION, PROBLEM, Record
 from kodi_addon_checker.report import Report
 
 
@@ -12,7 +12,9 @@ def check_repo(repo_path, branch_name, all_repo_addons, pr, config):
     for addon_folder in toplevel_folders:
         if addon_folder[0] != '.':
             addon_path = os.path.join(repo_path, addon_folder)
-            addon_report = check_addon.start(addon_path, branch_name, all_repo_addons, pr, config)
-            repo_report.add(addon_report)
-
+            try:
+                addon_report = check_addon.start(addon_path, branch_name, all_repo_addons, pr, config)
+                repo_report.add(addon_report)
+            except Exception as e:
+                repo_report.add(Record(PROBLEM, "Something went wrong. Please see: %s" % e))
     return repo_report
