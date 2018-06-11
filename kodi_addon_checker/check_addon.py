@@ -396,7 +396,7 @@ def _get_addons(xml_url):
         }
     except requests.exceptions.ReadTimeout as errrt:
         LOGGER.error(errrt)
-    except requests.exceptions.ConnectionTimeout as errct:
+    except requests.exceptions.ConnectTimeout as errct:
         LOGGER.error(errct)
 
 
