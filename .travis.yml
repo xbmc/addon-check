@@ -2,12 +2,97 @@ language: python
 matrix:
   include:
     - python: "3.6"
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=gotham
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=helix
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=gotham
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=helix
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-skins BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-skins BRANCH=leia
+  allow_failures:
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=gotham
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=helix
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-plugins BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-resources BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=gotham
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=helix
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=isengard
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=jarvis
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-scripts BRANCH=leia
+    - python: "3.6"
+      env: REPO=repo-skins BRANCH=krypton
+    - python: "3.6"
+      env: REPO=repo-skins BRANCH=leia
 
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+
+before_script:
+  - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
+      git clone --branch=$BRANCH --depth=1 --single-branch https://github.com/xbmc/$REPO.git ../repo;
+    fi
+
 # command to run tests
 script:
-  - py.test -v
-  - pycodestyle . --max-line-length=120
-
+  - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
+      python3 -m kodi_addon_checker --branch=$BRANCH ../repo;
+    fi
+  - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
+      py.test -v;
+    fi
+  - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
+      pycodestyle . --max-line-length=120;
+    fi
