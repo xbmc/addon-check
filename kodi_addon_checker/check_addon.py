@@ -11,11 +11,10 @@ from kodi_addon_checker import logger
 import gzip
 from io import BytesIO
 
-from PIL import Image
-
-from kodi_addon_checker.common import has_transparency, relative_path
+from kodi_addon_checker.common import relative_path
 from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
+from kodi_addon_checker import check_artwork
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -94,7 +93,7 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
             _check_for_invalid_json_files(addon_report, file_index)
 
-            _check_artwork(addon_report, addon_path, addon_xml, file_index)
+            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index)
 
             max_entrypoint_line_count = config.configs.get(
                 "max_entrypoint_line_count", 15)
@@ -171,103 +170,6 @@ def _check_addon_xml(report: Report, addon_path, parsed_xml):
                           relative_path(addon_xml_path)))
 
     return parsed_xml
-
-
-def _check_artwork(report: Report, addon_path, addon_xml, file_index):
-    # icon, fanart, screenshot - these will also check if the addon.xml links correctly
-    _check_image_type(report, "icon", addon_xml, addon_path)
-    _check_image_type(report, "fanart", addon_xml, addon_path)
-    _check_image_type(report, "screenshot", addon_xml, addon_path)
-
-    # go through all but the above and try to open the image
-    for file in file_index:
-        if re.match(r"(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
-            image_path = os.path.join(file["path"], file["name"])
-            try:
-                # Just try if we can successfully open it
-                Image.open(image_path)
-            except IOError:
-                report.add(
-                    Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(image_path)))
-
-
-def _check_image_type(report: Report, image_type, addon_xml, addon_path):
-    images = addon_xml.findall("*//" + image_type)
-
-    icon_fallback = False
-    fanart_fallback = False
-    if not images and image_type == "icon":
-        icon_fallback = True
-        image = type('image', (object,),
-                     {'text': 'icon.png'})()
-        images.append(image)
-    elif not images and image_type == "fanart":
-        skip_addon_types = [".module.", "metadata.", "context.", ".language."]
-        for addon_type in skip_addon_types:
-            if addon_type in addon_path:
-                break
-        else:
-            fanart_fallback = True
-            image = type('image', (object,),
-                         {'text': 'fanart.jpg'})()
-            images.append(image)
-
-    for image in images:
-        if image.text:
-            filepath = os.path.join(addon_path, image.text)
-            if os.path.isfile(filepath):
-                report.add(Record(INFORMATION, "Image %s exists" % image_type))
-                try:
-                    im = Image.open(filepath)
-                    width, height = im.size
-
-                    if image_type == "icon":
-                        if has_transparency(im):
-                            report.add(
-                                Record(PROBLEM, "Icon.png should be solid. It has transparency."))
-                        if (width != 256 and height != 256) and (width != 512 and height != 512):
-                            report.add(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
-                                width, height)))
-                        else:
-                            report.add(
-                                Record(INFORMATION, "%s dimensions are fine %sx%s" % (image_type, width, height)))
-                    elif image_type == "fanart":
-                        fanart_sizes = [
-                            (1280, 720), (1920, 1080), (3840, 2160)]
-                        fanart_sizes_str = " or ".join(
-                            ["%dx%d" % (w, h) for w, h in fanart_sizes])
-                        if (width, height) not in fanart_sizes:
-                            report.add(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
-                                fanart_sizes_str, width, height)))
-                        else:
-                            report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
-                                              (image_type, width, height)))
-                    else:
-                        # screenshots have no size definitions
-                        LOGGER.info("Artwork was a screenshot")
-                        pass
-                except IOError:
-                    report.add(
-                        Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
-
-            else:
-                # if it's a fallback path addons.xml should still be able to
-                # get build
-                if fanart_fallback or icon_fallback:
-                    if icon_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a icon"))
-                    elif fanart_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a fanart"))
-                # it's no fallback path, so building addons.xml will crash -
-                # this is a problem ;)
-                else:
-                    report.add(
-                        Record(PROBLEM, "%s does not exist at specified path." % image_type))
-        else:
-            report.add(
-                Record(WARNING, "Empty image tag found for %s" % image_type))
 
 
 def _addon_file_exists(report: Report, addon_path, file_name):
