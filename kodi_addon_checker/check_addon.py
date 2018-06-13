@@ -2,7 +2,6 @@ import json
 import os
 import pathlib
 import re
-from radon.raw import analyze
 from distutils.version import LooseVersion
 import xml.etree.ElementTree as ET
 import requests
@@ -16,6 +15,7 @@ from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker import check_artwork
 from kodi_addon_checker import check_dependencies
+from kodi_addon_checker import check_entrypoint
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -96,10 +96,10 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
             check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index)
 
-            max_entrypoint_line_count = config.configs.get(
-                "max_entrypoint_line_count", 15)
-            _check_complex_addon_entrypoint(
-                addon_report, addon_path, parsed_xml, max_entrypoint_line_count)
+            max_entrypoint_count = config.configs.get(
+                "max_entrypoint_count", 15)
+            check_entrypoint.check_complex_addon_entrypoint(
+                addon_report, addon_path, parsed_xml, max_entrypoint_count)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
@@ -235,49 +235,6 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
                 report.add(Record(WARNING,
                                   "Found non whitelisted file ending in filename %s" %
                                   relative_path(os.path.join(file["path"], file["name"]))))
-
-
-def _check_complex_addon_entrypoint(report: Report, addon_path, parsed_xml, max_entrypoint_line_count):
-
-    for i in parsed_xml.findall("extension"):
-        library = i.get("library")
-
-        if library:
-            filepath = os.path.join(addon_path, library)
-
-            if not os.path.isdir(filepath):
-                name, ext = os.path.splitext(filepath)
-
-                if os.path.exists(filepath):
-                    if ext == '.py':
-                        number_of_lines(report, filepath, library,
-                                        max_entrypoint_line_count)
-                else:
-                    report.add(
-                        Record(PROBLEM, "%s Entry point does not exists" % library))
-
-
-def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_line_count: int):
-
-    with open(filepath, 'r') as file:
-        data = file.read()
-
-    try:
-        lineno = analyze(data).lloc
-        if lineno >= max_entrypoint_line_count:
-            report.add(Record(WARNING,
-                              "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
-                              % (library, lineno, max_entrypoint_line_count)))
-    except SyntaxError as e:
-        if e.msg == 'SyntaxError at line: 1':
-            report.add(Record(PROBLEM,
-                              ("Error parsing file, is your file saved with UTF-8 encoding? "
-                               "Make sure it has no BOM. Check: %s")
-                              % library))
-        else:
-            report.add(Record(PROBLEM,
-                              "Error parsing file, is there a syntax error in your file? Check: %s"
-                              % library))
 
 
 def _get_addons(xml_url):
