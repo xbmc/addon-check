@@ -6,8 +6,7 @@ from kodi_addon_checker import logger
 import gzip
 from io import BytesIO
 
-from kodi_addon_checker.common import relative_path
-from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
+from kodi_addon_checker.record import Record, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker import check_artwork
 from kodi_addon_checker import check_old_addon
@@ -15,6 +14,7 @@ from kodi_addon_checker import check_dependencies
 from kodi_addon_checker import check_entrypoint
 from kodi_addon_checker import handle_files
 from kodi_addon_checker import check_files
+from kodi_addon_checker import check_string
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -62,23 +62,23 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
                                                r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
             if config.is_enabled("check_legacy_strings_xml"):
-                _check_for_legacy_strings_xml(addon_report, addon_path)
+                check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
             if config.is_enabled("check_legacy_language_path"):
                 check_files.check_for_legacy_language_path(addon_report, addon_path)
 
             # Kodi 18 Leia + deprecations
             if config.is_enabled("check_kodi_leia_deprecations"):
-                _find_blacklisted_strings(addon_report, addon_path,
-                                          ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
-                                           "ListItem.ChannelNumber", "ListItem.SubChannelNumber",
-                                           "MusicPlayer.ChannelNumber",
-                                           "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber",
-                                           "VideoPlayer.SubChannelNumber"],
-                                          [], [".py", ".xml"])
+                check_string.find_blacklisted_strings(addon_report, addon_path,
+                                                      ["System.HasModalDialog", "StringCompare", "SubString",
+                                                       "IntegerGreaterThan", "ListItem.ChannelNumber",
+                                                       "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
+                                                       "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber",
+                                                       "VideoPlayer.SubChannelNumber"],
+                                                      [], [".py", ".xml"])
 
             # General blacklist
-            _find_blacklisted_strings(addon_report, addon_path, [], [], [])
+            check_string.find_blacklisted_strings(addon_report, addon_path, [], [], [])
 
             check_files.check_file_whitelist(addon_report, file_index, addon_path)
         else:
@@ -86,22 +86,6 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
                 Record(INFORMATION, "Addon marked as broken - skipping"))
 
     return addon_report
-
-
-def _check_for_legacy_strings_xml(report: Report, addon_path):
-    if handle_files.find_file_recursive("strings.xml", addon_path) is not None:
-        report.add(
-            Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
-
-
-def _find_blacklisted_strings(report: Report, addon_path, problem_list, warning_list, whitelisted_file_types):
-    for result in handle_files.find_in_file(addon_path, problem_list, whitelisted_file_types):
-        report.add(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
-
-    for result in handle_files.find_in_file(addon_path, warning_list, whitelisted_file_types):
-        report.add(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
 
 def _get_addons(xml_url):
