@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import re
 import xml.etree.ElementTree as ET
 import requests
@@ -16,54 +15,11 @@ from kodi_addon_checker import check_artwork
 from kodi_addon_checker import check_old_addon
 from kodi_addon_checker import check_dependencies
 from kodi_addon_checker import check_entrypoint
+from kodi_addon_checker import handle_files
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
-
-
-def _find_file(name, path):
-    for file_name in os.listdir(path):
-        match = re.match(name, file_name, re.IGNORECASE)
-        if match is not None:
-            return os.path.join(path, match.string)
-    return
-
-
-# this looks for a file but only returns the first occurance
-def _find_file_recursive(name, path):
-    for file in os.walk(path):
-        if name in file[2]:
-            return os.path.join(path, name)
-    return
-
-
-def _create_file_index(path):
-    file_index = []
-    for dirs in os.walk(path):
-        for file_name in dirs[2]:
-            file_index.append({"path": dirs[0], "name": file_name})
-    return file_index
-
-
-def _find_in_file(path, search_terms, whitelisted_file_types):
-    results = []
-    if len(search_terms) > 0:
-        for directory in os.walk(path):
-            for file_name in directory[2]:
-                if pathlib.Path(file_name).suffix in whitelisted_file_types or len(whitelisted_file_types) == 0:
-                    file_path = os.path.join(directory[0], file_name)
-
-                    searchfile = open(file_path, "r", encoding="utf8")
-                    linenumber = 0
-                    for line in searchfile:
-                        linenumber = linenumber + 1
-                        for term in search_terms:
-                            if term in line:
-                                results.append({"term": term, "line": line.strip(
-                                ), "searchfile": file_path, "linenumber": linenumber})
-                    searchfile.close()
-    return results
 
 
 def start(addon_path, branch_name, all_repo_addons, pr, config=None):
@@ -84,7 +40,7 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
-            file_index = _create_file_index(addon_path)
+            file_index = handle_files.create_file_index(addon_path)
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml)
 
@@ -103,8 +59,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
-                _addon_file_exists(addon_report, addon_path,
-                                   r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
+                handle_files.addon_file_exists(addon_report, addon_path,
+                                               r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
             if config.is_enabled("check_legacy_strings_xml"):
                 _check_for_legacy_strings_xml(addon_report, addon_path)
@@ -161,7 +117,7 @@ def _check_for_invalid_json_files(report: Report, file_index):
 def _check_addon_xml(report: Report, addon_path, parsed_xml):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     try:
-        _addon_file_exists(report, addon_path, r"addon\.xml")
+        handle_files.addon_file_exists(report, addon_path, r"addon\.xml")
 
         report.add(Record(INFORMATION, "Created by %s" %
                           parsed_xml.attrib.get("provider-name")))
@@ -173,12 +129,6 @@ def _check_addon_xml(report: Report, addon_path, parsed_xml):
     return parsed_xml
 
 
-def _addon_file_exists(report: Report, addon_path, file_name):
-    if _find_file(file_name, addon_path) is None:
-        report.add(Record(PROBLEM, "Not found %s in folder %s" %
-                          (file_name, relative_path(addon_path))))
-
-
 def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
     if os.path.basename(os.path.normpath(addon_path)) == addon_xml.attrib.get("id"):
         report.add(Record(INFORMATION, "Addon id matches folder name"))
@@ -187,17 +137,17 @@ def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
 
 
 def _check_for_legacy_strings_xml(report: Report, addon_path):
-    if _find_file_recursive("strings.xml", addon_path) is not None:
+    if handle_files.find_file_recursive("strings.xml", addon_path) is not None:
         report.add(
             Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
 
 
 def _find_blacklisted_strings(report: Report, addon_path, problem_list, warning_list, whitelisted_file_types):
-    for result in _find_in_file(addon_path, problem_list, whitelisted_file_types):
+    for result in handle_files.find_in_file(addon_path, problem_list, whitelisted_file_types):
         report.add(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
-    for result in _find_in_file(addon_path, warning_list, whitelisted_file_types):
+    for result in handle_files.find_in_file(addon_path, warning_list, whitelisted_file_types):
         report.add(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
