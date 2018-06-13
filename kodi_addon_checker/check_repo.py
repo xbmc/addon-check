@@ -1,7 +1,7 @@
 import os
 import kodi_addon_checker.check_addon as check_addon
-from kodi_addon_checker.record import INFORMATION, PROBLEM, Record
-from kodi_addon_checker.report import Report
+from .record import INFORMATION, PROBLEM, Record
+from .report import Report
 
 
 def check_repo(repo_path, branch_name, all_repo_addons, pr, config):

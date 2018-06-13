@@ -1,9 +1,9 @@
 import pathlib
 import re
 import os
-from kodi_addon_checker.report import Report
-from kodi_addon_checker.common import relative_path
-from kodi_addon_checker.record import PROBLEM, Record
+from .report import Report
+from .common import relative_path
+from .record import PROBLEM, Record
 
 
 def find_file(name: str, path: str):
