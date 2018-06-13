@@ -2,7 +2,6 @@ import os
 import xml.etree.ElementTree as ET
 import requests
 import logging
-from . import logger
 import gzip
 from io import BytesIO
 
