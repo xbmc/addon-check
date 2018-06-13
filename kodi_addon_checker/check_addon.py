@@ -13,7 +13,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from kodi_addon_checker.common import has_transparency
+from kodi_addon_checker.common import has_transparency, relative_path
 from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 
@@ -332,11 +332,6 @@ def _check_file_whitelist(report: Report, file_index, addon_path):
                 report.add(Record(WARNING,
                                   "Found non whitelisted file ending in filename %s" %
                                   relative_path(os.path.join(file["path"], file["name"]))))
-
-
-def relative_path(file_path):
-    path_to_print = file_path[len(REL_PATH):]
-    return ".{}".format(path_to_print)
 
 
 def _check_complex_addon_entrypoint(report: Report, addon_path, parsed_xml, max_entrypoint_line_count):

@@ -3,6 +3,8 @@ import os
 import pkgutil
 import sys
 
+REL_PATH = ""
+
 
 def has_transparency(im):
     try:
@@ -25,3 +27,8 @@ def load_plugins():
     for importer, package_name, _ in pkgutil.iter_modules([plugins_dir]):
         if "test_" not in package_name:
             importlib.import_module(package_name)
+
+
+def relative_path(file_path):
+    path_to_print = file_path[len(REL_PATH):]
+    return ".{}".format(path_to_print)
