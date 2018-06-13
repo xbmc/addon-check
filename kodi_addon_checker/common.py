@@ -24,7 +24,7 @@ def has_transparency(im):
 def load_plugins():
     plugins_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plugins")
     sys.path.append(plugins_dir)
-    for importer, package_name, _ in pkgutil.iter_modules([plugins_dir]):
+    for _, package_name, _ in pkgutil.iter_modules([plugins_dir]):
         if "test_" not in package_name:
             importlib.import_module(package_name)
 
