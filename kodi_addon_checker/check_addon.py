@@ -88,8 +88,25 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     return addon_report
 
 
-def _get_addons(xml_url):
-    """addon.xml for the target Kodi version"""
+def all_repo_addons():
+    """Returns a nested dictionary of format:
+        {'gotham':{'name_of_addon':'version_of_addon'}}
+    """
+
+    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
+    repo_addons = {}
+
+    for branch in branches:
+        branch_url = ROOT_URL.format(branch=branch)
+        repo_addons[branch] = _get_addons(branch_url)
+
+    return repo_addons
+
+
+def _get_addons(xml_url: str):
+    """Gets addon.xml file for all the version of kodi
+        :xml_url: url of the version of kodi
+    """
     try:
         gz_file = requests.get(xml_url, timeout=(10, 10)).content
         with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
@@ -104,14 +121,3 @@ def _get_addons(xml_url):
         LOGGER.error(errrt)
     except requests.exceptions.ConnectTimeout as errct:
         LOGGER.error(errct)
-
-
-def all_repo_addons():
-    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
-    repo_addons = {}
-
-    for branch in branches:
-        branch_url = ROOT_URL.format(branch=branch)
-        repo_addons[branch] = _get_addons(branch_url)
-
-    return repo_addons
