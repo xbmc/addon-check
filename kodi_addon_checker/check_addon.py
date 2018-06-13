@@ -15,6 +15,7 @@ from kodi_addon_checker.common import relative_path
 from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
 from kodi_addon_checker.report import Report
 from kodi_addon_checker import check_artwork
+from kodi_addon_checker import check_dependencies
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -85,7 +86,7 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = _create_file_index(addon_path)
 
-            _check_dependencies(addon_report, repo_addons, parsed_xml)
+            check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml)
 
             _check_for_invalid_xml_files(addon_report, file_index)
 
@@ -295,50 +296,6 @@ def _get_addons(xml_url):
         LOGGER.error(errrt)
     except requests.exceptions.ConnectTimeout as errct:
         LOGGER.error(errct)
-
-
-def _get_users_dependencies(parsed_xml):
-    """
-        User's addon.xml from pull request
-    """
-    return {
-        i.get("addon"): i.get("version")
-        for i in parsed_xml.findall("requires/import")
-    }
-
-
-def _check_dependencies(report: Report, repo_addons, parsed_xml):
-    """Check for any new dependencies in addon.xml file"""
-    deps = _get_users_dependencies(parsed_xml)
-    ignore = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
-              'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows', 'xbmc.metadata.scraper.library',
-              'xbmc.ui.screensaver', 'xbmc.player.musicviz', 'xbmc.python.pluginsource', 'xbmc.python.script',
-              'xbmc.python.weather', 'xbmc.python.lyrics', 'xbmc.python.library', 'xbmc.python.module',
-              'xbmc.subtitle.module', 'kodi.context.item', 'kodi.game.controller', 'xbmc.gui.skin',
-              'xbmc.webinterface', 'xbmc.addon.repository', 'xbmc.pvrclient', 'kodi.gameclient',
-              'kodi.peripheral', 'xbmc.addon.video', 'xbmc.addon.audio', 'xbmc.addon.image',
-              'xbmc.addon.executable', 'kodi.addon.game', 'kodi.audioencoder', 'kodi.audiodecoder',
-              'xbmc.service', 'kodi.resource.images', 'kodi.resource.language', 'kodi.resource.uisounds',
-              'kodi.resource.games', 'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
-              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
-
-    for required_addon, required_version in deps.items():
-        if required_addon not in repo_addons:
-            if required_addon not in ignore:
-                report.add(Record(
-                    PROBLEM, "Required addon %s not available in current repository." % required_addon))
-        else:
-            available_version = repo_addons[required_addon]
-
-            if required_version is None:
-                report.add(Record(WARNING, "Required addon %s does not require a fixed version Available: %s "
-                                  % (required_addon, available_version)))
-            elif available_version is None:
-                report.add(Record(PROBLEM, "Version of %s in required version %s not available"
-                                  % (required_addon, required_version)))
-            elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
-                report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
-                                  % (required_addon, required_version, available_version)))
 
 
 def _get_addon_name(xml_path):
