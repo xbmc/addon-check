@@ -1,9 +1,4 @@
-import json
 import os
-import pathlib
-import re
-from radon.raw import analyze
-from distutils.version import LooseVersion
 import xml.etree.ElementTree as ET
 import requests
 import logging
@@ -11,59 +6,19 @@ from kodi_addon_checker import logger
 import gzip
 from io import BytesIO
 
-from PIL import Image
-
-from kodi_addon_checker.common import has_transparency
-from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
+from kodi_addon_checker.record import Record, INFORMATION
 from kodi_addon_checker.report import Report
+from kodi_addon_checker import check_artwork
+from kodi_addon_checker import check_old_addon
+from kodi_addon_checker import check_dependencies
+from kodi_addon_checker import check_entrypoint
+from kodi_addon_checker import handle_files
+from kodi_addon_checker import check_files
+from kodi_addon_checker import check_string
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
-
-
-def _find_file(name, path):
-    for file_name in os.listdir(path):
-        match = re.match(name, file_name, re.IGNORECASE)
-        if match is not None:
-            return os.path.join(path, match.string)
-    return
-
-
-# this looks for a file but only returns the first occurance
-def _find_file_recursive(name, path):
-    for file in os.walk(path):
-        if name in file[2]:
-            return os.path.join(path, name)
-    return
-
-
-def _create_file_index(path):
-    file_index = []
-    for dirs in os.walk(path):
-        for file_name in dirs[2]:
-            file_index.append({"path": dirs[0], "name": file_name})
-    return file_index
-
-
-def _find_in_file(path, search_terms, whitelisted_file_types):
-    results = []
-    if len(search_terms) > 0:
-        for directory in os.walk(path):
-            for file_name in directory[2]:
-                if pathlib.Path(file_name).suffix in whitelisted_file_types or len(whitelisted_file_types) == 0:
-                    file_path = os.path.join(directory[0], file_name)
-
-                    searchfile = open(file_path, "r", encoding="utf8")
-                    linenumber = 0
-                    for line in searchfile:
-                        linenumber = linenumber + 1
-                        for term in search_terms:
-                            if term in line:
-                                results.append({"term": term, "line": line.strip(
-                                ), "searchfile": file_path, "linenumber": linenumber})
-                    searchfile.close()
-    return results
 
 
 def start(addon_path, branch_name, all_repo_addons, pr, config=None):
@@ -80,52 +35,52 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     # Extract common path from addon paths
     # All paths will be printed relative to this path
     REL_PATH = os.path.split(addon_path[:-1])[0]
-    addon_xml = _check_addon_xml(addon_report, addon_path, parsed_xml)
+    addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml)
 
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
-            file_index = _create_file_index(addon_path)
+            file_index = handle_files.create_file_index(addon_path)
 
-            _check_dependencies(addon_report, repo_addons, parsed_xml)
+            check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml)
 
-            _check_for_invalid_xml_files(addon_report, file_index)
+            check_files.check_for_invalid_xml_files(addon_report, file_index)
 
-            _check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
+            check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
 
-            _check_for_invalid_json_files(addon_report, file_index)
+            check_files.check_for_invalid_json_files(addon_report, file_index)
 
-            _check_artwork(addon_report, addon_path, addon_xml, file_index)
+            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index)
 
-            max_entrypoint_line_count = config.configs.get(
-                "max_entrypoint_line_count", 15)
-            _check_complex_addon_entrypoint(
-                addon_report, addon_path, parsed_xml, max_entrypoint_line_count)
+            max_entrypoint_count = config.configs.get(
+                "max_entrypoint_count", 15)
+            check_entrypoint.check_complex_addon_entrypoint(
+                addon_report, addon_path, parsed_xml, max_entrypoint_count)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
-                _addon_file_exists(addon_report, addon_path,
-                                   r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
+                handle_files.addon_file_exists(addon_report, addon_path,
+                                               r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
             if config.is_enabled("check_legacy_strings_xml"):
-                _check_for_legacy_strings_xml(addon_report, addon_path)
+                check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
             if config.is_enabled("check_legacy_language_path"):
-                _check_for_legacy_language_path(addon_report, addon_path)
+                check_files.check_for_legacy_language_path(addon_report, addon_path)
 
             # Kodi 18 Leia + deprecations
             if config.is_enabled("check_kodi_leia_deprecations"):
-                _find_blacklisted_strings(addon_report, addon_path,
-                                          ["System.HasModalDialog", "StringCompare", "SubString", "IntegerGreaterThan",
-                                           "ListItem.ChannelNumber", "ListItem.SubChannelNumber",
-                                           "MusicPlayer.ChannelNumber",
-                                           "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber",
-                                           "VideoPlayer.SubChannelNumber"],
-                                          [], [".py", ".xml"])
+                check_string.find_blacklisted_strings(addon_report, addon_path,
+                                                      ["System.HasModalDialog", "StringCompare", "SubString",
+                                                       "IntegerGreaterThan", "ListItem.ChannelNumber",
+                                                       "ListItem.SubChannelNumber", "MusicPlayer.ChannelNumber",
+                                                       "MusicPlayer.SubChannelNumber", "VideoPlayer.ChannelNumber",
+                                                       "VideoPlayer.SubChannelNumber"],
+                                                      [], [".py", ".xml"])
 
             # General blacklist
-            _find_blacklisted_strings(addon_report, addon_path, [], [], [])
+            check_string.find_blacklisted_strings(addon_report, addon_path, [], [], [])
 
-            _check_file_whitelist(addon_report, file_index, addon_path)
+            check_files.check_file_whitelist(addon_report, file_index, addon_path)
         else:
             addon_report.add(
                 Record(INFORMATION, "Addon marked as broken - skipping"))
@@ -133,257 +88,25 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     return addon_report
 
 
-def _check_for_invalid_xml_files(report: Report, file_index):
-    for file in file_index:
-        if ".xml" in file["name"]:
-            xml_path = os.path.join(file["path"], file["name"])
-            try:
-                # Just try if we can successfully parse it
-                ET.parse(xml_path)
-            except ET.ParseError:
-                report.add(Record(PROBLEM, "Invalid xml found. %s" %
-                                  relative_path(xml_path)))
+def all_repo_addons():
+    """Returns a nested dictionary of format:
+        {'gotham':{'name_of_addon':'version_of_addon'}}
+    """
+
+    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
+    repo_addons = {}
+
+    for branch in branches:
+        branch_url = ROOT_URL.format(branch=branch)
+        repo_addons[branch] = _get_addons(branch_url)
+
+    return repo_addons
 
 
-def _check_for_invalid_json_files(report: Report, file_index):
-    for file in file_index:
-        if ".json" in file["name"]:
-            path = os.path.join(file["path"], file["name"])
-            try:
-                # Just try if we can successfully parse it
-                with open(path) as json_data:
-                    json.load(json_data)
-            except ValueError:
-                report.add(Record(PROBLEM, "Invalid json found. %s" %
-                                  relative_path(path)))
-
-
-def _check_addon_xml(report: Report, addon_path, parsed_xml):
-    addon_xml_path = os.path.join(addon_path, "addon.xml")
-    try:
-        _addon_file_exists(report, addon_path, r"addon\.xml")
-
-        report.add(Record(INFORMATION, "Created by %s" %
-                          parsed_xml.attrib.get("provider-name")))
-        _addon_xml_matches_folder(report, addon_path, parsed_xml)
-    except ET.ParseError:
-        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" %
-                          relative_path(addon_xml_path)))
-
-    return parsed_xml
-
-
-def _check_artwork(report: Report, addon_path, addon_xml, file_index):
-    # icon, fanart, screenshot - these will also check if the addon.xml links correctly
-    _check_image_type(report, "icon", addon_xml, addon_path)
-    _check_image_type(report, "fanart", addon_xml, addon_path)
-    _check_image_type(report, "screenshot", addon_xml, addon_path)
-
-    # go through all but the above and try to open the image
-    for file in file_index:
-        if re.match(r"(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
-            image_path = os.path.join(file["path"], file["name"])
-            try:
-                # Just try if we can successfully open it
-                Image.open(image_path)
-            except IOError:
-                report.add(
-                    Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(image_path)))
-
-
-def _check_image_type(report: Report, image_type, addon_xml, addon_path):
-    images = addon_xml.findall("*//" + image_type)
-
-    icon_fallback = False
-    fanart_fallback = False
-    if not images and image_type == "icon":
-        icon_fallback = True
-        image = type('image', (object,),
-                     {'text': 'icon.png'})()
-        images.append(image)
-    elif not images and image_type == "fanart":
-        skip_addon_types = [".module.", "metadata.", "context.", ".language."]
-        for addon_type in skip_addon_types:
-            if addon_type in addon_path:
-                break
-        else:
-            fanart_fallback = True
-            image = type('image', (object,),
-                         {'text': 'fanart.jpg'})()
-            images.append(image)
-
-    for image in images:
-        if image.text:
-            filepath = os.path.join(addon_path, image.text)
-            if os.path.isfile(filepath):
-                report.add(Record(INFORMATION, "Image %s exists" % image_type))
-                try:
-                    im = Image.open(filepath)
-                    width, height = im.size
-
-                    if image_type == "icon":
-                        if has_transparency(im):
-                            report.add(
-                                Record(PROBLEM, "Icon.png should be solid. It has transparency."))
-                        if (width != 256 and height != 256) and (width != 512 and height != 512):
-                            report.add(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
-                                width, height)))
-                        else:
-                            report.add(
-                                Record(INFORMATION, "%s dimensions are fine %sx%s" % (image_type, width, height)))
-                    elif image_type == "fanart":
-                        fanart_sizes = [
-                            (1280, 720), (1920, 1080), (3840, 2160)]
-                        fanart_sizes_str = " or ".join(
-                            ["%dx%d" % (w, h) for w, h in fanart_sizes])
-                        if (width, height) not in fanart_sizes:
-                            report.add(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
-                                fanart_sizes_str, width, height)))
-                        else:
-                            report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
-                                              (image_type, width, height)))
-                    else:
-                        # screenshots have no size definitions
-                        LOGGER.info("Artwork was a screenshot")
-                        pass
-                except IOError:
-                    report.add(
-                        Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
-
-            else:
-                # if it's a fallback path addons.xml should still be able to
-                # get build
-                if fanart_fallback or icon_fallback:
-                    if icon_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a icon"))
-                    elif fanart_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a fanart"))
-                # it's no fallback path, so building addons.xml will crash -
-                # this is a problem ;)
-                else:
-                    report.add(
-                        Record(PROBLEM, "%s does not exist at specified path." % image_type))
-        else:
-            report.add(
-                Record(WARNING, "Empty image tag found for %s" % image_type))
-
-
-def _addon_file_exists(report: Report, addon_path, file_name):
-    if _find_file(file_name, addon_path) is None:
-        report.add(Record(PROBLEM, "Not found %s in folder %s" %
-                          (file_name, relative_path(addon_path))))
-
-
-def _addon_xml_matches_folder(report: Report, addon_path, addon_xml):
-    if os.path.basename(os.path.normpath(addon_path)) == addon_xml.attrib.get("id"):
-        report.add(Record(INFORMATION, "Addon id matches folder name"))
-    else:
-        report.add(Record(PROBLEM, "Addon id and folder name does not match."))
-
-
-def _check_for_legacy_strings_xml(report: Report, addon_path):
-    if _find_file_recursive("strings.xml", addon_path) is not None:
-        report.add(
-            Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
-
-
-def _find_blacklisted_strings(report: Report, addon_path, problem_list, warning_list, whitelisted_file_types):
-    for result in _find_in_file(addon_path, problem_list, whitelisted_file_types):
-        report.add(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
-
-    for result in _find_in_file(addon_path, warning_list, whitelisted_file_types):
-        report.add(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
-
-
-def _check_for_legacy_language_path(report: Report, addon_path):
-    language_path = os.path.join(addon_path, "resources", "language")
-    if os.path.exists(language_path):
-        dirs = next(os.walk(language_path))[1]
-        found_warning = False
-        for dir in dirs:
-            if not found_warning and "resource.language." not in dir:
-                report.add(Record(
-                    WARNING, "Using the old language directory structure, please move to the new one."))
-                found_warning = True
-
-
-def _check_file_whitelist(report: Report, file_index, addon_path):
-    if ".module." in addon_path:
-        report.add(Record(INFORMATION, "Module skipping whitelist"))
-        return
-
-    whitelist = (
-        r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|"
-        r"rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|"
-        r"help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
-    )
-
-    for file in file_index:
-        file_parts = file["name"].rsplit(".")
-        # Only check file endings if there are file endings...
-        # This will not check "README" or ".gitignore"
-        if len(file_parts) > 1:
-            file_ending = "." + file_parts[len(file_parts) - 1]
-            if re.match(whitelist, file_ending, re.IGNORECASE) is None:
-                report.add(Record(WARNING,
-                                  "Found non whitelisted file ending in filename %s" %
-                                  relative_path(os.path.join(file["path"], file["name"]))))
-
-
-def relative_path(file_path):
-    path_to_print = file_path[len(REL_PATH):]
-    return ".{}".format(path_to_print)
-
-
-def _check_complex_addon_entrypoint(report: Report, addon_path, parsed_xml, max_entrypoint_line_count):
-
-    for i in parsed_xml.findall("extension"):
-        library = i.get("library")
-
-        if library:
-            filepath = os.path.join(addon_path, library)
-
-            if not os.path.isdir(filepath):
-                name, ext = os.path.splitext(filepath)
-
-                if os.path.exists(filepath):
-                    if ext == '.py':
-                        number_of_lines(report, filepath, library,
-                                        max_entrypoint_line_count)
-                else:
-                    report.add(
-                        Record(PROBLEM, "%s Entry point does not exists" % library))
-
-
-def number_of_lines(report: Report, filepath: str, library: str, max_entrypoint_line_count: int):
-
-    with open(filepath, 'r') as file:
-        data = file.read()
-
-    try:
-        lineno = analyze(data).lloc
-        if lineno >= max_entrypoint_line_count:
-            report.add(Record(WARNING,
-                              "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
-                              % (library, lineno, max_entrypoint_line_count)))
-    except SyntaxError as e:
-        if e.msg == 'SyntaxError at line: 1':
-            report.add(Record(PROBLEM,
-                              ("Error parsing file, is your file saved with UTF-8 encoding? "
-                               "Make sure it has no BOM. Check: %s")
-                              % library))
-        else:
-            report.add(Record(PROBLEM,
-                              "Error parsing file, is there a syntax error in your file? Check: %s"
-                              % library))
-
-
-def _get_addons(xml_url):
-    """addon.xml for the target Kodi version"""
+def _get_addons(xml_url: str):
+    """Gets addon.xml file for all the version of kodi
+        :xml_url: url of the version of kodi
+    """
     try:
         gz_file = requests.get(xml_url, timeout=(10, 10)).content
         with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
@@ -398,95 +121,3 @@ def _get_addons(xml_url):
         LOGGER.error(errrt)
     except requests.exceptions.ConnectTimeout as errct:
         LOGGER.error(errct)
-
-
-def _get_users_dependencies(parsed_xml):
-    """
-        User's addon.xml from pull request
-    """
-    return {
-        i.get("addon"): i.get("version")
-        for i in parsed_xml.findall("requires/import")
-    }
-
-
-def _check_dependencies(report: Report, repo_addons, parsed_xml):
-    """Check for any new dependencies in addon.xml file"""
-    deps = _get_users_dependencies(parsed_xml)
-    ignore = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
-              'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows', 'xbmc.metadata.scraper.library',
-              'xbmc.ui.screensaver', 'xbmc.player.musicviz', 'xbmc.python.pluginsource', 'xbmc.python.script',
-              'xbmc.python.weather', 'xbmc.python.lyrics', 'xbmc.python.library', 'xbmc.python.module',
-              'xbmc.subtitle.module', 'kodi.context.item', 'kodi.game.controller', 'xbmc.gui.skin',
-              'xbmc.webinterface', 'xbmc.addon.repository', 'xbmc.pvrclient', 'kodi.gameclient',
-              'kodi.peripheral', 'xbmc.addon.video', 'xbmc.addon.audio', 'xbmc.addon.image',
-              'xbmc.addon.executable', 'kodi.addon.game', 'kodi.audioencoder', 'kodi.audiodecoder',
-              'xbmc.service', 'kodi.resource.images', 'kodi.resource.language', 'kodi.resource.uisounds',
-              'kodi.resource.games', 'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
-              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
-
-    for required_addon, required_version in deps.items():
-        if required_addon not in repo_addons:
-            if required_addon not in ignore:
-                report.add(Record(
-                    PROBLEM, "Required addon %s not available in current repository." % required_addon))
-        else:
-            available_version = repo_addons[required_addon]
-
-            if required_version is None:
-                report.add(Record(WARNING, "Required addon %s does not require a fixed version Available: %s "
-                                  % (required_addon, available_version)))
-            elif available_version is None:
-                report.add(Record(PROBLEM, "Version of %s in required version %s not available"
-                                  % (required_addon, required_version)))
-            elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
-                report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
-                                  % (required_addon, required_version, available_version)))
-
-
-def _get_addon_name(xml_path):
-    tree = ET.parse(xml_path).getroot()
-    return (tree.get("id"), tree.get("version"))
-
-
-def _check_for_existing_addon(report: Report, addon_path, all_repo_addons, pr):
-    """Check if addon submitted already exists or not"""
-    addon_xml = os.path.join(addon_path, "addon.xml")
-    addon_name, addon_version = _get_addon_name(addon_xml)
-
-    for branch in sorted(all_repo_addons):
-        repo_addons = all_repo_addons[branch]
-
-        if addon_name in repo_addons:
-            _check_versions(report, addon_name, branch, addon_version, repo_addons[addon_name], pr)
-            return
-
-    report.add(Record(INFORMATION, "This is a new addon"))
-
-
-def _check_versions(report: Report, addon_name, branch, addon_version, repo_addons_version, pr):
-    if pr:
-        if LooseVersion(addon_version) > LooseVersion(repo_addons_version):
-            LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s"
-                        % (addon_name, addon_version, repo_addons_version, branch))
-        else:
-            report.add(Record(PROBLEM, "%s addon already exists with version: %s in %s branch")
-                       % (addon_name, repo_addons_version, branch))
-    else:
-        if LooseVersion(addon_version) < LooseVersion(repo_addons_version):
-            report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
-                              % (addon_name, repo_addons_version, branch)))
-        else:
-            report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"
-                              % (addon_name, branch, repo_addons_version)))
-
-
-def all_repo_addons():
-    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
-    repo_addons = {}
-
-    for branch in branches:
-        branch_url = ROOT_URL.format(branch=branch)
-        repo_addons[branch] = _get_addons(branch_url)
-
-    return repo_addons
