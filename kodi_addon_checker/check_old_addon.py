@@ -2,8 +2,8 @@ import os
 import logging
 import xml.etree.ElementTree as ET
 from distutils.version import LooseVersion
-from kodi_addon_checker.report import Report
-from kodi_addon_checker.record import PROBLEM, Record, INFORMATION
+from .report import Report
+from .record import PROBLEM, Record, INFORMATION
 
 LOGGER = logging.getLogger(__name__)
 

@@ -2,9 +2,9 @@ import os
 import re
 import logging
 from PIL import Image
-from kodi_addon_checker.report import Report
-from kodi_addon_checker.common import has_transparency, relative_path
-from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
+from .report import Report
+from .common import has_transparency, relative_path
+from .record import PROBLEM, Record, WARNING, INFORMATION
 
 LOGGER = logging.getLogger(__name__)
 

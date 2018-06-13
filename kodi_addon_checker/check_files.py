@@ -2,10 +2,10 @@ import os
 import re
 import json
 import xml.etree.ElementTree as ET
-from kodi_addon_checker import handle_files
-from kodi_addon_checker.common import relative_path
-from kodi_addon_checker.record import PROBLEM, Record, WARNING, INFORMATION
-from kodi_addon_checker.report import Report
+from . import handle_files
+from .common import relative_path
+from .record import PROBLEM, Record, WARNING, INFORMATION
+from .report import Report
 
 
 def check_for_invalid_xml_files(report: Report, file_index: list):

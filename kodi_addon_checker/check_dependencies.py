@@ -1,6 +1,6 @@
 from distutils.version import LooseVersion
-from kodi_addon_checker.report import Report
-from kodi_addon_checker.record import PROBLEM, Record, WARNING
+from .report import Report
+from .record import PROBLEM, Record, WARNING
 
 
 def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml):

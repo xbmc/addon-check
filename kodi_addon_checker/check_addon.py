@@ -2,19 +2,19 @@ import os
 import xml.etree.ElementTree as ET
 import requests
 import logging
-from kodi_addon_checker import logger
+from . import logger
 import gzip
 from io import BytesIO
 
-from kodi_addon_checker.record import Record, INFORMATION
-from kodi_addon_checker.report import Report
-from kodi_addon_checker import check_artwork
-from kodi_addon_checker import check_old_addon
-from kodi_addon_checker import check_dependencies
-from kodi_addon_checker import check_entrypoint
-from kodi_addon_checker import handle_files
-from kodi_addon_checker import check_files
-from kodi_addon_checker import check_string
+from .record import Record, INFORMATION
+from .report import Report
+from . import check_artwork
+from . import check_old_addon
+from . import check_dependencies
+from . import check_entrypoint
+from . import handle_files
+from . import check_files
+from . import check_string
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"

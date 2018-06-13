@@ -1,4 +1,4 @@
-from kodi_addon_checker.record import Record, PROBLEM, WARNING
+from .record import Record, PROBLEM, WARNING
 
 
 class Report(object):

@@ -2,7 +2,7 @@ import inspect
 import sys
 from abc import ABC
 
-from kodi_addon_checker.report import Report
+from .report import Report
 
 
 class Reporter(ABC):

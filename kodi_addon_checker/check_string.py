@@ -1,7 +1,7 @@
-from kodi_addon_checker.report import Report
-from kodi_addon_checker.common import relative_path
-from kodi_addon_checker import handle_files
-from kodi_addon_checker.record import PROBLEM, Record, WARNING
+from .report import Report
+from .common import relative_path
+from . import handle_files
+from .record import PROBLEM, Record, WARNING
 
 
 def check_for_legacy_strings_xml(report: Report, addon_path: str):
