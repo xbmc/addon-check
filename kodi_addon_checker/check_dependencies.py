@@ -21,7 +21,8 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml):
               'xbmc.addon.executable', 'kodi.addon.game', 'kodi.audioencoder', 'kodi.audiodecoder',
               'xbmc.service', 'kodi.resource.images', 'kodi.resource.language', 'kodi.resource.uisounds',
               'kodi.resource.games', 'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
-              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
+              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil',
+              'inputstream.adaptive', 'script.module.pycryptodome']
 
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
