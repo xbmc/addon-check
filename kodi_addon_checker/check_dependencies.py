@@ -2,26 +2,31 @@ from distutils.version import LooseVersion
 from .report import Report
 from .record import PROBLEM, Record, WARNING
 
+common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
+                      'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows',
+                      'xbmc.metadata.scraper.library', 'xbmc.ui.screensaver', 'xbmc.player.musicviz',
+                      'xbmc.python.pluginsource', 'xbmc.python.script', 'xbmc.python.weather', 'xbmc.python.lyrics',
+                      'xbmc.python.library', 'xbmc.python.module', 'xbmc.subtitle.module', 'kodi.context.item',
+                      'kodi.game.controller', 'xbmc.gui.skin', 'xbmc.webinterface', 'xbmc.addon.repository',
+                      'xbmc.pvrclient', 'kodi.gameclient', 'kodi.peripheral', 'xbmc.addon.video',
+                      'xbmc.addon.audio', 'xbmc.addon.image', 'xbmc.addon.executable', 'kodi.addon.game',
+                      'kodi.audioencoder', 'kodi.audiodecoder', 'xbmc.service', 'kodi.resource.images',
+                      'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
+                      'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.json',
+                      'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil',
+                      'inputstream.adaptive', 'script.module.pycryptodome']
 
-def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml):
+
+def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, branch_name: str):
     """Check for any new dependencies in addon.xml file and reports them
         :parsed_xml: parsed addon.xml file
         :repo_addons: dictionary having all the addon list of a particular
                         version of kodi
+        :branch_name: name of the kodi branch/version
     """
 
     deps = _get_users_dependencies(parsed_xml)
-    ignore = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
-              'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows', 'xbmc.metadata.scraper.library',
-              'xbmc.ui.screensaver', 'xbmc.player.musicviz', 'xbmc.python.pluginsource', 'xbmc.python.script',
-              'xbmc.python.weather', 'xbmc.python.lyrics', 'xbmc.python.library', 'xbmc.python.module',
-              'xbmc.subtitle.module', 'kodi.context.item', 'kodi.game.controller', 'xbmc.gui.skin',
-              'xbmc.webinterface', 'xbmc.addon.repository', 'xbmc.pvrclient', 'kodi.gameclient',
-              'kodi.peripheral', 'xbmc.addon.video', 'xbmc.addon.audio', 'xbmc.addon.image',
-              'xbmc.addon.executable', 'kodi.addon.game', 'kodi.audioencoder', 'kodi.audiodecoder',
-              'xbmc.service', 'kodi.resource.images', 'kodi.resource.language', 'kodi.resource.uisounds',
-              'kodi.resource.games', 'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
-              'xbmc.json', 'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python']
+    ignore = _get_ignore_list(branch_name)
 
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
@@ -40,6 +45,21 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml):
             elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
                 report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
                                   % (required_addon, required_version, available_version)))
+
+
+def _get_ignore_list(branch_name):
+
+    if branch_name == "leia":
+        common_ignore_deps.extend(["inputstream.adaptative", "inputstream.rtmp",
+                                   "script.module.cryptodome"])
+        return common_ignore_deps
+
+    elif branch_name == "krypton":
+        common_ignore_deps.extend(["inputstream.adaptative", "inputstream.rtmp"])
+        return common_ignore_deps
+
+    else:
+        return common_ignore_deps
 
 
 def _get_users_dependencies(parsed_xml):
