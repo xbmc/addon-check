@@ -14,7 +14,7 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.alb
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
                       'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.json',
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil',
-                      'inputstream.adaptive', 'script.module.pycryptodome']
+                      'script.module.pycryptodome']
 
 
 def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, branch_name: str):
@@ -50,12 +50,12 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
 def _get_ignore_list(branch_name):
 
     if branch_name == "leia":
-        common_ignore_deps.extend(["inputstream.adaptative", "inputstream.rtmp",
+        common_ignore_deps.extend(["inputstream.adaptive", "inputstream.rtmp",
                                    "script.module.cryptodome"])
         return common_ignore_deps
 
     elif branch_name == "krypton":
-        common_ignore_deps.extend(["inputstream.adaptative", "inputstream.rtmp"])
+        common_ignore_deps.extend(["inputstream.adaptive", "inputstream.rtmp"])
         return common_ignore_deps
 
     else:
