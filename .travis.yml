@@ -78,7 +78,7 @@ matrix:
 
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
+  - make init
 
 before_script:
   - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
@@ -91,7 +91,7 @@ script:
       python3 -m kodi_addon_checker --branch=$BRANCH ../repo;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
-      py.test -v;
+      make test;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
       pycodestyle . --max-line-length=120;
