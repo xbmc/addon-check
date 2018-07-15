@@ -6,5 +6,5 @@ install:
   - pip install kodi-addon-checker
 
 # command to run our tests
-script: 
+script:
   - kodi-addon-checker . --branch=BRANCH_NAME --PR
