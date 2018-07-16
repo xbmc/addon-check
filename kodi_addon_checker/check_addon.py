@@ -14,6 +14,7 @@ from . import check_entrypoint
 from . import handle_files
 from . import check_files
 from . import check_string
+from . import check_py3_compatibility
 
 REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -54,6 +55,9 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
                 "max_entrypoint_count", 15)
             check_entrypoint.check_complex_addon_entrypoint(
                 addon_report, addon_path, parsed_xml, max_entrypoint_count)
+
+            if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
+                check_py3_compatibility.Check_Py3_compatibility(addon_report, addon_path)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
