@@ -1,4 +1,5 @@
 from .record import Record, PROBLEM, WARNING
+from .reporter import ReportManager
 
 
 class Report(object):
@@ -11,7 +12,6 @@ class Report(object):
         self.problem_count = 0
         self.warning_count = 0
         self.information_count = 0
-        self.reports = []
 
     def add(self, report):
         """
@@ -19,8 +19,9 @@ class Report(object):
         :param report: a record or report
         :return: None
         """
-        self.reports.append(report)
         if type(report) is Record:
+            for reporter in ReportManager.getEnabledReporters():
+                reporter.report(report)
             if PROBLEM == report.log_level:
                 self.problem_count += 1
             elif WARNING == report.log_level:
@@ -31,6 +32,3 @@ class Report(object):
             self.problem_count += report.problem_count
             self.warning_count += report.warning_count
             self.information_count += report.information_count
-
-    def __iter__(self):
-        return iter(self.reports)
