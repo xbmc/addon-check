@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import logging
 from kodi_addon_checker import logger
 from kodi_addon_checker import check_addon
@@ -83,13 +84,12 @@ def main():
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
                           (report.problem_count, report.warning_count)))
+        sys.exit(1)
     elif report.warning_count > 0:
         report.add(Record(WARNING, "We found no problems and %s warnings, please check the logfile." %
                           report.warning_count))
     else:
         report.add(Record(INFORMATION, "We found no problems and no warnings, please enjoy your day."))
-
-    ReportManager.report(report)
 
 
 if __name__ == "__main__":

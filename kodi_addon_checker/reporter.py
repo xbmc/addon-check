@@ -1,8 +1,5 @@
 import inspect
-import sys
 from abc import ABC
-
-from .report import Report
 
 
 class Reporter(ABC):
@@ -16,7 +13,7 @@ class ReportManager(object):
 
     @classmethod
     def register(cls, reporter_clazz: Reporter, name, enabled):
-        cls.reporters[name] = [reporter_clazz, enabled]
+        cls.reporters[name] = [reporter_clazz(), enabled]
 
     @classmethod
     def enable(cls, names):
@@ -29,14 +26,8 @@ class ReportManager(object):
             arr[1] = name in names
 
     @classmethod
-    def report(cls, report: Report):
-        for arr in cls.reporters.values():
-            if arr[1]:
-                # Report enabled
-                arr[0]().report(report)
-        if report.problem_count > 0:
-            # Found problems. Mark the build as broken
-            sys.exit(1)
+    def getEnabledReporters(cls):
+        return [reporter[0] for reporter in cls.reporters.values() if reporter[1]]
 
 
 def reporter(name, enabled=False):

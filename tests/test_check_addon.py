@@ -1,7 +1,9 @@
 import unittest
 from kodi_addon_checker.check_addon import all_repo_addons
 from kodi_addon_checker.check_addon import start
+from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.record import Record
+from kodi_addon_checker.reporter import ReportManager
 from kodi_addon_checker.config import Config
 
 
@@ -13,14 +15,16 @@ class TestCheckAddon(unittest.TestCase):
         self.whitelist = ["INFO: Checking add-on script.test", "INFO: Created by mzfr", "INFO: This is a new addon"
                           "INFO: Image icon exists", "Icon dimensions are fine", "INFO: Image fanart exists",
                           "WARN: Complex entry point", "WARN: We found", "please check the logfile"]
+        load_plugins()
         self.config = Config(self.path)
+        ReportManager.enable(["array"])
         self.branch_name = "krypton"
         self.all_repo_addons = all_repo_addons()
         self.pr = False
 
     def test_start(self):
         result = start(self.path, self.branch_name, self.all_repo_addons, self.pr, self.config)
-        records = [Record.__str__(r) for r in result]
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
 
         # Comparing the whitelist with the list of output we get from addon-checker tool
         for white_str in self.whitelist:
