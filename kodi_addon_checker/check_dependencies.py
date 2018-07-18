@@ -8,7 +8,7 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'xbmc.python.pluginsource', 'xbmc.python.script', 'xbmc.python.weather', 'xbmc.python.lyrics',
                       'xbmc.python.library', 'xbmc.python.module', 'xbmc.subtitle.module', 'kodi.context.item',
                       'kodi.game.controller', 'xbmc.gui.skin', 'xbmc.webinterface', 'xbmc.addon.repository',
-                      'xbmc.pvrclient', 'kodi.gameclient', 'kodi.peripheral', 'xbmc.addon.video',
+                      'xbmc.pvrclient', 'kodi.gameclient', 'kodi.peripheral', 'kodi.resource', 'xbmc.addon.video',
                       'xbmc.addon.audio', 'xbmc.addon.image', 'xbmc.addon.executable', 'kodi.addon.game',
                       'kodi.audioencoder', 'kodi.audiodecoder', 'xbmc.service', 'kodi.resource.images',
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
