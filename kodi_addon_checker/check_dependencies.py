@@ -2,7 +2,7 @@ from distutils.version import LooseVersion
 from .report import Report
 from .record import PROBLEM, Record, WARNING
 
-common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
+common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
                       'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows',
                       'xbmc.metadata.scraper.library', 'xbmc.ui.screensaver', 'xbmc.player.musicviz',
                       'xbmc.python.pluginsource', 'xbmc.python.script', 'xbmc.python.weather', 'xbmc.python.lyrics',
@@ -12,7 +12,7 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.alb
                       'xbmc.addon.audio', 'xbmc.addon.image', 'xbmc.addon.executable', 'kodi.addon.game',
                       'kodi.audioencoder', 'kodi.audiodecoder', 'xbmc.service', 'kodi.resource.images',
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
-                      'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.json',
+                      'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
 
 
