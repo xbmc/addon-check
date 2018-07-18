@@ -12,7 +12,7 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'xbmc.addon.audio', 'xbmc.addon.image', 'xbmc.addon.executable', 'kodi.addon.game',
                       'kodi.audioencoder', 'kodi.audiodecoder', 'xbmc.service', 'kodi.resource.images',
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
-                      'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder',
+                      'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.addon',
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
 
 
