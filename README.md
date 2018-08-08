@@ -3,35 +3,83 @@
 
 # Kodi Addon checker
 
-This tool checks the Kodi repo for best practices and creates problem and warning reports
+This tool checks the Kodi repo for best practices and produces a report containing found problems and warnings.
+
+It can also be used locally for detecting problems in your addons.
 
 ## Features
 
-- Checks if all images are valid images
+- Checks if artwork is available and if the size is as [defined](https://kodi.wiki/view/Add-on_structure#icon.png)
 
-- Checks if all xml files are valid
+- Checks if all artworks(images/fanart/screenshot) are valid.
 
-- Checks if addon.xml and license file exists for an addon
+- Checks if addon.xml and license file exists for an addon.
 
-- Checks if the addon id in addon.xml matches with the folder name
+- Checks if all xml files are valid.
 
-- Checks if artwork is available and if the size is as defined
+- Check if all the json files are valid.
 
-- Checks if the addon uses the old strings.xml translation format
+- Checks if the addon id in addon.xml matches with the folder name.
 
-- Check if the addon uses the old language folders (English vs resource.language.en_gb)
+- Checks if the addon uses the old strings.xml translation format.
 
-- Checks for various blacklisted strings
+- Check if the addon uses the old language folders (English vs resource.language.en_gb).
 
-- Check for blacklisted filetypes
+- Checks for various blacklisted strings.
+
+- Check for blacklisted filetypes.
+
+- Check for new dependencies present in addon.xml files.
+
+- Check the complexity of the entrypoint files for addon.
+
+- Check if addon already exists in any of lower repositories
+
+- Check if addon is compatible with python3 or not
+
+- Validate addon.xml againt schemas
+
+All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation
+
+
+* You will need Python3.
+
+Then you can directly install it from pip package:
 
 ```bash
 pip install kodi-addon-checker
 ```
 
-## How to use
+#### For Developement
 
-1. Open Terminal in add-on repository directory
-2. Execute `kodi-addon-checker`
+* Clone the repository
+```
+git clone https://github.com/xbmc/addon-check
+```
+
+* `cd <path-to-cloned-repo>`
+* Install the requirements:
+```
+pip install -r requirement.txt
+```
+
+## Usage
+
+* If you are in add-on directory:
+    - Execute `kodi-addon-checker`
+
+* If you want to run it from any other directory
+    - Execute
+    ```
+    kodi-addon-checker <path-to-addon>
+    ```
+
+You can use the tool with the following options:
+```
+
+--version           version of the tool
+--branch            name of the branch the tool is to run on
+--PR                only when the tool is running on a pull request
+```
