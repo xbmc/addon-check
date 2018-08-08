@@ -30,7 +30,7 @@ def dir_type(dir_path):
     return os.path.abspath(dir_path)
 
 
-def check_artifact(artifact_path, args, branch_name, pr):
+def check_artifact(artifact_path, args, branch_name, all_repo_addons, pr):
     """
     Check given artifact and return its report. The artifact can be either an add-on or a repository.
     :param artifact_path: the path of add-on or repo
@@ -39,7 +39,6 @@ def check_artifact(artifact_path, args, branch_name, pr):
     """
     logger = logging.getLogger(__package__)
     logger.info("Downloading all repo addon list")
-    all_repo_addons = check_addon.all_repo_addons()
     logger.info("Download completed")
     artifact_path = os.path.abspath(artifact_path)
     config = Config(artifact_path, args)
@@ -73,13 +72,15 @@ def main():
     log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker.log")
     logger.Logger.create_logger(log_file_name, __package__)
 
+    all_repo_addons = check_addon.all_repo_addons()
+
     if args.dir:
         # Following report is a wrapper for all sub reports
         report = Report("")
         for directory in args.dir:
-            report.add(check_artifact(directory, args, args.branch, args.PR))
+            report.add(check_artifact(directory, args, args.branch, all_repo_addons, args.PR))
     else:
-        report = check_artifact(os.getcwd(), args, args.branch, args.PR)
+        report = check_artifact(os.getcwd(), args, args.branch, all_repo_addons, args.PR)
 
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
