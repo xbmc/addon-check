@@ -37,8 +37,6 @@ It can also be used locally for detecting problems in your addons.
 
 - Check if addon is compatible with python3 or not
 
-- Validate addon.xml againt schemas
-
 All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation
