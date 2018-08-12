@@ -1,4 +1,6 @@
+import logging
 from distutils.version import LooseVersion
+
 from .report import Report
 from .record import PROBLEM, Record, WARNING
 
@@ -14,6 +16,11 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
                       'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.addon',
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
+
+VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0',
+                                 'jarvis': '2.24.0', 'krypton': '2.25.0', 'leia': '2.25.0'}}
+
+LOGGER = logging.getLogger(__name__)
 
 
 def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, branch_name: str):
@@ -32,6 +39,15 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
             if required_addon not in ignore:
                 report.add(Record(
                     PROBLEM, "Required addon %s not available in current repository." % required_addon))
+            elif required_addon in VERSION_ATTRB:
+                try:
+                    version = VERSION_ATTRB[required_addon][branch_name]
+                    if LooseVersion(version) != LooseVersion(required_version):
+                        report.add(Record(WARNING, "For %s it is advised to set %s version to %s" %
+                                          (branch_name, required_addon, required_version)))
+                except KeyError:
+                    LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
+
         else:
             available_version = repo_addons[required_addon]
 
