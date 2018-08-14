@@ -40,7 +40,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
             if existing_line[line] != required_changes[line]:
                 self.table.append([line + 1, existing_line[line], required_changes[line]])
 
-        self.output = tabulate(self.table, headers=self.headers, tablefmt='fancy_grid')
+        self.output = tabulate(self.table, headers=self.headers, tablefmt='pipe')
         self.report.add(Record(INFORMATION, self.short_path(filepath) + '\n' + self.output))
 
 
