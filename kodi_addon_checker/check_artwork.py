@@ -39,7 +39,6 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
             filepath = os.path.join(addon_path, image.text)
 
             if os.path.isfile(filepath):
-
                 report.add(Record(INFORMATION, "Image %s exists" % image_type))
                 try:
                     im = Image.open(filepath)
@@ -52,6 +51,8 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
                         _check_fanart(report, width, height)
                     else:
                         # screenshots have no size definitions
+                        if has_transparency(im):
+                            report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image.text))
                         LOGGER.info("Artwork was a screenshot")
                 except IOError:
                     report.add(
