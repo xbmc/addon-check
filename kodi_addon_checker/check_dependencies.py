@@ -44,7 +44,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                     version = VERSION_ATTRB[required_addon][branch_name]
                     if LooseVersion(version) != LooseVersion(required_version):
                         report.add(Record(WARNING, "For %s it is advised to set %s version to %s" %
-                                          (branch_name, required_addon, required_version)))
+                                          (branch_name, required_addon, version)))
                 except KeyError:
                     LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
