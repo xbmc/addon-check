@@ -19,15 +19,15 @@ def find_file(name: str, path: str):
     return
 
 
-def find_file_recursive(name: str, path: str):
+def find_files_recursive(name: str, path: str):
     """This looks for a file but only returns the first occurance
         :name: name of the file to look for
         :path: path of directory to look for the file
     """
-    for file in os.walk(path):
-        if name in file[2]:
-            return os.path.join(path, name)
-    return
+    for root, _, files in os.walk(path):
+        for file in files:
+            if name in file:
+                yield os.path.join(root, file)
 
 
 def create_file_index(path: str):

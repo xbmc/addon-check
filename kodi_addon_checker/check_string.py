@@ -1,3 +1,5 @@
+import os
+
 from .report import Report
 from .common import relative_path
 from . import handle_files
@@ -8,9 +10,9 @@ def check_for_legacy_strings_xml(report: Report, addon_path: str):
     """Find for the string.xml file in addon which was used in old versions
         :addon_path: path of the addon
     """
-    if handle_files.find_file_recursive("strings.xml", addon_path) is not None:
+    for file in handle_files.find_files_recursive("strings.xml", os.path.join(addon_path, "resources", "language")):
         report.add(
-            Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
+            Record(PROBLEM, "Found %s please migrate to strings.po." % relative_path(file)))
 
 
 def find_blacklisted_strings(report: Report, addon_path: str, problems: list, warnings: list, file_types: list):
