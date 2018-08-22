@@ -1,3 +1,5 @@
+import os
+
 from .report import Report
 from .common import relative_path
 from . import handle_files
@@ -8,7 +10,7 @@ def check_for_legacy_strings_xml(report: Report, addon_path: str):
     """Find for the string.xml file in addon which was used in old versions
         :addon_path: path of the addon
     """
-    if handle_files.find_file_recursive("strings.xml", addon_path) is not None:
+    if handle_files.find_file_recursive("strings.xml", os.path.join(addon_path, "resources", "language")) is not None:
         report.add(
             Record(PROBLEM, "Found strings.xml in folder %s please migrate to strings.po." % relative_path(addon_path)))
 
