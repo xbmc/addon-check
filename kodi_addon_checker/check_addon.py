@@ -15,8 +15,8 @@ from . import handle_files
 from . import check_files
 from . import check_string
 from . import check_py3_compatibility
+from . import common
 
-REL_PATH = ""
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
 
@@ -31,10 +31,9 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     parsed_xml = ET.parse(addon_xml_path).getroot()
 
-    global REL_PATH
     # Extract common path from addon paths
     # All paths will be printed relative to this path
-    REL_PATH = os.path.split(addon_path[:-1])[0]
+    common.REL_PATH = os.path.split(addon_path[:-1])[0]
     addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml)
 
     if addon_xml is not None:
