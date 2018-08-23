@@ -106,8 +106,7 @@ def start(addon_path, repo_addons, config=None):
                 # check if license file is existing
                 _addon_file_exists(addon_report, addon_path, r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
-            if config.is_enabled("check_legacy_strings_xml"):
-                _check_for_legacy_strings_xml(addon_report, addon_path)
+            _check_for_legacy_strings_xml(addon_report, addon_path)
 
             if config.is_enabled("check_legacy_language_path"):
                 _check_for_legacy_language_path(addon_report, addon_path)
