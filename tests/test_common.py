@@ -23,7 +23,7 @@ def test_if_false_gets_picked_up():
 
 def test_if_true_gets_picked_up():
     config = Config(FIXTURE_PATH)
-    assert config.is_enabled("check_legacy_strings_xml") is True
+    assert config.is_enabled("check_legacy_language_path") is True
 
 
 def test_if_does_not_exists_default_to_false():

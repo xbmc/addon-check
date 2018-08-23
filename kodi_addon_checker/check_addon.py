@@ -63,8 +63,7 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
                 handle_files.addon_file_exists(addon_report, addon_path,
                                                r"^LICENSE\.txt|LICENSE\.md|LICENSE$")
 
-            if config.is_enabled("check_legacy_strings_xml"):
-                check_string.check_for_legacy_strings_xml(addon_report, addon_path)
+            check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
             if config.is_enabled("check_legacy_language_path"):
                 check_files.check_for_legacy_language_path(addon_report, addon_path)
