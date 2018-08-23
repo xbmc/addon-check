@@ -32,11 +32,11 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list)
 def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: str):
     """Check for whether the given image type exists or not if they do """
 
-    icon_fallback, fanart_fallback, images = _assests(image_type, parsed_xml, addon_path)
+    fallback, images = _assests(image_type, parsed_xml, addon_path)
 
     for image in images:
-        if image.text:
-            filepath = os.path.join(addon_path, image.text)
+        if image:
+            filepath = os.path.join(addon_path, image)
 
             if os.path.isfile(filepath):
                 report.add(Record(INFORMATION, "Image %s exists" % image_type))
@@ -52,7 +52,7 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
                     else:
                         # screenshots have no size definitions
                         if has_transparency(im):
-                            report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image.text))
+                            report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image))
                         LOGGER.info("Artwork was a screenshot")
                 except IOError:
                     report.add(
@@ -61,13 +61,8 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
             else:
                 # if it's a fallback path addons.xml should still be able to
                 # get build
-                if fanart_fallback or icon_fallback:
-                    if icon_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a icon"))
-                    elif fanart_fallback:
-                        report.add(
-                            Record(INFORMATION, "You might want to add a fanart"))
+                if fallback:
+                    report.add(Record(INFORMATION, "You might want to add a %s" % image_type))
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
@@ -80,26 +75,23 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
 
 def _assests(image_type: str, parsed_xml, addon_path: str):
     """"""
-    images = parsed_xml.findall("*//" + image_type)
+    images = [image.text for image in parsed_xml.findall("./extension/assets/" + image_type)]
 
-    icon_fallback = False
-    fanart_fallback = False
+    fallback = False
 
     if not images and image_type == "icon":
-        icon_fallback = True
-        image = type('image', (object,), {'text': 'icon.png'})()
-        images.append(image)
+        fallback = True
+        images.append('icon.png')
     elif not images and image_type == "fanart":
         skip_addon_types = [".module.", "metadata.", "context.", ".language."]
         for addon_type in skip_addon_types:
             if addon_type in addon_path:
                 break
         else:
-            fanart_fallback = True
-            image = type('image', (object,), {'text': 'fanart.jpg'})()
-            images.append(image)
+            fallback = True
+            images.append('fanart.jpg')
 
-    return icon_fallback, fanart_fallback, images
+    return fallback, images
 
 
 def _check_icon(report: Report, im, width, height):
