@@ -2,7 +2,7 @@ import logging
 from distutils.version import LooseVersion
 
 from .report import Report
-from .record import PROBLEM, Record, WARNING
+from .record import PROBLEM, Record, WARNING, INFORMATION
 
 common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
                       'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows',
@@ -31,8 +31,22 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
         :branch_name: name of the kodi branch/version
     """
 
-    deps = _get_users_dependencies(parsed_xml)
+    optional_deps, deps = _get_users_dependencies(parsed_xml)
     ignore = _get_ignore_list(branch_name)
+
+    if optional_deps:
+        for dependency, version in optional_deps.items():
+            if dependency not in repo_addons:
+                report.add(Record(INFORMATION,
+                                  "Optional dependency %s with version %s is not present in Kodi repository" %
+                                  (dependency, version)))
+            else:
+                deps_version = repo_addons[dependency]
+                if deps_version is not None:
+                    if LooseVersion(version) > LooseVersion(deps_version) and (dependency not in ignore):
+                        report.add(INFORMATION,
+                                   "version mismatch for optional dependencies: %s. Available: %s, Required: %s" %
+                                   (dependency, deps_version, version))
 
     for required_addon, required_version in deps.items():
         if required_addon not in repo_addons:
@@ -81,8 +95,12 @@ def _get_users_dependencies(parsed_xml):
     """Gets all the dependencies from a given addon
         :parsed_xml: parsed addon.xml
     """
+    user_deps = {}
+    optional_deps = {}
+    for i in parsed_xml.findall("requires/import"):
+        if i.get("optional"):
+            optional_deps[i.get("addon")] = i.get("version")
+        else:
+            user_deps[i.get("addon")] = i.get("version")
 
-    return {
-        i.get("addon"): i.get("version")
-        for i in parsed_xml.findall("requires/import")
-    }
+    return optional_deps, user_deps
