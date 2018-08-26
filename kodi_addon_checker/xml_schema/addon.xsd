@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="addon">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="requires" type="requiresType" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="provider-name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="requiresType">
+    <xs:sequence>
+      <xs:element name="import" type="importType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importType">
+    <xs:attribute name="addon" type="xs:string" use="required"/>
+    <xs:attribute name="version" type="xs:string"/>
+    <xs:attribute name="optional" type="xs:boolean"/>
+  </xs:complexType>
+</xs:schema>

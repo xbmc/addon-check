@@ -16,6 +16,7 @@ from . import check_files
 from . import check_string
 from . import check_py3_compatibility
 from . import common
+from . import schema_validation
 
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
@@ -39,6 +40,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = handle_files.create_file_index(addon_path)
+
+            schema_validation.schemas(addon_report, parsed_xml, branch_name)
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
 
