@@ -79,12 +79,11 @@ def check_for_legacy_language_path(report: Report, addon_path: str):
     language_path = os.path.join(addon_path, "resources", "language")
     if os.path.exists(language_path):
         dirs = next(os.walk(language_path))[1]
-        found_warning = False
         for directory in dirs:
-            if not found_warning and "resource.language." not in directory:
+            if "resource.language." not in directory:
                 report.add(Record(
                     WARNING, "Using the old language directory structure, please move to the new one."))
-                found_warning = True
+                break
 
 
 def check_file_whitelist(report: Report, file_index: list, addon_path: str):
