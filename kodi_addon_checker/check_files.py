@@ -82,7 +82,7 @@ def check_for_legacy_language_path(report: Report, addon_path: str):
         for directory in dirs:
             if "resource.language." not in directory:
                 report.add(Record(
-                    WARNING, "Using the old language directory structure, please move to the new one."))
+                    PROBLEM, "Using the old language directory structure, please move to the new one."))
                 break
 
 
