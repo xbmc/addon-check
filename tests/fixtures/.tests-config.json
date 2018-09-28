@@ -1,4 +1,4 @@
 {
-    "check_legacy_language_path": true,
+    "true_config": true,
     "check_license_file_exists": false
 }
