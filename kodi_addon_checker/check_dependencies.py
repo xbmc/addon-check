@@ -18,7 +18,7 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
 
 VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0',
-                                 'jarvis': '2.24.0', 'krypton': '2.25.0', 'leia': '2.25.0'}}
+                                 'jarvis': '2.24.0', 'krypton': '2.25.0', 'leia': '2.26.0'}}
 
 LOGGER = logging.getLogger(__name__)
 
