@@ -13,7 +13,7 @@
   </xs:element>
   <xs:complexType name="requiresType">
     <xs:sequence>
-      <xs:element name="import" type="importType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="import" type="importType" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="importType">
