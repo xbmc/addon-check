@@ -21,7 +21,13 @@ setuptools.setup(
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
-    install_requires=requirements,
+    install_requires=[
+        'pillow',
+        'requests',
+        'radon',
+        'tabulate',
+        'xmlschema'
+        ],
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [
         'kodi-addon-checker = kodi_addon_checker.__main__:main']},
