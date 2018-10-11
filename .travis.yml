@@ -94,5 +94,5 @@ script:
       py.test -v;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
-      pycodestyle . --max-line-length=120;
+      pycodestyle . --max-line-length=120 --exclude=.eggs;
     fi
