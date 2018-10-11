@@ -12,7 +12,7 @@ with open(os.path.join(_ROOT, 'README.md')) as f:
 
 setuptools.setup(
     name="kodi-addon-checker",
-    version="0.0.10",
+    version="0.0.11",
     description="Check kodi addons or whole kodi repositories for errors and best practices.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
