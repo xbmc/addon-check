@@ -64,7 +64,7 @@ git clone https://github.com/xbmc/addon-check
 * `cd <path-to-cloned-repo>`
 * Install the requirements:
 ```
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ## Usage
