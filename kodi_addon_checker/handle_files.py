@@ -38,8 +38,10 @@ def create_file_index(path: str):
     """
     file_index = []
     for dirs in os.walk(path):
-        for file_name in dirs[2]:
-            file_index.append({"path": dirs[0], "name": file_name})
+        if dirs[0][0] != '.':
+            for file_name in dirs[2]:
+                if file_name[0] != '.':
+                    file_index.append({"path": dirs[0], "name": file_name})
     return file_index
 
 

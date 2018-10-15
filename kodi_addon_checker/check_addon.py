@@ -39,6 +39,9 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
     if addon_xml is not None:
         if len(addon_xml.findall("*//broken")) == 0:
+            if os.path.basename(addon_path).startswith('.'):
+                report.add(Record(PROBLEM, "Addon's path lead to an hidden directory: %s (Should not start with a dot)" % (os.path.basename(addon_path))))
+
             file_index = handle_files.create_file_index(addon_path)
 
             schema_validation.schemas(addon_report, parsed_xml, branch_name)
