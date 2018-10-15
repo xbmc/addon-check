@@ -41,6 +41,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = handle_files.create_file_index(addon_path)
 
+            handle_files.addon_file_exists(addon_report, addon_path, "settings.xml")
+
             schema_validation.schemas(addon_report, parsed_xml, branch_name)
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
