@@ -47,6 +47,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
 
+            check_files.check_file_permission(addon_report, addon_path)
+
             check_files.check_for_invalid_xml_files(addon_report, file_index)
 
             check_files.check_for_invalid_json_files(addon_report, file_index)

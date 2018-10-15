@@ -2,6 +2,7 @@ import os
 import re
 import json
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from . import handle_files
 from .common import relative_path
 from .record import PROBLEM, Record, WARNING, INFORMATION
@@ -110,3 +111,16 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
                 report.add(Record(WARNING,
                                   "Found non whitelisted file ending in filename %s" %
                                   relative_path(os.path.join(file["path"], file["name"]))))
+
+
+def check_file_permission(report: Report, addon_path: str):
+    """Check whether the files present in addon are marked executable
+       or not
+        :addon_path: Path of the addon
+    """
+
+    files = Path(addon_path).glob('**/*')
+
+    for file in files:
+        if os.path.isfile(file) and os.access(str(file), os.X_OK):
+            report.add(Record(PROBLEM, "%s is marked as stand-alone executable" % relative_path(str(file))))
