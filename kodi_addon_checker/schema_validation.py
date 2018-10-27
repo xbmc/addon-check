@@ -54,7 +54,7 @@ def _validation_checks(report: Report, parsed_xml, branch_name):
         'xbmc.metadata.scraper.musicvideos': 'scraper.xsd',
         'xbmc.metadata.scraper.tvshows': 'scraper.xsd',
         'xbmc.metadata.scraper.library': 'scraper.xsd',
-        'xbmc.python.script': 'script.xsd',
+        'xbmc.python.script': 'pythonscript.xsd',
         'xbmc.python.lyrics': 'script.xsd',
         'xbmc.python.weather': 'script.xsd',
         'xbmc.python.library': 'script.xsd',
