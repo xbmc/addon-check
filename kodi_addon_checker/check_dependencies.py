@@ -79,8 +79,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
 def _get_ignore_list(branch_name):
 
     if branch_name == "leia":
-        common_ignore_deps.extend(["inputstream.adaptive", "inputstream.rtmp",
-                                   "script.module.pycryptodome"])
+        common_ignore_deps.extend(["script.module.pycryptodome"])
         return common_ignore_deps
 
     elif branch_name == "krypton":
