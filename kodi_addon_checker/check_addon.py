@@ -38,6 +38,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml)
 
     if addon_xml is not None:
+        check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
+
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = handle_files.create_file_index(addon_path)
 
@@ -46,8 +48,6 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
 
             check_files.check_for_invalid_xml_files(addon_report, file_index)
-
-            check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
 
             check_files.check_for_invalid_json_files(addon_report, file_index)
 
