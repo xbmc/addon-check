@@ -1,3 +1,11 @@
+"""
+    Copyright (C) 2017-2018 Team Kodi
+    This file is part of Kodi - kodi.tv
+
+    SPDX-License-Identifier: GPL-3.0-only
+    See LICENSES/README.md for more information.
+"""
+
 import os
 import kodi_addon_checker.check_addon as check_addon
 from .record import INFORMATION, PROBLEM, Record
