@@ -8,14 +8,14 @@
         <xs:element name="description" type="translatedString" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="disclaimer" type="translatedString" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="platform" type="platformList" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="language" type="nonEmptyString"  minOccurs="0" maxOccurs="1"/>
+        <xs:element name="language" type="xs:string"  minOccurs="0" maxOccurs="1"/>
         <xs:element name="license" type="nonEmptyString"  minOccurs="0" maxOccurs="1" />
-        <xs:element name="forum" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="forum" type="xs:string" minOccurs="0" maxOccurs="1"/>
         <xs:element name="website" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
         <xs:element name="source" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="email" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1"/>
         <xs:element name="broken" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="news" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="news" type="nonEmptyStringCapped" minOccurs="0" maxOccurs="1"/>
         <xs:element name="reuselanguageinvoker" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
         <xs:element name="assets" type="assetsList" minOccurs="0" maxOccurs="1"/>
       </xs:choice>
@@ -32,12 +32,16 @@
   <xs:simpleType name="nonEmptyString">
     <xs:restriction base="xs:string">
       <xs:pattern value="\s*([^\s]\s*)+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="nonEmptyStringCapped">
+    <xs:restriction base="nonEmptyString">
       <xs:maxLength value="1500"/>  
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="translatedString">
     <xs:simpleContent>
-      <xs:extension base="nonEmptyString">
+      <xs:extension base="nonEmptyStringCapped">
         <xs:attribute name="lang" type="langIdentifier" use="required"/>
       </xs:extension>
     </xs:simpleContent>
