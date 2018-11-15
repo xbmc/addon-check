@@ -45,9 +45,11 @@ def create_file_index(path: str):
         :path: path for the directory
     """
     file_index = []
-    for dirs in os.walk(path):
-        for file_name in dirs[2]:
-            file_index.append({"path": dirs[0], "name": file_name})
+    for root, folders, files in os.walk(path, topdown=True):
+        if ".git" in folders:
+            folders.remove(".git")
+        for file_name in files:
+            file_index.append({"path": root, "name": file_name})
     return file_index
 
 
