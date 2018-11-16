@@ -121,14 +121,13 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
                                   relative_path(os.path.join(file["path"], file["name"]))))
 
 
-def check_file_permission(report: Report, addon_path: str):
+def check_file_permission(report: Report, file_index: list):
     """Check whether the files present in addon are marked executable
        or not
-        :addon_path: Path of the addon
+        :file_index: list having names and path of all the files present in addon
     """
 
-    files = Path(addon_path).glob('**/*')
-
-    for file in files:
+    for file in file_index:
+        file = os.path.join(file["path"], file["name"])
         if os.path.isfile(file) and os.access(str(file), os.X_OK):
             report.add(Record(PROBLEM, "%s is marked as stand-alone executable" % relative_path(str(file))))
