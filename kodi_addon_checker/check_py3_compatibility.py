@@ -58,8 +58,22 @@ def Check_Py3_compatibility(report: Report, path: str):
         :path: path to the addon
     """
     fixer_names = []
-    list_of_fixes = ['import', 'dict', 'except', 'filter', 'has_key', 'itertools',
-                     'map', 'ne', 'next', 'print', 'renames', 'types', 'xrange', 'zip']
+    list_of_fixes = [
+                     'dict',
+                     'except',
+                     'filter',
+                     'has_key',
+                     'import',
+                     'itertools',
+                     'map',
+                     'ne',
+                     'next',
+                     'print',
+                     'renames',
+                     'types',
+                     'xrange',
+                     'zip'
+                    ]
 
     for fix in list_of_fixes:
         fixer_names.append('lib2to3.fixes.fix_' + fix)
