@@ -68,6 +68,7 @@ def Check_Py3_compatibility(report: Report, path: str):
                      'map',
                      'ne',
                      'next',
+                     'numliterals',
                      'print',
                      'renames',
                      'types',
