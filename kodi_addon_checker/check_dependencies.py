@@ -57,13 +57,13 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
             report.add(Record(INFORMATION if dependency.optional else WARNING,
                               "{} dependency {} does not require a minimum version, available: {}"
                               .format("Optional" if dependency.optional else "Required", dependency.id,
-                                      repo_addons[dependency.id])))
+                                      repo_addons.find(dependency.id).version)))
 
-        elif LooseVersion(repo_addons[dependency.id]) < dependency.version:
+        elif repo_addons.find(dependency.id).version < dependency.version:
             report.add(Record(INFORMATION if dependency.optional else PROBLEM,
                               "Version mismatch for {} dependency {}, required: {}, Available: {}"
                               .format("optional" if dependency.optional else "required", dependency.id,
-                                      dependency.version, repo_addons[dependency.id])))
+                                      dependency.version, repo_addons.find(dependency.id).version)))
 
         if dependency.id in VERSION_ATTRB:
             try:

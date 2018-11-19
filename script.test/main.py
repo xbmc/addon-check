@@ -12,7 +12,6 @@ import re
 from radon.raw import analyze
 from distutils.version import LooseVersion
 import xml.etree.ElementTree as ET
-import requests
 
 from PIL import Image
 
@@ -356,19 +355,6 @@ def number_of_lines(filepath):
         data = file.read()
 
     return (analyze(data).lloc)
-
-
-def _get_addons(xml_url):
-    """
-        addon.xml for the target Kodi version
-    """
-    content = requests.get(xml_url).content
-    tree = ET.fromstring(content)
-
-    return {
-        a.get("id"): a.get("version")
-        for a in tree.findall("addon")
-    }
 
 
 def _get_users_dependencies(addon_path):
