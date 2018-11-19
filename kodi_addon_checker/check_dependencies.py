@@ -6,6 +6,8 @@
     See LICENSES/README.md for more information.
 """
 
+from .addons.Addon import Addon
+
 import logging
 from distutils.version import LooseVersion
 
@@ -39,46 +41,38 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
         :branch_name: name of the kodi branch/version
     """
 
-    optional_deps, deps = _get_users_dependencies(parsed_xml)
+    addon = Addon(parsed_xml)
     ignore = _get_ignore_list(branch_name)
 
-    if optional_deps:
-        for dependency, version in optional_deps.items():
-            if dependency not in repo_addons:
-                report.add(Record(INFORMATION,
-                                  "Optional dependency %s with version %s is not present in Kodi repository" %
-                                  (dependency, version)))
-            else:
-                deps_version = repo_addons[dependency]
-                if deps_version is not None:
-                    if LooseVersion(version) > LooseVersion(deps_version) and (dependency not in ignore):
-                        report.add(INFORMATION,
-                                   "version mismatch for optional dependencies: %s. Available: %s, Required: %s" %
-                                   (dependency, deps_version, version))
+    for dependency in addon.dependencies:
+        if dependency.id in ignore and not dependency.optional:
+            pass
 
-    for required_addon, required_version in deps.items():
-        if required_addon not in repo_addons:
-            if required_addon not in ignore:
-                report.add(Record(
-                    PROBLEM, "Required addon %s not available in current repository." % required_addon))
-            elif required_addon in VERSION_ATTRB:
-                try:
-                    version = VERSION_ATTRB[required_addon][branch_name]
-                    if LooseVersion(version) != LooseVersion(required_version):
-                        report.add(Record(WARNING, "For %s it is advised to set %s version to %s" %
-                                          (branch_name, required_addon, version)))
-                except KeyError:
-                    LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
+        elif dependency.id not in repo_addons:
+            report.add(Record(INFORMATION if dependency.optional else PROBLEM,
+                              "{} dependency {} is not available in current repository"
+                              .format("Optional" if dependency.optional else "Required", dependency.id)))
 
-        else:
-            available_version = repo_addons[required_addon]
+        elif dependency.version is None:
+            report.add(Record(INFORMATION if dependency.optional else WARNING,
+                              "{} dependency {} does not require a minimum version, available: {}"
+                              .format("Optional" if dependency.optional else "Required", dependency.id,
+                                      repo_addons[dependency.id])))
 
-            if required_version is None:
-                report.add(Record(WARNING, "Required addon %s does not require a fixed version Available: %s "
-                                  % (required_addon, available_version)))
-            elif LooseVersion(available_version) < LooseVersion(required_version) and (required_addon not in ignore):
-                report.add(Record(PROBLEM, "Version mismatch for addon %s. Required: %s, Available: %s "
-                                  % (required_addon, required_version, available_version)))
+        elif LooseVersion(repo_addons[dependency.id]) < dependency.version:
+            report.add(Record(INFORMATION if dependency.optional else PROBLEM,
+                              "Version mismatch for {} dependency {}, required: {}, Available: {}"
+                              .format("optional" if dependency.optional else "required", dependency.id,
+                                      dependency.version, repo_addons[dependency.id])))
+
+        if dependency.id in VERSION_ATTRB:
+            try:
+                version = VERSION_ATTRB[dependency.id][branch_name]
+                if LooseVersion(version) != dependency.version:
+                    report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
+                                      .format(branch_name, dependency.id, version)))
+            except KeyError:
+                LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
 
 def _get_ignore_list(branch_name):
@@ -93,18 +87,3 @@ def _get_ignore_list(branch_name):
 
     else:
         return common_ignore_deps
-
-
-def _get_users_dependencies(parsed_xml):
-    """Gets all the dependencies from a given addon
-        :parsed_xml: parsed addon.xml
-    """
-    user_deps = {}
-    optional_deps = {}
-    for i in parsed_xml.findall("requires/import"):
-        if i.get("optional"):
-            optional_deps[i.get("addon")] = i.get("version")
-        else:
-            user_deps[i.get("addon")] = i.get("version")
-
-    return optional_deps, user_deps
