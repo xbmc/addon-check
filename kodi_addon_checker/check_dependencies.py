@@ -75,6 +75,41 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                 LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
 
+def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all_repo_addons: dict):
+    addonInRepo = None
+    rdepends = []
+    rdependsLowerBranch = []
+    branchFound = False
+
+    for branch, repo in sorted(all_repo_addons.items()):
+        if not branchFound and branch != branch_name:
+            for rdepend in repo.rdepends(addon):
+                if rdepend not in rdependsLowerBranch:
+                    rdependsLowerBranch.append(rdepend)
+            continue
+        branchFound = True
+
+        addonFind = repo.find(addon)
+        if addonFind and addonInRepo and addonFind != addonInRepo:
+            break
+
+        addonInRepo = addonFind
+
+        for rdepend in repo.rdepends(addon):
+            if rdepend not in rdependsLowerBranch and rdepend not in rdepends:
+                rdepends.append(rdepend)
+    if addon.startswith("script.module.") and len(rdepends) + len(rdependsLowerBranch) == 0:
+        report.add(Record(WARNING, "This module isn't required by any add-on."))
+
+    if len(rdepends) > 0:
+        report.add(Record(INFORMATION, "Reverse dependencies: {} ({})"
+                          .format(", ".join(sorted([r.id for r in rdepends])), len(rdepends))))
+
+    if len(rdependsLowerBranch) > 0:
+        report.add(Record(INFORMATION, "Reverse dependencies (in lower branches): {} ({})"
+                          .format(", ".join(sorted([r.id for r in rdependsLowerBranch])), len(rdependsLowerBranch))))
+
+
 def _get_ignore_list(branch_name):
 
     if branch_name == "leia":

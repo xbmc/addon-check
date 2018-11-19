@@ -38,3 +38,10 @@ class Repository(object):
             if addon.id == addonId:
                 return addon
         return None
+
+    def rdepends(self, addonId):
+        rdepends = []
+        for addon in self.addons:
+            if addon.dependsOn(addonId):
+                rdepends.append(addon)
+        return rdepends

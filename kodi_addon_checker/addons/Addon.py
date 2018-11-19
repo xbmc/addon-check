@@ -19,3 +19,12 @@ class Addon(object):
         self.dependencies = []
         for dependency in addon_xml.findall('./requires/import'):
             self.dependencies.append(AddonDependency(dependency))
+
+    def __eq__(self, other):
+        return self.id == other.id and self.version == other.version
+
+    def dependsOn(self, addonId):
+        for dependency in self.dependencies:
+            if dependency.id == addonId:
+                return True
+        return False
