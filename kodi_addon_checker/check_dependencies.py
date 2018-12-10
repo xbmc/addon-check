@@ -27,6 +27,26 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.addon',
                       'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
 
+extensions = {"kodi.gameclient": "kodi.binary.instance.game",
+              "xbmc.gui.skin": "xbmc.gui",
+              "kodi.vfs": "kodi.binary.instance.vfs",
+              "xbmc.metadata.scraper.albums": "xbmc.metadata",
+              "xbmc.metadata.scraper.artists": "xbmc.metadata",
+              "xbmc.metadata.scraper.library": "xbmc.metadata",
+              "xbmc.metadata.scraper.movies": "xbmc.metadata",
+              "xbmc.metadata.scraper.musicvideos": "xbmc.metadata",
+              "xbmc.metadata.scraper.tvshows": "xbmc.metadata",
+              "xbmc.pvrclient": "kodi.binary.instance.pvr",
+              "xbmc.python.library": "xbmc.python",
+              "xbmc.python.lyrics": "xbmc.python",
+              "xbmc.python.module": "xbmc.python",
+              "xbmc.python.pluginsource": "xbmc.python",
+              "xbmc.python.script": "xbmc.python",
+              "xbmc.python.weather": "xbmc.python",
+              "xbmc.ui.screensaver": "xbmc.python",
+              "xbmc.webinterface": "xbmc.webinterface",
+              }
+
 VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0',
                                  'jarvis': '2.24.0', 'krypton': '2.25.0', 'leia': '2.26.0'}}
 
@@ -73,6 +93,8 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                                       .format(branch_name, dependency.id, version)))
             except KeyError:
                 LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
+
+    _check_extensions(report, parsed_xml, addon)
 
 
 def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all_repo_addons: dict):
@@ -122,3 +144,19 @@ def _get_ignore_list(branch_name):
 
     else:
         return common_ignore_deps
+
+
+def _check_extensions(report: Report, parsed_xml, addon):
+    """Check if required dependency exist with comparision to
+       the existing extension points
+
+      :addon: class kodi_addon_checker.addons.Addon.Addon
+
+    """
+    deps = [dependency.id for dependency in addon.dependencies]
+
+    for extension in parsed_xml.findall("extension"):
+        point = extension.get("point")
+        if point in extensions and extensions[point] not in deps:
+            report.add(Record(PROBLEM, "{} dependency is required for {} extensions"
+                              .format(extensions[point], point)))
