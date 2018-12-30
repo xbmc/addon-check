@@ -17,7 +17,7 @@ from .record import PROBLEM, Record, WARNING, INFORMATION
 LOGGER = logging.getLogger(__name__)
 
 
-def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list):
+def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list, branch_name: str):
     """Checks for icon/fanart/screenshot
         :addon_path: path to the folder having addon files
         :parsed_xml: xml file i.e addon.xml
@@ -25,7 +25,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list)
     """
     art_type = ['icon', 'fanart', 'screenshot']
     for image_type in art_type:
-        _check_image_type(report, image_type, parsed_xml, addon_path)
+        _check_image_type(report, image_type, parsed_xml, addon_path, branch_name)
 
     for file in file_index:
         if re.match(r"(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
@@ -37,7 +37,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list)
                     Record(PROBLEM, "Could not open image, is the file corrupted ? %s" % relative_path(image_path)))
 
 
-def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: str):
+def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: str, branch_name: str):
     """Check for whether the given image type exists or not if they do """
 
     fallback, images = _assests(image_type, parsed_xml, addon_path)
@@ -48,6 +48,9 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
 
             if os.path.isfile(filepath):
                 report.add(Record(INFORMATION, "Image %s exists" % image_type))
+                if fallback and branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
+                    report.add(Record(
+                        PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % image_type))
                 try:
                     im = Image.open(filepath)
                     width, height = im.size
