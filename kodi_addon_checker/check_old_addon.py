@@ -25,11 +25,9 @@ def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: d
     addon_xml = os.path.join(addon_path, "addon.xml")
     addon_name, addon_version = _get_addon_name(addon_xml)
 
-    for branch in sorted(all_repo_addons):
-        repo_addons = all_repo_addons[branch]
-
-        if addon_name in repo_addons:
-            _check_versions(report, addon_name, branch, addon_version, repo_addons[addon_name], pr)
+    for branch, repo in sorted(all_repo_addons.items()):
+        if addon_name in repo:
+            _check_versions(report, addon_name, branch, addon_version, repo.find(addon_name).version, pr)
             return
 
     report.add(Record(INFORMATION, "This is a new addon"))

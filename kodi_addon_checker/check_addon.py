@@ -8,11 +8,9 @@
 
 import os
 import xml.etree.ElementTree as ET
-import requests
 import logging
-import gzip
-from io import BytesIO
 
+from .addons.Repository import Repository
 from .record import Record, INFORMATION
 from .report import Report
 from . import check_artwork
@@ -54,6 +52,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
             schema_validation.schemas(addon_report, parsed_xml, branch_name)
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
+
+            check_dependencies.check_reverse_dependencies(addon_report, addon_id, branch_name, all_repo_addons)
 
             check_files.check_file_permission(addon_report, file_index)
 
@@ -112,26 +112,6 @@ def all_repo_addons():
 
     for branch in branches:
         branch_url = ROOT_URL.format(branch=branch)
-        repo_addons[branch] = _get_addons(branch_url)
+        repo_addons[branch] = Repository(branch, branch_url)
 
     return repo_addons
-
-
-def _get_addons(xml_url: str):
-    """Gets addon.xml file for all the version of kodi
-        :xml_url: url of the version of kodi
-    """
-    try:
-        gz_file = requests.get(xml_url, timeout=(10, 10)).content
-        with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
-            content = xml_file.read()
-        tree = ET.fromstring(content)
-
-        return {
-            a.get("id"): a.get("version")
-            for a in tree.findall("addon")
-        }
-    except requests.exceptions.ReadTimeout as errrt:
-        LOGGER.error(errrt)
-    except requests.exceptions.ConnectTimeout as errct:
-        LOGGER.error(errct)
