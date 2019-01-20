@@ -45,6 +45,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Check for unused script.module addons
 
+- Check presence of extensions in addon dependencies.
+
 All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation
