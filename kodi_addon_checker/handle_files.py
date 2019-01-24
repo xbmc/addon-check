@@ -46,14 +46,10 @@ def create_file_index(path: str):
     """
     file_index = []
     for root, folders, files in os.walk(path, topdown=True):
-        if ".directory" in files:
-            files.remove(".directory")
         if ".git" in folders:
             folders.remove(".git")
         for file_name in files:
-            if not os.path.basename(root).startswith("."):
-                file_index.append({"path": root, "name": file_name})
-
+            file_index.append({"path": root, "name": file_name})
     return file_index
 
 
