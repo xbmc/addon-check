@@ -55,7 +55,6 @@ def check_py3_compatibility(report: Report, path: str):
      Checks compatibility of addons with python3
         :path: path to the addon
     """
-    fixer_names = []
     list_of_fixes = [
                      'dict',
                      'except',
@@ -74,8 +73,7 @@ def check_py3_compatibility(report: Report, path: str):
                      'zip'
                     ]
 
-    for fix in list_of_fixes:
-        fixer_names.append('lib2to3.fixes.fix_' + fix)
+    fixer_names = ['lib2to3.fixes.fix_' + fix for fix in list_of_fixes]
 
     rt = KodiRefactoringTool(report, fixer_names, options=None, explicit=None)
     rt.refactor([path])
