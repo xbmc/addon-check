@@ -11,6 +11,7 @@ import os
 from lib2to3 import refactor
 from tabulate import tabulate
 
+from .common import relative_path
 from .report import Report
 from .record import Record, INFORMATION
 
@@ -20,9 +21,6 @@ class KodiRefactoringTool(refactor.RefactoringTool):
     def __init__(self, report, *args, **kwargs):
         self.report = report
         super(KodiRefactoringTool, self).__init__(*args, **kwargs)
-
-    def short_path(self, path):
-        return os.path.split(path)[1]
 
     def print_output(self, old, new, filepath, equal):
         """
@@ -49,7 +47,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
                 self.table.append([line + 1, existing_line[line], required_changes[line]])
 
         self.output = tabulate(self.table, headers=self.headers, tablefmt='pipe')
-        self.report.add(Record(INFORMATION, self.short_path(filepath) + '\n' + self.output))
+        self.report.add(Record(INFORMATION, self.relative_path(filepath) + '\n' + self.output))
 
 
 def check_py3_compatibility(report: Report, path: str):
