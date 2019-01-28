@@ -52,7 +52,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
         self.report.add(Record(INFORMATION, self.short_path(filepath) + '\n' + self.output))
 
 
-def Check_Py3_compatibility(report: Report, path: str):
+def check_py3_compatibility(report: Report, path: str):
     """
      Checks compatibility of addons with python3
         :path: path to the addon
