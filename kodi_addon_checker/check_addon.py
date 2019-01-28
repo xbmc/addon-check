@@ -71,8 +71,7 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
             check_entrypoint.check_complex_addon_entrypoint(
                 addon_report, addon_path, parsed_xml, max_entrypoint_count)
 
-            if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
-                check_py3_compatibility.check_py3_compatibility(addon_report, addon_path)
+            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, branch_name)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing

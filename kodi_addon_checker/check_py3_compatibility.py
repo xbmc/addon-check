@@ -13,13 +13,14 @@ from tabulate import tabulate
 
 from .common import relative_path
 from .report import Report
-from .record import Record, INFORMATION
+from .record import Record, INFORMATION, PROBLEM
 
 
 class KodiRefactoringTool(refactor.RefactoringTool):
 
-    def __init__(self, report, *args, **kwargs):
+    def __init__(self, report, log_level, *args, **kwargs):
         self.report = report
+        self.log_level = log_level
         super(KodiRefactoringTool, self).__init__(*args, **kwargs)
 
     def print_output(self, old, new, filepath, equal):
@@ -47,33 +48,46 @@ class KodiRefactoringTool(refactor.RefactoringTool):
                 self.table.append([line + 1, existing_line[line], required_changes[line]])
 
         self.output = tabulate(self.table, headers=self.headers, tablefmt='pipe')
-        self.report.add(Record(INFORMATION, self.relative_path(filepath) + '\n' + self.output))
+        self.report.add(Record(self.log_level, relative_path(filepath) + '\n' + self.output))
 
 
-def check_py3_compatibility(report: Report, path: str):
+def check_py3_compatibility(report: Report, path: str, branch_name: str):
     """
      Checks compatibility of addons with python3
         :path: path to the addon
     """
     list_of_fixes = [
-                     'dict',
                      'except',
-                     'filter',
-                     'has_key',
-                     'import',
-                     'itertools',
-                     'map',
+                     'exec',
                      'ne',
-                     'next',
-                     'numliterals',
-                     'print',
-                     'renames',
-                     'types',
-                     'xrange',
-                     'zip'
+                     'raise',
+                     'repr',
+                     'tuple_params',
                     ]
 
     fixer_names = ['lib2to3.fixes.fix_' + fix for fix in list_of_fixes]
 
-    rt = KodiRefactoringTool(report, fixer_names, options=None, explicit=None)
+    rt = KodiRefactoringTool(report, PROBLEM, fixer_names, options=None, explicit=None)
     rt.refactor([path])
+
+    if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
+        list_of_fixes = [
+                        'dict',
+                        'filter',
+                        'has_key',
+                        'import',
+                        'itertools',
+                        'map',
+                        'next',
+                        'numliterals',
+                        'print',
+                        'renames',
+                        'types',
+                        'xrange',
+                        'zip',
+                        ]
+
+        fixer_names = ['lib2to3.fixes.fix_' + fix for fix in list_of_fixes]
+
+        rt = KodiRefactoringTool(report, INFORMATION, fixer_names, options=None, explicit=None)
+        rt.refactor([path])
