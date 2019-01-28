@@ -47,6 +47,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Check presence of extensions in addon dependencies.
 
+- Check for valid forum, source and website value in addon.xml
+
 All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation

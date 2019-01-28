@@ -21,6 +21,7 @@ from . import handle_files
 from . import check_files
 from . import check_string
 from . import check_py3_compatibility
+from . import check_url
 from . import common
 from . import schema_validation
 
@@ -50,6 +51,8 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
             file_index = handle_files.create_file_index(addon_path)
 
             schema_validation.schemas(addon_report, parsed_xml, branch_name)
+
+            check_url.check_url(addon_report, parsed_xml)
 
             check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
 
