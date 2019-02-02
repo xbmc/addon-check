@@ -7,6 +7,11 @@ from kodi_addon_checker.reporter import ReportManager
 from kodi_addon_checker.config import Config
 
 
+class Args(object):
+    PR = False
+    allow_folder_id_mismatch = False
+
+
 class TestCheckAddon(unittest.TestCase):
     """Integration tests for Start function present in check_addon.py"""
 
@@ -20,10 +25,10 @@ class TestCheckAddon(unittest.TestCase):
         ReportManager.enable(["array"])
         self.branch_name = "krypton"
         self.all_repo_addons = all_repo_addons()
-        self.pr = False
+        self.args = Args()
 
     def test_start(self):
-        result = start(self.path, self.branch_name, self.all_repo_addons, self.pr, self.config)
+        result = start(self.path, self.branch_name, self.all_repo_addons, self.args, self.config)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
 
         # Comparing the whitelist with the list of output we get from addon-checker tool

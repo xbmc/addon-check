@@ -89,7 +89,8 @@ pip install -r requirements.txt
 You can use the tool with the following options:
 ```
 
---version           version of the tool
---branch            name of the branch the tool is to run on
---PR                only when the tool is running on a pull request
+--version                   version of the tool
+--branch                    name of the branch the tool is to run on
+--PR                        only when the tool is running on a pull request
+--allow-folder-id-mismatch  allow the addon's folder name and id to mismatch
 ```

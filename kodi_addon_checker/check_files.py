@@ -50,10 +50,11 @@ def check_for_invalid_json_files(report: Report, file_index: list):
                                   relative_path(path)))
 
 
-def check_addon_xml(report: Report, addon_path: str, parsed_xml):
+def check_addon_xml(report: Report, addon_path: str, parsed_xml, folder_id_mismatch: bool):
     """Check whether the addon.xml present in the addon is parseable or not
         :addon_path: path to the addon
         :parsed_xml: parsed tree for xml file
+        :folder_id_mismatch: whether to allow folder and id mismatch
     """
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     try:
@@ -61,7 +62,7 @@ def check_addon_xml(report: Report, addon_path: str, parsed_xml):
 
         report.add(Record(INFORMATION, "Created by %s" %
                           parsed_xml.attrib.get("provider-name")))
-        addon_xml_matches_folder(report, addon_path, parsed_xml)
+        addon_xml_matches_folder(report, addon_path, parsed_xml, folder_id_mismatch)
     except ET.ParseError:
         report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" %
                           relative_path(addon_xml_path)))
@@ -69,16 +70,23 @@ def check_addon_xml(report: Report, addon_path: str, parsed_xml):
     return parsed_xml
 
 
-def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml):
+def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml, folder_id_mismatch: bool):
     """Check if the name of the addon matches the folder in which the addon
     files are present
         :addon_path: path to the addon folder
         :addon_xml: parsed tree for xml file
+        :folder_id_mismatch: whether to allow folder and id mismatch
     """
-    if os.path.basename(os.path.normpath(addon_path)) == parsed_xml.attrib.get("id"):
+    addon_id = parsed_xml.attrib.get("id")
+    if os.path.basename(os.path.normpath(addon_path)) == addon_id:
         report.add(Record(INFORMATION, "Addon id matches folder name"))
     else:
-        report.add(Record(PROBLEM, "Addon id and folder name does not match."))
+        if folder_id_mismatch:
+            report.add(Record(INFORMATION, "Addon id and folder name does not match. "
+                                           "Ensure folder name is {} when submitting a PR "
+                                           "to Kodi's official repository.".format(addon_id)))
+        else:
+            report.add(Record(PROBLEM, "Addon id and folder name does not match."))
 
 
 def check_for_legacy_language_path(report: Report, addon_path: str):
