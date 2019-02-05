@@ -29,7 +29,7 @@ ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
 
 
-def start(addon_path, branch_name, all_repo_addons, pr, config=None):
+def start(addon_path, branch_name, all_repo_addons, args, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s" % addon_id)
@@ -42,10 +42,10 @@ def start(addon_path, branch_name, all_repo_addons, pr, config=None):
     # Extract common path from addon paths
     # All paths will be printed relative to this path
     common.REL_PATH = os.path.split(addon_path[:-1])[0]
-    addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml)
+    addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml, args.allow_folder_id_mismatch)
 
     if addon_xml is not None:
-        check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, pr)
+        check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR)
 
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = handle_files.create_file_index(addon_path)
