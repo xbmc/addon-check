@@ -58,7 +58,7 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
 
             check_dependencies.check_reverse_dependencies(addon_report, addon_id, branch_name, all_repo_addons)
 
-            check_files.check_file_permission(addon_report, file_index)
+            check_files.check_file_permission(addon_report, file_index, args.exclude_file, args.exclude_file_ext)
 
             check_files.check_for_invalid_xml_files(addon_report, file_index)
 
@@ -96,7 +96,8 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
             # General blacklist
             check_string.find_blacklisted_strings(addon_report, addon_path, [], [], [])
 
-            check_files.check_file_whitelist(addon_report, file_index, addon_path)
+            check_files.check_file_whitelist(addon_report, file_index, addon_path,
+                                             args.exclude_file, args.exclude_file_ext)
         else:
             addon_report.add(
                 Record(INFORMATION, "Addon marked as broken - skipping"))

@@ -103,23 +103,37 @@ def check_for_legacy_language_path(report: Report, addon_path: str):
                 break
 
 
-def check_file_whitelist(report: Report, file_index: list, addon_path: str):
+def check_file_whitelist(report: Report, file_index: list, addon_path: str,
+                         whitelisted_files: list, whitelisted_exts: list):
     """check whether the files present in addon are in whitelist or not
         It ignores README.md and .gitignore file
         :file_index: list having names and path of all the files present in addon
         :addon_path: path to the addon folder
+        :whitelisted_files: list of files/folders to whitelist provided by argument --exclude-file
+        :whitelisted_exts: list of file extensions to whitelist provided by argument --exclude-file-ext
     """
     if ".module." in addon_path:
         report.add(Record(INFORMATION, "Module skipping whitelist"))
         return
 
+    whitelisted_exts = "|".join(set([re.escape(ext.lstrip(".")) for ext in whitelisted_exts]))
+    if whitelisted_exts:
+        whitelisted_exts = "|" + whitelisted_exts
+
     whitelist = (
         r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|"
         r"rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|"
-        r"help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt)?$"
+        r"help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt{})?$".format(whitelisted_exts)
     )
 
+    whitelisted_files = set(whitelisted_files)
+
     for file in file_index:
+        full_path = os.path.join(file["path"], file["name"])
+        if any(f == file["name"] or f == full_path or (os.path.isdir(f) and file["path"].startswith(f))
+               for f in whitelisted_files):
+            continue
+
         file_parts = file["name"].rsplit(".")
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts) - 1]
@@ -129,13 +143,31 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
                                   relative_path(os.path.join(file["path"], file["name"]))))
 
 
-def check_file_permission(report: Report, file_index: list):
+def check_file_permission(report: Report, file_index: list, whitelisted_files: list, whitelisted_exts: list):
     """Check whether the files present in addon are marked executable
        or not
         :file_index: list having names and path of all the files present in addon
+        :whitelisted_files: list of files/folders to whitelist provided by argument --exclude-file
+        :whitelisted_exts: list of file extensions to whitelist provided by argument --exclude-file-ext
     """
 
+    whitelisted_exts = "|".join(set([re.escape(ext.lstrip(".")) for ext in whitelisted_exts]))
+    whitelist = r"\.?({})?$".format(whitelisted_exts)
+
+    whitelisted_files = set(whitelisted_files)
+
     for file in file_index:
-        file = os.path.join(file["path"], file["name"])
-        if os.path.isfile(file) and os.access(str(file), os.X_OK):
-            report.add(Record(PROBLEM, "%s is marked as stand-alone executable" % relative_path(str(file))))
+        full_path = os.path.join(file["path"], file["name"])
+        if any(f == file["name"] or f == full_path or (os.path.isdir(f) and file["path"].startswith(f))
+               for f in whitelisted_files):
+            continue
+
+        if whitelisted_exts:
+            file_parts = file["name"].rsplit(".")
+            if len(file_parts) > 1:
+                file_ending = "." + file_parts[len(file_parts) - 1]
+                if re.match(whitelist, file_ending, re.IGNORECASE):
+                    continue
+
+        if os.path.isfile(full_path) and os.access(str(full_path), os.X_OK):
+            report.add(Record(PROBLEM, "%s is marked as stand-alone executable" % relative_path(str(full_path))))

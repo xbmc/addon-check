@@ -10,6 +10,8 @@ from kodi_addon_checker.config import Config
 class Args(object):
     PR = False
     allow_folder_id_mismatch = False
+    exclude_file = []
+    exclude_file_ext = []
 
 
 class TestCheckAddon(unittest.TestCase):
