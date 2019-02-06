@@ -95,4 +95,6 @@ You can use the tool with the following options:
 --allow-folder-id-mismatch  allow the addon's folder name and id to mismatch
 --exclude-file              files/folders to exclude from permissions and file extension checks
 --exclude-file-ext          file extensions to exclude from permissions and file extension checks
+--whitelist-file            files/folders to exclude from file extension checks
+--whitelist-file-ext        file extensions to exclude from file extension checks
 ```

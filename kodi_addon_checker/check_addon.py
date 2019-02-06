@@ -96,8 +96,9 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
             # General blacklist
             check_string.find_blacklisted_strings(addon_report, addon_path, [], [], [])
 
-            check_files.check_file_whitelist(addon_report, file_index, addon_path,
-                                             args.exclude_file, args.exclude_file_ext)
+            whitelist_files = args.exclude_file + args.whitelist_file
+            whitelist_exts = args.exclude_file_ext + args.whitelist_file_ext
+            check_files.check_file_whitelist(addon_report, file_index, addon_path, whitelist_files, whitelist_exts)
         else:
             addon_report.add(
                 Record(INFORMATION, "Addon marked as broken - skipping"))

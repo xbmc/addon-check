@@ -80,6 +80,10 @@ def main():
                         help="Files/folders to exclude from permissions and file extension checks")
     parser.add_argument("--exclude-file-ext", nargs="*", default=[],
                         help="File extensions to exclude from permissions and file extension checks")
+    parser.add_argument("--whitelist-file", nargs="*", default=[],
+                        help="Files/folders to exclude from file extension checks")
+    parser.add_argument("--whitelist-file-ext", nargs="*", default=[],
+                        help="File extensions to exclude from file extension checks")
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 

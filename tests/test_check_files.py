@@ -4,6 +4,7 @@ from os import makedirs
 from os.path import abspath, dirname, join
 
 from kodi_addon_checker.check_files import check_file_permission
+from kodi_addon_checker.check_files import check_file_whitelist
 from kodi_addon_checker.handle_files import create_file_index
 
 from kodi_addon_checker.common import load_plugins
@@ -58,3 +59,32 @@ class TestCheckFilePermission(unittest.TestCase):
         flag = any(s == self.string for s in records)
         self.assertFalse(flag)
 
+    def test_check_file_whitelist_is_true(self):
+        self.path = join(HERE, 'test_data', 'File whitelist')
+        self.string = "WARN: Found non whitelisted file ending in filename {path}"\
+            .format(path=relative_path(join(self.path, "file_whitelist.ext")))
+        file_index = create_file_index(self.path)
+        check_file_whitelist(self.report, file_index, self.path, [], [])
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        flag = any(s == self.string for s in records)
+        self.assertTrue(flag)
+
+    def test_check_file_whitelist_is_excluded_by_name(self):
+        self.path = join(HERE, 'test_data', 'File whitelist')
+        self.string = "WARN: Found non whitelisted file ending in filename {path}"\
+            .format(path=relative_path(join(self.path, "file_whitelist.ext")))
+        file_index = create_file_index(self.path)
+        check_file_whitelist(self.report, file_index, self.path, ["file_whitelist.ext"], [])
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        flag = any(s == self.string for s in records)
+        self.assertFalse(flag)
+
+    def test_check_file_whitelist_is_excluded_by_ext(self):
+        self.path = join(HERE, 'test_data', 'File whitelist')
+        self.string = "WARN: Found non whitelisted file ending in filename {path}"\
+            .format(path=relative_path(join(self.path, "file_whitelist.ext")))
+        file_index = create_file_index(self.path)
+        check_file_whitelist(self.report, file_index, self.path, [], ["ext"])
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        flag = any(s == self.string for s in records)
+        self.assertFalse(flag)

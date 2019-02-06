@@ -12,6 +12,8 @@ class Args(object):
     allow_folder_id_mismatch = False
     exclude_file = []
     exclude_file_ext = []
+    whitelist_file = []
+    whitelist_file_ext = []
 
 
 class TestCheckAddon(unittest.TestCase):

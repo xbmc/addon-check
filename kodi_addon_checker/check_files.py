@@ -109,8 +109,8 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str,
         It ignores README.md and .gitignore file
         :file_index: list having names and path of all the files present in addon
         :addon_path: path to the addon folder
-        :whitelisted_files: list of files/folders to whitelist provided by argument --exclude-file
-        :whitelisted_exts: list of file extensions to whitelist provided by argument --exclude-file-ext
+        :whitelisted_files: list of files/folders to whitelist provided by --exclude-file + --whitelist-file
+        :whitelisted_exts: list of file extensions to whitelist provided by --exclude-file-ext + --whitelist-file-ext
     """
     if ".module." in addon_path:
         report.add(Record(INFORMATION, "Module skipping whitelist"))
