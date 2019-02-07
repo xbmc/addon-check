@@ -76,6 +76,7 @@ def main():
     parser.add_argument("--PR", help="Tell if tool is to run on a pull requests or not", action='store_true')
     parser.add_argument("--allow-folder-id-mismatch", help="Allow the addon's folder name and id to mismatch",
                         action="store_true")
+    parser.add_argument("--apply-gitignore", help="Apply .gitignore to the checked file index", action="store_true")
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 

@@ -10,6 +10,7 @@ from kodi_addon_checker.config import Config
 class Args(object):
     PR = False
     allow_folder_id_mismatch = False
+    apply_gitignore = False
 
 
 class TestCheckAddon(unittest.TestCase):

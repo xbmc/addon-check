@@ -57,7 +57,17 @@ class TestFindFilesRecursive(unittest.TestCase):
 class TestCreateFileIndex(unittest.TestCase):
 
     def test_create_file_index(self):
-        self.path = join(HERE, 'test_data', 'File_index/')
-        self.list = [{'path': self.path, 'name': 'file_index.py'}]
-        self.output = create_file_index(self.path)
+        self.path = join(HERE, 'test_data', 'File_index')
+        self.list = [{'path': self.path, 'name': 'file_index.py'},
+                     {'path': self.path, 'name': 'not_ignored.ext'},
+                     {'path': join(self.path, 'gitignore'), 'name': 'gitignore.ext'}]
+        self.output = create_file_index(self.path, "")
+        self.assertListEqual(self.output, self.list)
+
+    def test_create_file_index_gitignore(self):
+        self.path = join(HERE, 'test_data', 'File_index')
+        self.list = [{'path': self.path, 'name': 'not_ignored.ext'}]
+        with open(join(self.path, 'gitignore', 'gitignore.ext'), 'r') as f:
+            gitignore = f.read()
+        self.output = create_file_index(self.path, gitignore)
         self.assertListEqual(self.output, self.list)

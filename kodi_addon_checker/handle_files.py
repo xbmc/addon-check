@@ -7,6 +7,7 @@
 """
 
 import pathlib
+import pathspec
 import re
 import os
 from .report import Report
@@ -38,11 +39,12 @@ def find_files_recursive(name: str, path: str):
                 yield os.path.join(root, file)
 
 
-def create_file_index(path: str):
+def create_file_index(path: str, gitignore: str):
     """Creates a list having multiple dictionaries in following format:
         [{'name':<file_name>, 'path': '<path_to_file>'}]
 
         :path: path for the directory
+        :gitignore: contents of .gitignore to apply to the file index
     """
     file_index = []
     for root, folders, files in os.walk(path, topdown=True):
@@ -50,6 +52,16 @@ def create_file_index(path: str):
             folders.remove(".git")
         for file_name in files:
             file_index.append({"path": root, "name": file_name})
+
+    if gitignore:
+        gi_index = []
+        spec = pathspec.PathSpec.from_lines("gitwildmatch", gitignore.splitlines())
+        for f in file_index:
+            if not spec.match_file(os.path.join(f["path"], f["name"])):
+                gi_index.append(f)
+        if gi_index:
+            return gi_index
+
     return file_index
 
 

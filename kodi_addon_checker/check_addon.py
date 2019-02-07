@@ -48,7 +48,8 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
         check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR)
 
         if len(addon_xml.findall("*//broken")) == 0:
-            file_index = handle_files.create_file_index(addon_path)
+            gitignore = common.gitignore(addon_path, args.apply_gitignore)
+            file_index = handle_files.create_file_index(addon_path, gitignore)
 
             schema_validation.schemas(addon_report, parsed_xml, branch_name)
 

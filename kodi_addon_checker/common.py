@@ -40,3 +40,19 @@ def load_plugins():
 def relative_path(file_path):
     path_to_print = file_path[len(REL_PATH):]
     return ".{}".format(path_to_print)
+
+
+def gitignore(addon_path, read):
+    if not read:
+        return ""
+
+    gitignore_file = os.path.join(addon_path, ".gitignore")
+    gitignore_exists = os.path.isfile(gitignore_file)
+
+    if not gitignore_exists:
+        return ""
+
+    with open(gitignore_file, "r") as f:
+        data = f.read()
+
+    return data

@@ -1,3 +1,4 @@
+pathspec
 pillow
 requests
 radon
