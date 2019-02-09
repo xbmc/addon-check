@@ -25,7 +25,8 @@ class TestCheckFilePermission(unittest.TestCase):
 
     def test_check_file_permission_is_true(self):
         self.path = join(HERE, 'test_data', 'Executable file')
-        self.string = "ERROR: .{path}/file_permission.py is marked as stand-alone executable".format(path=self.path)
+        self.string = "ERROR: {path} is marked as stand-alone executable"\
+            .format(path=relative_path(join(self.path, "file_permission.py")))
         file_index = create_file_index(self.path)
         check_file_permission(self.report, file_index)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
