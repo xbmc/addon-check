@@ -9,7 +9,7 @@
 import os
 
 from lib2to3 import refactor
-from tabulate import tabulate
+import difflib
 
 from .common import relative_path
 from .report import Report
@@ -34,21 +34,16 @@ class KodiRefactoringTool(refactor.RefactoringTool):
             :equal: Tells whether or not old is equal to new
         """
 
-        self.headers = ['#', 'Existing Code', 'Changes required']
-        self.table = []
-
         if equal:
             return
 
-        required_changes = new.splitlines()
-        existing_line = old.splitlines()
+        diff = ""
+        for line in difflib.unified_diff(old.splitlines(), new.splitlines(),
+                                         relative_path(filepath), relative_path(filepath),
+                                         "(original)", "(refactored)", n=3, lineterm=""):
+            diff += line + "\n"
 
-        for line in range(min(len(required_changes), len(existing_line))):
-            if existing_line[line] != required_changes[line]:
-                self.table.append([line + 1, existing_line[line], required_changes[line]])
-
-        self.output = tabulate(self.table, headers=self.headers, tablefmt='pipe')
-        self.report.add(Record(self.log_level, relative_path(filepath) + '\n' + self.output))
+        self.report.add(Record(self.log_level, relative_path(filepath) + '\n' + diff[:-1]))
 
 
 def check_py3_compatibility(report: Report, path: str, branch_name: str):
