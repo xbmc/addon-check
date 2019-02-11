@@ -38,7 +38,7 @@ def dir_type(dir_path):
     return os.path.abspath(dir_path)
 
 
-def check_artifact(artifact_path, args, branch_name, all_repo_addons):
+def check_artifact(artifact_path, args, all_repo_addons):
     """
     Check given artifact and return its report. The artifact can be either an add-on or a repository.
     :param artifact_path: the path of add-on or repo
@@ -52,9 +52,9 @@ def check_artifact(artifact_path, args, branch_name, all_repo_addons):
     config = Config(artifact_path, args)
     ConfigManager.process_config(config)
     if os.path.isfile(os.path.join(artifact_path, "addon.xml")):
-        return check_addon.start(artifact_path, branch_name, all_repo_addons, args, config)
+        return check_addon.start(artifact_path, args, all_repo_addons, config)
     else:
-        return check_repo(artifact_path, branch_name, all_repo_addons, args, config)
+        return check_repo(artifact_path, args, all_repo_addons, config)
 
 
 def main():
@@ -88,9 +88,9 @@ def main():
         # Following report is a wrapper for all sub reports
         report = Report("")
         for directory in args.dir:
-            report.add(check_artifact(directory, args, args.branch, all_repo_addons))
+            report.add(check_artifact(directory, args, all_repo_addons))
     else:
-        report = check_artifact(os.getcwd(), args, args.branch, all_repo_addons)
+        report = check_artifact(os.getcwd(), args, all_repo_addons)
 
     if report.problem_count > 0:
         report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
