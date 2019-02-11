@@ -29,13 +29,13 @@ ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
 
 
-def start(addon_path, branch_name, all_repo_addons, args, config=None):
+def start(addon_path, args, all_repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s" % addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
-    repo_addons = all_repo_addons[branch_name]
+    repo_addons = all_repo_addons[args.branch]
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     parsed_xml = ET.parse(addon_xml_path).getroot()
 
@@ -50,13 +50,13 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
         if len(addon_xml.findall("*//broken")) == 0:
             file_index = handle_files.create_file_index(addon_path)
 
-            schema_validation.schemas(addon_report, parsed_xml, branch_name)
+            schema_validation.schemas(addon_report, parsed_xml, args.branch)
 
             check_url.check_url(addon_report, parsed_xml)
 
-            check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, branch_name)
+            check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, args.branch)
 
-            check_dependencies.check_reverse_dependencies(addon_report, addon_id, branch_name, all_repo_addons)
+            check_dependencies.check_reverse_dependencies(addon_report, addon_id, args.branch, all_repo_addons)
 
             check_files.check_file_permission(addon_report, file_index)
 
@@ -71,7 +71,7 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
             check_entrypoint.check_complex_addon_entrypoint(
                 addon_report, addon_path, parsed_xml, max_entrypoint_count)
 
-            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, branch_name)
+            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, args.branch)
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
@@ -80,7 +80,7 @@ def start(addon_path, branch_name, all_repo_addons, args, config=None):
 
             check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
-            if branch_name not in ['gotham', 'helix']:
+            if args.branch not in ['gotham', 'helix']:
                 check_files.check_for_legacy_language_path(addon_report, addon_path)
 
             # Kodi 18 Leia + deprecations
