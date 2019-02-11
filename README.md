@@ -49,6 +49,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Check for valid forum, source and website value in addon.xml
 
+- Check if all PO files are valid
+
 All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation

@@ -1,4 +1,4 @@
-# Kodi Media Center language file
+﻿# Kodi Media Center language file
 # Addon Name: kodi test addon
 # Addon id: script.test
 # Addon Provider: mzfr
@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: en_gb\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # This is a comment

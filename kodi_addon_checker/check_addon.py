@@ -83,6 +83,8 @@ def start(addon_path, args, all_repo_addons, config=None):
             if args.branch not in ['gotham', 'helix']:
                 check_files.check_for_legacy_language_path(addon_report, addon_path)
 
+            check_string.check_for_invalid_strings_po(addon_report, file_index)
+
             # Kodi 18 Leia + deprecations
             if config.is_enabled("check_kodi_leia_deprecations"):
                 check_string.find_blacklisted_strings(addon_report, addon_path,
