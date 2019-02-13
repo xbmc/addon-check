@@ -64,7 +64,7 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_files.check_for_invalid_json_files(addon_report, file_index)
 
-            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index)
+            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index, args.branch)
 
             max_entrypoint_count = config.configs.get(
                 "max_entrypoint_count", 15)
