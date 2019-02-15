@@ -93,4 +93,5 @@ You can use the tool with the following options:
 --branch                    name of the branch the tool is to run on
 --PR                        only when the tool is running on a pull request
 --allow-folder-id-mismatch  allow the addon's folder name and id to mismatch
+--reporter                  enable a reporter, this option can be used multiple times
 ```
