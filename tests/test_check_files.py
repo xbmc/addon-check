@@ -24,7 +24,7 @@ class TestCheckFilePermission(unittest.TestCase):
         self.report = Report("")
 
     def test_check_file_permission_is_true(self):
-        self.path = join(HERE, 'test_data', 'Executable file')
+        self.path = join(HERE, 'test_data', 'Executable_file')
         self.string = "ERROR: {path} is marked as stand-alone executable"\
             .format(path=relative_path(join(self.path, "file_permission.py")))
         file_index = create_file_index(self.path)
@@ -34,6 +34,6 @@ class TestCheckFilePermission(unittest.TestCase):
         self.assertTrue(flag)
 
     def test_check_file_permission_is_None(self):
-        self.path = join(HERE, 'test_data', 'Non-Executable file')
+        self.path = join(HERE, 'test_data', 'Non-Executable_file')
         file_index = create_file_index(self.path)
         self.assertIsNone(check_file_permission(self.report, file_index))
