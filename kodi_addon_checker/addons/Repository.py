@@ -6,12 +6,13 @@
     See LICENSES/README.md for more information.
 """
 
-from .Addon import Addon
-
 import gzip
-import requests
 import xml.etree.ElementTree as ET
 from io import BytesIO
+
+import requests
+
+from .Addon import Addon
 
 
 class Repository(object):

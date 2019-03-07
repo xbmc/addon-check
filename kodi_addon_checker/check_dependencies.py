@@ -6,13 +6,12 @@
     See LICENSES/README.md for more information.
 """
 
-from .addons.Addon import Addon
-
 import logging
 from distutils.version import LooseVersion
 
+from .addons.Addon import Addon
+from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
-from .record import PROBLEM, Record, WARNING, INFORMATION
 
 common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
                       'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows',

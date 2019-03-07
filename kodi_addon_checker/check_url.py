@@ -6,11 +6,11 @@
     See LICENSES/README.md for more information.
 """
 
-from .record import Record, WARNING
-from .report import Report
-
-import urllib3
 import requests
+import urllib3
+
+from .record import WARNING, Record
+from .report import Report
 
 
 def check_url(report: Report, parsed_xml):

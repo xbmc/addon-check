@@ -6,12 +6,13 @@
     See LICENSES/README.md for more information.
 """
 
-import os
 import logging
+import os
 import xml.etree.ElementTree as ET
 from distutils.version import LooseVersion
+
+from .record import INFORMATION, PROBLEM, Record
 from .report import Report
-from .record import PROBLEM, Record, INFORMATION
 
 LOGGER = logging.getLogger(__name__)
 

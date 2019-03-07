@@ -6,13 +6,15 @@
     See LICENSES/README.md for more information.
 """
 
+import logging
 import os
 import re
-import logging
+
 from PIL import Image
-from .report import Report
+
 from .common import has_transparency, relative_path
-from .record import PROBLEM, Record, WARNING, INFORMATION
+from .record import INFORMATION, PROBLEM, WARNING, Record
+from .report import Report
 
 LOGGER = logging.getLogger(__name__)
 

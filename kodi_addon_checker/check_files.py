@@ -6,14 +6,15 @@
     See LICENSES/README.md for more information.
 """
 
+import json
 import os
 import re
-import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
 from . import handle_files
 from .common import relative_path
-from .record import PROBLEM, Record, WARNING, INFORMATION
+from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
 
 

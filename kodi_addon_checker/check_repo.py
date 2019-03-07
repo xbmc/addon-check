@@ -7,7 +7,9 @@
 """
 
 import os
+
 import kodi_addon_checker.check_addon as check_addon
+
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 

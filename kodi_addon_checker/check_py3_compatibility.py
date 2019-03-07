@@ -6,15 +6,13 @@
     See LICENSES/README.md for more information.
 """
 
-import os
-
-from lib2to3 import pgen2
-from lib2to3 import refactor
 import difflib
+import os
+from lib2to3 import pgen2, refactor
 
 from .common import relative_path
+from .record import INFORMATION, PROBLEM, Record
 from .report import Report
-from .record import Record, INFORMATION, PROBLEM
 
 
 class KodiRefactoringTool(refactor.RefactoringTool):
