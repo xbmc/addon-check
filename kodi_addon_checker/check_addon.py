@@ -30,6 +30,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 def start(addon_path, args, all_repo_addons, config=None):
+    """Starting point of all the checks that
+       are to be performed on an addon
+
+       :addon_path: Path to the addon that is to be checked
+       :args: argparse object
+       :all_repo_addons: a nested list having information
+                         about all the repo addons
+    """
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s" % addon_id)

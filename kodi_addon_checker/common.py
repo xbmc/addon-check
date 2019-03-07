@@ -15,6 +15,10 @@ REL_PATH = ""
 
 
 def has_transparency(im):
+    """Check the transparency(aplha layer) in the given image
+
+        :im: PIL.Image object
+    """
     try:
         if im.mode == "RGBA":
             alpha = im.split()[-1]
@@ -30,6 +34,8 @@ def has_transparency(im):
 
 
 def load_plugins():
+    """Load the reporter plugins
+    """
     plugins_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plugins")
     sys.path.append(plugins_dir)
     for _, package_name, _ in pkgutil.iter_modules([plugins_dir]):
@@ -38,5 +44,7 @@ def load_plugins():
 
 
 def relative_path(file_path):
+    """Return the relative_path of the file
+    """
     path_to_print = file_path[len(REL_PATH):]
     return ".{}".format(path_to_print)

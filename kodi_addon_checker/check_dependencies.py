@@ -98,6 +98,14 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
 
 
 def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all_repo_addons: dict):
+    """Check for orphaned addon i.e the addons that are not requirement of any other addon.
+
+      :addon: addon that is to be checked
+      :branch_name: name of the branch on which the
+                    checks are being performed
+      :all_repo_addons: a nested list having information
+                        about all the repo addonst
+    """
     addonInRepo = None
     rdepends = []
     rdependsLowerBranch = []
@@ -133,6 +141,9 @@ def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all
 
 
 def _get_ignore_list(branch_name):
+    """Generate an dependency ignore list based
+       on the branch name
+    """
 
     if branch_name == "leia":
         common_ignore_deps.extend(["script.module.pycryptodome"])
@@ -151,7 +162,6 @@ def _check_extensions(report: Report, parsed_xml, addon):
        the existing extension points
 
       :addon: class kodi_addon_checker.addons.Addon.Addon
-
     """
     deps = [dependency.id for dependency in addon.dependencies]
 

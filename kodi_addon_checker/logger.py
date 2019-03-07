@@ -14,7 +14,8 @@ class Logger:
 
     @staticmethod
     def create_logger(debug_filename, logger_name):
-
+        """Creates a logger format for error logging
+        """
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
