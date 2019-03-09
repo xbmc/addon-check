@@ -7,9 +7,11 @@
 """
 
 import os
+
 from radon.raw import analyze
+
+from .record import PROBLEM, WARNING, Record
 from .report import Report
-from .record import PROBLEM, Record, WARNING
 
 
 def check_complex_addon_entrypoint(report: Report, addon_path: str, parsed_xml, max_entrypoint_count: int):

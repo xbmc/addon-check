@@ -6,13 +6,15 @@
     See LICENSES/README.md for more information.
 """
 
+import logging
 import os
 import re
-import logging
+
 from PIL import Image
-from .report import Report
+
 from .common import has_transparency, relative_path
-from .record import PROBLEM, Record, WARNING, INFORMATION
+from .record import INFORMATION, PROBLEM, WARNING, Record
+from .report import Report
 
 LOGGER = logging.getLogger(__name__)
 
@@ -106,6 +108,12 @@ def _assests(image_type: str, parsed_xml, addon_path: str):
 
 
 def _check_icon(report: Report, im, width, height):
+    """Check the icon of the addon for transparency and dimensions
+
+        :im: PIL.Image object
+        :width: width of the icon
+        :height: height of the icon
+    """
     if has_transparency(im):
         report.add(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
 
@@ -120,6 +128,11 @@ def _check_icon(report: Report, im, width, height):
 
 
 def _check_fanart(report: Report, width, height):
+    """Check the dimensions of the fanart
+
+        :width: width of the icon
+        :height: height of the icon
+    """
     fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
     fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
 

@@ -6,12 +6,13 @@
     See LICENSES/README.md for more information.
 """
 
+import os
 import pathlib
 import re
-import os
-from .report import Report
+
 from .common import relative_path
 from .record import PROBLEM, Record
+from .report import Report
 
 
 def find_file(name: str, path: str):

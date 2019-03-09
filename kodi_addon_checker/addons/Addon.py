@@ -6,9 +6,9 @@
     See LICENSES/README.md for more information.
 """
 
-from .AddonDependency import AddonDependency
-
 import xml.etree.ElementTree as ET
+
+from .AddonDependency import AddonDependency
 
 
 class Addon(object):

@@ -6,30 +6,31 @@
     See LICENSES/README.md for more information.
 """
 
+import logging
 import os
 import xml.etree.ElementTree as ET
-import logging
 
+from . import (check_artwork, check_dependencies, check_entrypoint,
+               check_files, check_old_addon, check_py3_compatibility,
+               check_string, check_url, common, handle_files,
+               schema_validation)
 from .addons.Repository import Repository
-from .record import Record, INFORMATION
+from .record import INFORMATION, Record
 from .report import Report
-from . import check_artwork
-from . import check_old_addon
-from . import check_dependencies
-from . import check_entrypoint
-from . import handle_files
-from . import check_files
-from . import check_string
-from . import check_py3_compatibility
-from . import check_url
-from . import common
-from . import schema_validation
 
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
 LOGGER = logging.getLogger(__name__)
 
 
 def start(addon_path, args, all_repo_addons, config=None):
+    """Starting point of all the checks that
+       are to be performed on an addon
+
+       :addon_path: Path to the addon that is to be checked
+       :args: argparse object
+       :all_repo_addons: a nested list having information
+                         about all the repo addons
+    """
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s" % addon_id)

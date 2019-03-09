@@ -6,12 +6,13 @@
     See LICENSES/README.md for more information.
 """
 
-import os
 import logging
+import os
 import xml.etree.ElementTree as ET
 from distutils.version import LooseVersion
+
+from .record import INFORMATION, PROBLEM, Record
 from .report import Report
-from .record import PROBLEM, Record, INFORMATION
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +44,14 @@ def _get_addon_name(xml_path: str):
 
 
 def _check_versions(report: Report, addon_name, branch, addon_version, repo_addons_version, pr):
+    """Check for version bump in the existing addon
+
+        :addon_name:         addon that is to be checked
+        :addon_version:      the version of addon that is submitted
+        :repo_addon_version: version of addon present in Kodi repository
+        :pr:                 boolean value indicating whether the check is
+                             running on pull request or not
+    """
     if pr:
         if LooseVersion(addon_version) > LooseVersion(repo_addons_version):
             LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s"

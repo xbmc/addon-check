@@ -6,7 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
-from .record import Record, PROBLEM, WARNING
+from .record import PROBLEM, WARNING, Record
 from .reporter import ReportManager
 
 

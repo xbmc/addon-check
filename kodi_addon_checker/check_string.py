@@ -7,12 +7,14 @@
 """
 
 import os
-import polib
 import re
-from .report import Report
-from .common import relative_path
+
+import polib
+
 from . import handle_files
-from .record import INFORMATION, PROBLEM, Record, WARNING
+from .common import relative_path
+from .record import INFORMATION, PROBLEM, WARNING, Record
+from .report import Report
 
 
 def check_for_legacy_strings_xml(report: Report, addon_path: str):

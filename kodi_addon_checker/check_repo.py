@@ -7,12 +7,22 @@
 """
 
 import os
+
 import kodi_addon_checker.check_addon as check_addon
+
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
 
 def check_repo(repo_path, args, all_repo_addons, config):
+    """Perform all the check on a complete repository
+
+        :repo_path: Path of the repo that is to be tested
+        :args: argparse object
+        :all_repo_addons: a nested list having information
+                          about all the repo addons
+        :config: Config object
+    """
     repo_report = Report(repo_path)
     repo_report.add(Record(INFORMATION, "Checking repository %s" % repo_path))
     toplevel_folders = sorted(next(os.walk(repo_path))[1])

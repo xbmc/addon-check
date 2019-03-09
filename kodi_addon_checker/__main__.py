@@ -7,15 +7,15 @@
 """
 
 import argparse
+import logging
 import os
 import sys
-import logging
-from kodi_addon_checker import logger
-from kodi_addon_checker import check_addon
+
+from kodi_addon_checker import check_addon, logger
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
-from kodi_addon_checker.config import ConfigManager, Config
-from kodi_addon_checker.record import Record, PROBLEM, WARNING, INFORMATION
+from kodi_addon_checker.config import Config, ConfigManager
+from kodi_addon_checker.record import INFORMATION, PROBLEM, WARNING, Record
 from kodi_addon_checker.report import Report
 from kodi_addon_checker.reporter import ReportManager
 

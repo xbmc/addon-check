@@ -6,7 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
-from kodi_addon_checker.record import INFORMATION, WARNING, PROBLEM
+from kodi_addon_checker.record import INFORMATION, PROBLEM, WARNING
 from kodi_addon_checker.report import Record
 from kodi_addon_checker.reporter import Reporter, reporter
 
@@ -23,7 +23,8 @@ def colorPrint(string, color):
 
 @reporter(name="console", enabled=True)
 class ConsoleReporter(Reporter):
-
+    """Present Report on the console
+    """
     def report(self, report):
         if type(report) is Record:
             if report.log_level == INFORMATION:

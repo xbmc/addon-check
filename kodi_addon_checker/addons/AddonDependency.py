@@ -6,8 +6,8 @@
     See LICENSES/README.md for more information.
 """
 
-from distutils.version import LooseVersion
 import xml.etree.ElementTree as ET
+from distutils.version import LooseVersion
 
 
 class AddonDependency(object):

@@ -6,13 +6,14 @@
     See LICENSES/README.md for more information.
 """
 
-from os.path import abspath, dirname, join, exists, split
 import copy
 import logging
+from os.path import abspath, dirname, exists, join, split
+
 import xmlschema
 
+from .record import INFORMATION, PROBLEM, Record
 from .report import Report
-from .record import PROBLEM, Record, INFORMATION
 
 XML_SCHEMA = join(dirname(__file__), 'xml_schema')
 LOGGER = logging.getLogger(__name__)
