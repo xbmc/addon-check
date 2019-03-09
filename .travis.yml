@@ -79,6 +79,7 @@ matrix:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - pip install pylint
 
 before_script:
   - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
@@ -94,5 +95,5 @@ script:
       py.test -v;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
-      pycodestyle . --max-line-length=120;
+      pylint *;
     fi
