@@ -4,6 +4,8 @@ python: 3.7
 
 matrix:
   include:
+    - python: 3.5
+    - python: 3.6
     - python: 3.7
     - env: REPO=repo-plugins BRANCH=gotham
     - env: REPO=repo-plugins BRANCH=helix
