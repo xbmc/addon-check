@@ -1,80 +1,49 @@
+dist: xenial
 language: python
+python: 3.7
+
 matrix:
   include:
-    - python: "3.6"
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=gotham
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=helix
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=gotham
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=helix
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-skins BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-skins BRANCH=leia
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+    - env: REPO=repo-plugins BRANCH=gotham
+    - env: REPO=repo-plugins BRANCH=helix
+    - env: REPO=repo-plugins BRANCH=isengard
+    - env: REPO=repo-plugins BRANCH=jarvis
+    - env: REPO=repo-plugins BRANCH=krypton
+    - env: REPO=repo-plugins BRANCH=leia
+    - env: REPO=repo-resources BRANCH=isengard
+    - env: REPO=repo-resources BRANCH=jarvis
+    - env: REPO=repo-resources BRANCH=krypton
+    - env: REPO=repo-resources BRANCH=leia
+    - env: REPO=repo-scripts BRANCH=gotham
+    - env: REPO=repo-scripts BRANCH=helix
+    - env: REPO=repo-scripts BRANCH=isengard
+    - env: REPO=repo-scripts BRANCH=jarvis
+    - env: REPO=repo-scripts BRANCH=krypton
+    - env: REPO=repo-scripts BRANCH=leia
+    - env: REPO=repo-skins BRANCH=krypton
+    - env: REPO=repo-skins BRANCH=leia
   allow_failures:
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=gotham
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=helix
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-plugins BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-resources BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=gotham
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=helix
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=isengard
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=jarvis
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-scripts BRANCH=leia
-    - python: "3.6"
-      env: REPO=repo-skins BRANCH=krypton
-    - python: "3.6"
-      env: REPO=repo-skins BRANCH=leia
+    - env: REPO=repo-plugins BRANCH=gotham
+    - env: REPO=repo-plugins BRANCH=helix
+    - env: REPO=repo-plugins BRANCH=isengard
+    - env: REPO=repo-plugins BRANCH=jarvis
+    - env: REPO=repo-plugins BRANCH=krypton
+    - env: REPO=repo-plugins BRANCH=leia
+    - env: REPO=repo-resources BRANCH=isengard
+    - env: REPO=repo-resources BRANCH=jarvis
+    - env: REPO=repo-resources BRANCH=krypton
+    - env: REPO=repo-resources BRANCH=leia
+    - env: REPO=repo-scripts BRANCH=gotham
+    - env: REPO=repo-scripts BRANCH=helix
+    - env: REPO=repo-scripts BRANCH=isengard
+    - env: REPO=repo-scripts BRANCH=jarvis
+    - env: REPO=repo-scripts BRANCH=krypton
+    - env: REPO=repo-scripts BRANCH=leia
+    - env: REPO=repo-skins BRANCH=krypton
+    - env: REPO=repo-skins BRANCH=leia
 
 # command to install dependencies
 install:
