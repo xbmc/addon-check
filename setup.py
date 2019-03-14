@@ -22,6 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
     install_requires=requirements,
+    python_requires=">=3.4",
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [
         'kodi-addon-checker = kodi_addon_checker.__main__:main']},
