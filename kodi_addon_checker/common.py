@@ -27,8 +27,7 @@ def has_transparency(im):
                                            for x in enumerate(listdata) if x[1] < 255)
             if first_transparent_pixel is not None:
                 return True
-        else:
-            return False
+        return False
     except StopIteration:
         return False
 

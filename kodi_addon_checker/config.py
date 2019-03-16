@@ -13,7 +13,7 @@ from argparse import ArgumentParser
 from kodi_addon_checker.reporter import ReportManager
 
 
-class Config(object):
+class Config():
     def __init__(self, repo_path, cmd_args=None):
         """
         Create Config object using .tests-config.json and command line arguments.
@@ -43,7 +43,7 @@ class Config(object):
         return self.configs.get(item)
 
 
-class ConfigManager(object):
+class ConfigManager():
     configurations = {}
 
     @classmethod

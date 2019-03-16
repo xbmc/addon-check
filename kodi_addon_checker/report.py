@@ -10,7 +10,7 @@ from .record import PROBLEM, WARNING, Record
 from .reporter import ReportManager
 
 
-class Report(object):
+class Report():
     def __init__(self, artifact_name):
         """
         Create a new report for the given artifact. The artifact can be a repo, add-on or file.
@@ -27,7 +27,7 @@ class Report(object):
         :param report: a record or report
         :return: None
         """
-        if type(report) is Record:
+        if isinstance(report, Record):
             for reporter in ReportManager.getEnabledReporters():
                 reporter.report(report)
             if PROBLEM == report.log_level:

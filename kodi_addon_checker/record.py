@@ -11,7 +11,7 @@ WARNING = "WARN"
 INFORMATION = "INFO"
 
 
-class Record(object):
+class Record():
     def __init__(self, log_level, message, start_line=-1, end_line=-1, start_char_position=-1,
                  end_char_position=-1):
         """

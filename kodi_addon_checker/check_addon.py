@@ -33,7 +33,7 @@ def start(addon_path, args, all_repo_addons, config=None):
     """
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
-    LOGGER.info("Checking add-on %s" % addon_id)
+    LOGGER.info("Checking add-on %s", addon_id)
     addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
 
     repo_addons = all_repo_addons[args.branch]
@@ -48,7 +48,7 @@ def start(addon_path, args, all_repo_addons, config=None):
     if addon_xml is not None:
         check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR)
 
-        if len(addon_xml.findall("*//broken")) == 0:
+        if not addon_xml.findall("*//broken"):
             file_index = handle_files.create_file_index(addon_path)
 
             schema_validation.schemas(addon_report, parsed_xml, args.branch)

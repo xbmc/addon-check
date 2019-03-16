@@ -91,7 +91,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                     report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
                                       .format(branch_name, dependency.id, version)))
             except KeyError:
-                LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
+                LOGGER.warning("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
     _check_extensions(report, parsed_xml, addon)
 
@@ -130,11 +130,11 @@ def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all
     if addon.startswith("script.module.") and len(rdepends) + len(rdependsLowerBranch) == 0:
         report.add(Record(WARNING, "This module isn't required by any add-on."))
 
-    if len(rdepends) > 0:
+    if rdepends:
         report.add(Record(INFORMATION, "Reverse dependencies: {} ({})"
                           .format(", ".join(sorted([r.id for r in rdepends])), len(rdepends))))
 
-    if len(rdependsLowerBranch) > 0:
+    if rdependsLowerBranch:
         report.add(Record(INFORMATION, "Reverse dependencies (in lower branches): {} ({})"
                           .format(", ".join(sorted([r.id for r in rdependsLowerBranch])), len(rdependsLowerBranch))))
 

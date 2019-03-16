@@ -16,7 +16,7 @@ class Reporter(ABC):
         pass
 
 
-class ReportManager(object):
+class ReportManager():
     reporters = {}
 
     @classmethod

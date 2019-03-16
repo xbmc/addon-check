@@ -29,7 +29,7 @@ class LogReporter(Reporter):
         self.logger = logger
 
     def report(self, report):
-        if type(report) is Record:
+        if isinstance(report, Record):
             self.logger.info(report)
         else:
             for rep in report:

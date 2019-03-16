@@ -54,8 +54,8 @@ def _check_versions(report: Report, addon_name, branch, addon_version, repo_addo
     """
     if pr:
         if LooseVersion(addon_version) > LooseVersion(repo_addons_version):
-            LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s"
-                        % (addon_name, addon_version, repo_addons_version, branch))
+            LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s",
+                        addon_name, addon_version, repo_addons_version, branch)
         else:
             report.add(Record(PROBLEM, "%s addon already exists with version: %s in %s branch"
                               % (addon_name, repo_addons_version, branch)))

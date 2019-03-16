@@ -16,5 +16,5 @@ class ArrayReporter(Reporter):
         self.reports = []
 
     def report(self, report):
-        if type(report) is Record:
+        if isinstance(report, Record):
             self.reports.append(report)

@@ -7,7 +7,7 @@ from kodi_addon_checker.reporter import ReportManager
 from kodi_addon_checker.config import Config
 
 
-class Args(object):
+class Args():
     PR = False
     allow_folder_id_mismatch = False
     branch = "krypton"
@@ -28,7 +28,7 @@ class TestCheckAddon(unittest.TestCase):
         self.args = Args()
 
     def test_start(self):
-        result = start(self.path, self.args, self.all_repo_addons, self.config)
+        start(self.path, self.args, self.all_repo_addons, self.config)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
 
         # Comparing the whitelist with the list of output we get from addon-checker tool

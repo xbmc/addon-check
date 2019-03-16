@@ -7,7 +7,6 @@
 """
 
 import difflib
-import os
 from lib2to3 import pgen2, refactor
 
 from .common import relative_path
@@ -22,14 +21,14 @@ class KodiRefactoringTool(refactor.RefactoringTool):
         self.log_level = log_level
         super(KodiRefactoringTool, self).__init__(*args, **kwargs)
 
-    def print_output(self, old, new, filepath, equal):
+    def print_output(self, old_text, new_text, filename, equal):
         """
         Called with the old version, new version, and filepath of a
         refactored file.
 
-            :old: old text of refactored file
-            :new: new text of refactored file
-            :filepath: Path of the file
+            :old_text: old text of refactored file
+            :new_text: new text of refactored file
+            :filename: Path of the file
             :equal: Tells whether or not old is equal to new
         """
 
@@ -37,12 +36,12 @@ class KodiRefactoringTool(refactor.RefactoringTool):
             return
 
         diff = ""
-        for line in difflib.unified_diff(old.splitlines(), new.splitlines(),
-                                         relative_path(filepath), relative_path(filepath),
+        for line in difflib.unified_diff(old_text.splitlines(), new_text.splitlines(),
+                                         relative_path(filename), relative_path(filename),
                                          "(original)", "(refactored)", n=3, lineterm=""):
             diff += line + "\n"
 
-        self.report.add(Record(self.log_level, relative_path(filepath) + '\n' + diff[:-1]))
+        self.report.add(Record(self.log_level, relative_path(filename) + '\n' + diff[:-1]))
 
 
 def check_py3_compatibility(report: Report, path: str, branch_name: str):
@@ -51,13 +50,13 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
         :path: path to the addon
     """
     list_of_fixes = [
-                     'except',
-                     'exec',
-                     'ne',
-                     'raise',
-                     'repr',
-                     'tuple_params',
-                    ]
+        'except',
+        'exec',
+        'ne',
+        'raise',
+        'repr',
+        'tuple_params',
+    ]
 
     fixer_names = ['lib2to3.fixes.fix_' + fix for fix in list_of_fixes]
 

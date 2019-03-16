@@ -10,7 +10,6 @@ import json
 import os
 import re
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
 from . import handle_files
 from .common import relative_path
