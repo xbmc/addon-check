@@ -86,7 +86,7 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
             continue
 
         try:
-            po = polib.pofile(full_path, encoding="utf-8")
+            polib.pofile(full_path, encoding="utf-8")
         except OSError as error:
             # raised on the first syntax error
             message = str(error)
