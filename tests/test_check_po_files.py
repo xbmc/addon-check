@@ -23,16 +23,16 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "valid_file")
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = []
+        expected = []
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_missing_header(self):
         ReportManager.getEnabledReporters()[0].reports = []
@@ -40,18 +40,18 @@ class TestPOFiles(unittest.TestCase):
         path = join(self.path, "missing_header")
         full_path = join(path, "strings.po")
 
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = ['ERROR: Invalid PO file {path}:\n'
+        expected = ['ERROR: Invalid PO file {path}:\n'
                          'Missing required header:\n'
                          '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_syntax_error(self):
         ReportManager.getEnabledReporters()[0].reports = []
@@ -59,17 +59,17 @@ class TestPOFiles(unittest.TestCase):
         path = join(self.path, "syntax_error")
         full_path = join(path, "strings.po")
 
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = ["ERROR: Invalid PO file {path}: "
+        expected = ["ERROR: Invalid PO file {path}: "
                          "Syntax error on line 19".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_encoding(self):
         ReportManager.getEnabledReporters()[0].reports = []
@@ -77,17 +77,17 @@ class TestPOFiles(unittest.TestCase):
         path = join(self.path, "encoding")
         full_path = join(path, "strings.po")
 
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = ["ERROR: Invalid PO file {path}: "
+        expected = ["ERROR: Invalid PO file {path}: "
                          "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_bom(self):
         ReportManager.getEnabledReporters()[0].reports = []
@@ -95,17 +95,17 @@ class TestPOFiles(unittest.TestCase):
         path = join(self.path, "bom")
         full_path = join(path, "strings.po")
 
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = ["ERROR: Invalid PO file {path}: "
+        expected = ["ERROR: Invalid PO file {path}: "
                          "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_empty(self):
         ReportManager.getEnabledReporters()[0].reports = []
@@ -113,13 +113,13 @@ class TestPOFiles(unittest.TestCase):
         path = join(self.path, "empty")
         full_path = join(path, "strings.po")
 
-        self.file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": path, "name": "strings.po"}]
 
-        self.expected = ["ERROR: Invalid PO file {path}: File is empty".format(path=relative_path(full_path))]
+        expected = ["ERROR: Invalid PO file {path}: File is empty".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, self.file_index)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        self.output = [s for s in records if s.startswith(self.report_matches)]
+        output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(self.expected, self.output)
+        self.assertListEqual(expected, output)

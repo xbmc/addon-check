@@ -14,6 +14,11 @@ HERE = abspath(dirname(__file__))
 
 class TestFindFile(unittest.TestCase):
 
+    def __init__(self, methodName='runTest'):
+        super().__init__(methodName)
+        self.path = None
+        self.file = None
+
     def setUp(self):
         self.path = tempfile.mkdtemp()
         self.file = join(self.path, "addon.txt")
@@ -31,12 +36,18 @@ class TestFindFile(unittest.TestCase):
 
 class TestFindFilesRecursive(unittest.TestCase):
 
+    def __init__(self, methodName='runTest'):
+        super().__init__(methodName)
+        self.path = None
+        self.file = None
+        self.folder = None
+
     def setUp(self):
         self.path = tempfile.mkdtemp()
         self.file = join(self.path, "addon.txt")
-        self.dirs = join(self.path, "tree/subdir")
-        makedirs(self.dirs)
-        self.folder = join(self.dirs, "addon.xml")
+        dirs = join(self.path, "tree/subdir")
+        makedirs(dirs)
+        self.folder = join(dirs, "addon.xml")
 
     def test_find_files_recursive_is_False(self):
         self.assertFalse(list(FFR("randomname", self.path)))
@@ -57,7 +68,7 @@ class TestFindFilesRecursive(unittest.TestCase):
 class TestCreateFileIndex(unittest.TestCase):
 
     def test_create_file_index(self):
-        self.path = join(HERE, 'test_data', 'File_index/')
-        self.list = [{'path': self.path, 'name': 'file_index.py'}]
-        self.output = create_file_index(self.path)
-        self.assertListEqual(self.output, self.list)
+        path = join(HERE, 'test_data', 'File_index/')
+        expected_list = [{'path': path, 'name': 'file_index.py'}]
+        output = create_file_index(path)
+        self.assertListEqual(output, expected_list)
