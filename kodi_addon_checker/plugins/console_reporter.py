@@ -26,7 +26,7 @@ class ConsoleReporter(Reporter):
     """Present Report on the console
     """
     def report(self, report):
-        if type(report) is Record:
+        if isinstance(report, Record):
             if report.log_level == INFORMATION:
                 colorPrint(report, "34")
             elif report.log_level == WARNING:

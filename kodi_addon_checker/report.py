@@ -27,7 +27,7 @@ class Report():
         :param report: a record or report
         :return: None
         """
-        if type(report) is Record:
+        if isinstance(report, Record):
             for reporter in ReportManager.getEnabledReporters():
                 reporter.report(report)
             if PROBLEM == report.log_level:
