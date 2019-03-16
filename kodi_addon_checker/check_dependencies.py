@@ -91,7 +91,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                     report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
                                       .format(branch_name, dependency.id, version)))
             except KeyError:
-                LOGGER.warn("Misconfiguration in VERSION_ATTRB of check_dependencies")
+                LOGGER.warning("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
     _check_extensions(report, parsed_xml, addon)
 
