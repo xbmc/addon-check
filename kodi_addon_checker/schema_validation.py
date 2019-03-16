@@ -81,7 +81,7 @@ def _validation_checks(report: Report, parsed_xml, branch_name):
             schema_path = check_version(branch_name, valid_points[extension_point])
 
             if schema_path:
-                if extension_point == "xbmc.addon.metadata" or extension_point == "kodi.addon.metadata":
+                if extension_point in ("xbmc.addon.metadata", "kodi.addon.metadata"):
                     metadatacount += 1
 
                 if not exists(schema_path):
