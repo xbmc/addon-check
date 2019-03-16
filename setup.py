@@ -1,6 +1,8 @@
 import os
 import setuptools
 
+import kodi_addon_checker
+
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -12,7 +14,7 @@ with open(os.path.join(_ROOT, 'README.md')) as f:
 
 setuptools.setup(
     name="kodi-addon-checker",
-    version="0.0.13",
+    version=kodi_addon_checker.__version__,
     description="Check kodi addons or whole kodi repositories for errors and best practices.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",

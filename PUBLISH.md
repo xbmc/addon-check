@@ -1,6 +1,6 @@
 # Publish
 Make sure to run this with python 3.
-Increase the version flag in `setup.py`
+Increase the version flag in `kodi_addon_checker/__init__.py`
 
 ## Run these commands
 ```py

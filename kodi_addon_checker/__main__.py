@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 
-from kodi_addon_checker import check_addon, logger
+from kodi_addon_checker import __version__, check_addon, logger
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import Config, ConfigManager
@@ -69,7 +69,7 @@ def main():
                                      Otherwise, scan current repository and check all add-ons in \
                                      the current directory.")
     parser.add_argument("--version", action="version",
-                        version="%(prog)s 0.0.1")
+                        version="%(prog)s {version}".format(version=__version__))
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
     parser.add_argument("--branch", choices=choice, required=True,
                         help="Target branch name where the checker will resolve dependencies")
