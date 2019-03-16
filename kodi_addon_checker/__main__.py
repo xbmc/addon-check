@@ -17,7 +17,6 @@ from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import Config, ConfigManager
 from kodi_addon_checker.record import INFORMATION, PROBLEM, WARNING, Record
 from kodi_addon_checker.report import Report
-from kodi_addon_checker.reporter import ReportManager
 
 
 def dir_type(dir_path):

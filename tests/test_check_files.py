@@ -1,6 +1,4 @@
 import unittest
-from pathlib import Path
-from os import makedirs
 from os.path import abspath, dirname, join
 
 from kodi_addon_checker.check_files import check_file_permission

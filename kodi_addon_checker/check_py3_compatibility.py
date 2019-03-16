@@ -7,7 +7,6 @@
 """
 
 import difflib
-import os
 from lib2to3 import pgen2, refactor
 
 from .common import relative_path

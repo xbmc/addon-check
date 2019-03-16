@@ -8,7 +8,7 @@
 
 import copy
 import logging
-from os.path import abspath, dirname, exists, join, split
+from os.path import dirname, exists, join
 
 import xmlschema
 

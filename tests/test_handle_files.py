@@ -1,7 +1,6 @@
 import unittest
 import tempfile
 import shutil
-from pathlib import Path
 from os import makedirs
 from os.path import abspath, dirname, join
 
