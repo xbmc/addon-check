@@ -10,7 +10,7 @@ from .record import PROBLEM, WARNING, Record
 from .reporter import ReportManager
 
 
-class Report(object):
+class Report():
     def __init__(self, artifact_name):
         """
         Create a new report for the given artifact. The artifact can be a repo, add-on or file.

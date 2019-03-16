@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 from .AddonDependency import AddonDependency
 
 
-class Addon(object):
+class Addon():
     def __init__(self, addon_xml: ET.Element):
         super(Addon, self).__init__()
         self.id = addon_xml.get('id')

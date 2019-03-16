@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 from distutils.version import LooseVersion
 
 
-class AddonDependency(object):
+class AddonDependency():
     def __init__(self, import_xml: ET.Element):
         super(AddonDependency, self).__init__()
         self.id = import_xml.get('addon')

@@ -7,7 +7,7 @@ from kodi_addon_checker.reporter import ReportManager
 from kodi_addon_checker.config import Config
 
 
-class Args(object):
+class Args():
     PR = False
     allow_folder_id_mismatch = False
     branch = "krypton"
