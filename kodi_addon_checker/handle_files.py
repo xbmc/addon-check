@@ -25,7 +25,7 @@ def find_file(name: str, path: str):
         match = re.match(name, file_name, re.IGNORECASE)
         if match is not None:
             return os.path.join(path, match.string)
-    return
+    return None
 
 
 def find_files_recursive(name: str, path: str):
