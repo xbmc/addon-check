@@ -50,13 +50,13 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
         :path: path to the addon
     """
     list_of_fixes = [
-                     'except',
-                     'exec',
-                     'ne',
-                     'raise',
-                     'repr',
-                     'tuple_params',
-                    ]
+        'except',
+        'exec',
+        'ne',
+        'raise',
+        'repr',
+        'tuple_params',
+    ]
 
     fixer_names = ['lib2to3.fixes.fix_' + fix for fix in list_of_fixes]
 

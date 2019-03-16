@@ -43,8 +43,8 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": path, "name": "strings.po"}]
 
         expected = ['ERROR: Invalid PO file {path}:\n'
-                         'Missing required header:\n'
-                         '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
+                    'Missing required header:\n'
+                    '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -62,7 +62,7 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
-                         "Syntax error on line 19".format(path=relative_path(full_path))]
+                    "Syntax error on line 19".format(path=relative_path(full_path))]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -80,7 +80,7 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
-                         "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
+                    "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -98,7 +98,7 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
-                         "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
+                    "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
 
         check_for_invalid_strings_po(self.report, file_index)
 
