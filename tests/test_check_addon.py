@@ -11,6 +11,7 @@ class Args():
     PR = False
     allow_folder_id_mismatch = False
     branch = "krypton"
+    force_python3_check = False
 
 
 class TestCheckAddon(unittest.TestCase):

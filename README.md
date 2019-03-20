@@ -96,4 +96,5 @@ You can use the tool with the following options:
 --PR                        only when the tool is running on a pull request
 --allow-folder-id-mismatch  allow the addon's folder name and id to mismatch
 --reporter                  enable a reporter, this option can be used multiple times
+--check-python3             include Python 3 compatibility check regardless of the current branch
 ```

@@ -44,7 +44,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
         self.report.add(Record(self.log_level, relative_path(filename) + '\n' + diff[:-1]))
 
 
-def check_py3_compatibility(report: Report, path: str, branch_name: str):
+def check_py3_compatibility(report: Report, path: str, branch_name: str, forced: bool):
     """
      Checks compatibility of addons with python3
         :path: path to the addon
@@ -66,7 +66,7 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
     except pgen2.parse.ParseError as e:
         report.add(Record(PROBLEM, "ParseError: {}".format(e)))
 
-    if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
+    if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis'] or forced:
         list_of_fixes = [
                         'dict',
                         'filter',
