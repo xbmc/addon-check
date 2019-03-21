@@ -40,9 +40,10 @@ class Record():
         """
         if self.start_line == -1:
             return "%s: %s" % (self.log_level, self.message)
-        elif self.start_char_position == -1:
+
+        if self.start_char_position == -1:
             return "%s [%d-%d]: %s" % (self.log_level, self.start_line, self.end_line, self.message)
-        else:
-            return "%s [%d:%d-%d:%d]: %s" % (
-                self.log_level, self.start_line, self.start_char_position, self.end_line, self.end_char_position,
-                self.message)
+
+        return "%s [%d:%d-%d:%d]: %s" % (
+            self.log_level, self.start_line, self.start_char_position, self.end_line, self.end_char_position,
+            self.message)
