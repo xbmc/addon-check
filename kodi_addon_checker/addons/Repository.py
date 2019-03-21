@@ -20,9 +20,12 @@ class Repository():
         super(Repository, self).__init__()
         self.version = version
         self.path = path
-        gz_file = requests.get(path, timeout=(10, 10)).content
-        with gzip.open(BytesIO(gz_file), 'rb') as xml_file:
-            content = xml_file.read()
+        content = requests.get(path, timeout=(10, 10)).content
+
+        if path.endswith('.gz'):
+            with gzip.open(BytesIO(content), 'rb') as xml_file:
+                content = xml_file.read()
+
         tree = ET.fromstring(content)
         self.addons = []
         for addon in tree.findall("addon"):
