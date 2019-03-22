@@ -146,14 +146,11 @@ def _get_ignore_list(branch_name):
 
     if branch_name == "leia":
         common_ignore_deps.extend(["script.module.pycryptodome"])
-        return common_ignore_deps
 
-    elif branch_name == "krypton":
+    if branch_name == "krypton":
         common_ignore_deps.extend(["inputstream.adaptive", "inputstream.rtmp"])
-        return common_ignore_deps
 
-    else:
-        return common_ignore_deps
+    return common_ignore_deps
 
 
 def _check_extensions(report: Report, parsed_xml, addon):

@@ -52,8 +52,8 @@ def check_artifact(artifact_path, args, all_repo_addons):
     ConfigManager.process_config(config)
     if os.path.isfile(os.path.join(artifact_path, "addon.xml")):
         return check_addon.start(artifact_path, args, all_repo_addons, config)
-    else:
-        return check_repo(artifact_path, args, all_repo_addons, config)
+
+    return check_repo(artifact_path, args, all_repo_addons, config)
 
 
 def main():
