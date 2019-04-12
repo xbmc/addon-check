@@ -27,7 +27,6 @@ disable=import-error,
         useless-else-on-loop,
         too-many-arguments,
         too-many-nested-blocks,
-        redefined-outer-name,
 
 
 [FORMAT]

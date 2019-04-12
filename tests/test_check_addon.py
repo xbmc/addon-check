@@ -1,5 +1,5 @@
 import unittest
-from kodi_addon_checker.check_addon import all_repo_addons
+from kodi_addon_checker.check_addon import get_all_repo_addons
 from kodi_addon_checker.check_addon import start
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.record import Record
@@ -24,7 +24,7 @@ class TestCheckAddon(unittest.TestCase):
         load_plugins()
         self.config = Config(self.path)
         ReportManager.enable(["array"])
-        self.all_repo_addons = all_repo_addons()
+        self.all_repo_addons = get_all_repo_addons()
         self.args = Args()
 
     def test_start(self):
