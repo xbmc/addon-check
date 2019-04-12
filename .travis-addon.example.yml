@@ -1,10 +1,10 @@
+dist: xenial
 language: python
-python:
-  - "3.6"
+python: 3.7
 
 install:
   - pip install kodi-addon-checker
 
 # command to run our tests
 script:
-  - kodi-addon-checker . --branch=BRANCH_NAME --PR
+  - kodi-addon-checker . --branch=BRANCH_NAME
