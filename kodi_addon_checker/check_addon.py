@@ -107,7 +107,7 @@ def start(addon_path, args, all_repo_addons, config=None):
     return addon_report
 
 
-def all_repo_addons():
+def get_all_repo_addons():
     """Returns a nested dictionary of format:
         {'gotham':{'name_of_addon':'version_of_addon'}}
     """

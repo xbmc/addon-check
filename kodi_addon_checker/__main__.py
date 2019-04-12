@@ -11,10 +11,11 @@ import logging
 import os
 import sys
 
-from kodi_addon_checker import __version__, check_addon, logger
+from kodi_addon_checker import __version__, check_addon
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import Config, ConfigManager
+from kodi_addon_checker.logger import Logger
 from kodi_addon_checker.record import INFORMATION, PROBLEM, WARNING, Record
 from kodi_addon_checker.report import Report
 
@@ -79,9 +80,9 @@ def main():
     args = parser.parse_args()
 
     log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker.log")
-    logger.Logger.create_logger(log_file_name, __package__)
+    Logger.create_logger(log_file_name, __package__)
 
-    all_repo_addons = check_addon.all_repo_addons()
+    all_repo_addons = check_addon.get_all_repo_addons()
 
     if args.dir:
         # Following report is a wrapper for all sub reports
