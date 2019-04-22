@@ -5,7 +5,7 @@
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <xs:element name="summary" type="translatedString" minOccurs="1" maxOccurs="unbounded"/>
-        <xs:element name="description" type="translatedString" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="description" type="translatedStringLong" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="disclaimer" type="translatedString" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="platform" type="platformList" minOccurs="0" maxOccurs="1"/>
         <xs:element name="language" type="xs:string"  minOccurs="0" maxOccurs="1"/>
@@ -42,6 +42,18 @@
   <xs:complexType name="translatedString">
     <xs:simpleContent>
       <xs:extension base="nonEmptyStringCapped">
+        <xs:attribute name="lang" type="langIdentifier" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="nonEmptyStringCappedLong">
+    <xs:restriction base="nonEmptyString">
+      <xs:maxLength value="2500"/>  
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="translatedStringLong">
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyStringCappedLong">
         <xs:attribute name="lang" type="langIdentifier" use="required"/>
       </xs:extension>
     </xs:simpleContent>
