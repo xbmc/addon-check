@@ -47,7 +47,7 @@ def _number_of_lines(report: Report, filepath: str, library: str, max_entrypoint
     """
 
     try:
-        with open(filepath, 'r') as file:
+        with open(filepath, 'r', encoding="utf-8") as file:
             data = file.read()
 
         lineno = analyze(data).lloc
