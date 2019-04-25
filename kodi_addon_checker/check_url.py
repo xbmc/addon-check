@@ -49,5 +49,6 @@ def check_url(report: Report, parsed_xml):
                 report.add(Record(WARNING, "{} redirects to {}".format(source.text, r.url)))
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError,
-                requests.exceptions.MissingSchema, requests.exceptions.ReadTimeout, requests.exceptions.SSLError) as e:
+                requests.exceptions.InvalidSchema, requests.exceptions.MissingSchema, requests.exceptions.ReadTimeout,
+                requests.exceptions.SSLError) as e:
             report.add(Record(WARNING, e))
