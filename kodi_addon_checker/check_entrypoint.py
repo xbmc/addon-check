@@ -46,15 +46,19 @@ def _number_of_lines(report: Report, filepath: str, library: str, max_entrypoint
         :max_entypoint_line_count: max value allowed in any entrypoint file
     """
 
-    with open(filepath, 'r') as file:
-        data = file.read()
-
     try:
+        with open(filepath, 'r', encoding="utf-8") as file:
+            data = file.read()
+
         lineno = analyze(data).lloc
         if lineno >= max_entrypoint_count:
             report.add(Record(WARNING,
                               "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
                               % (library, lineno, max_entrypoint_count)))
+
+    except UnicodeDecodeError as e:
+        report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+
     except SyntaxError as e:
         if e.msg == 'SyntaxError at line: 1':
             report.add(Record(PROBLEM,

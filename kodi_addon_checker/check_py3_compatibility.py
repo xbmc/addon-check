@@ -70,6 +70,10 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
             rt.refactor([path])
         except pgen2.parse.ParseError as e:
             report.add(Record(PROBLEM, "ParseError: {}".format(e)))
+        except UnicodeDecodeError as e:
+            report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+    except UnicodeDecodeError as e:
+        report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
 
     if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
         list_of_fixes = [
@@ -98,3 +102,7 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
                 rt.refactor([path])
             except pgen2.parse.ParseError as e:
                 report.add(Record(INFORMATION, "ParseError: {}".format(e)))
+            except UnicodeDecodeError as e:
+                report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+        except UnicodeDecodeError as e:
+            report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))

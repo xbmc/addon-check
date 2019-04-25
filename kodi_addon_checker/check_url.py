@@ -36,11 +36,12 @@ def check_url(report: Report, parsed_xml):
 
         url = source.text
         scheme = True
-        if urllib3.util.parse_url(source.text).scheme is None:
-            url = "http://{}".format(source.text)
-            scheme = False
 
         try:
+            if urllib3.util.parse_url(source.text).scheme is None:
+                url = "http://{}".format(source.text)
+                scheme = False
+
             r = requests.head(url, allow_redirects=True, timeout=5)
             host = urllib3.util.parse_url(r.url).host
             if not scheme and not host.endswith(source.text):
@@ -49,5 +50,6 @@ def check_url(report: Report, parsed_xml):
                 report.add(Record(WARNING, "{} redirects to {}".format(source.text, r.url)))
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError,
-                requests.exceptions.MissingSchema, requests.exceptions.ReadTimeout, requests.exceptions.SSLError) as e:
+                requests.exceptions.InvalidSchema, requests.exceptions.MissingSchema, requests.exceptions.ReadTimeout,
+                requests.exceptions.SSLError, urllib3.exceptions.LocationParseError) as e:
             report.add(Record(WARNING, e))
