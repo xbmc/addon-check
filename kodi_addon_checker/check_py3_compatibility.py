@@ -10,6 +10,7 @@ import difflib
 from lib2to3 import pgen2, refactor
 
 from .common import relative_path
+from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
@@ -44,7 +45,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
         self.report.add(Record(self.log_level, relative_path(filename) + '\n' + diff[:-1]))
 
 
-def check_py3_compatibility(report: Report, path: str, branch_name: str):
+def check_py3_compatibility(report: Report, path: str, kodi_version: KodiVersion):
     """
      Checks compatibility of addons with python3
         :path: path to the addon
@@ -75,7 +76,7 @@ def check_py3_compatibility(report: Report, path: str, branch_name: str):
     except UnicodeDecodeError as e:
         report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
 
-    if branch_name not in ['gotham', 'helix', 'isengard', 'jarvis']:
+    if kodi_version >= KodiVersion("krypton"):
         list_of_fixes = [
                         'dict',
                         'filter',

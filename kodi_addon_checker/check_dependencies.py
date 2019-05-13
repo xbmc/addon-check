@@ -10,6 +10,7 @@ import logging
 from distutils.version import LooseVersion
 
 from .addons.Addon import Addon
+from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
 
@@ -61,7 +62,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
     """
 
     addon = Addon(parsed_xml)
-    ignore = _get_ignore_list(branch_name)
+    ignore = _get_ignore_list(KodiVersion(branch_name))
 
     for dependency in addon.dependencies:
         if dependency.id in ignore and not dependency.optional:
@@ -139,15 +140,15 @@ def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all
                           .format(", ".join(sorted([r.id for r in rdependsLowerBranch])), len(rdependsLowerBranch))))
 
 
-def _get_ignore_list(branch_name):
+def _get_ignore_list(kodi_version: KodiVersion):
     """Generate an dependency ignore list based
        on the branch name
     """
 
-    if branch_name == "leia":
+    if kodi_version == KodiVersion("leia"):
         common_ignore_deps.extend(["script.module.pycryptodome"])
 
-    if branch_name == "krypton":
+    if kodi_version == KodiVersion("krypton"):
         common_ignore_deps.extend(["inputstream.adaptive", "inputstream.rtmp"])
 
     return common_ignore_deps

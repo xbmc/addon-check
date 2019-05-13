@@ -15,6 +15,7 @@ from . import (check_artwork, check_dependencies, check_entrypoint,
                check_string, check_url, common, handle_files,
                schema_validation, ValidKodiVersions)
 from .addons.Repository import Repository
+from .KodiVersion import KodiVersion
 from .record import INFORMATION, Record
 from .report import Report
 
@@ -65,14 +66,14 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_files.check_for_invalid_json_files(addon_report, file_index)
 
-            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index, args.branch)
+            check_artwork.check_artwork(addon_report, addon_path, parsed_xml, file_index, KodiVersion(args.branch))
 
             max_entrypoint_count = config.configs.get(
                 "max_entrypoint_count", 15)
             check_entrypoint.check_complex_addon_entrypoint(
                 addon_report, addon_path, parsed_xml, max_entrypoint_count)
 
-            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, args.branch)
+            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, KodiVersion(args.branch))
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
@@ -81,7 +82,7 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
-            if args.branch not in ['gotham', 'helix']:
+            if KodiVersion(args.branch) >= KodiVersion("isengard"):
                 check_files.check_for_legacy_language_path(addon_report, addon_path)
 
             check_string.check_for_invalid_strings_po(addon_report, file_index)
