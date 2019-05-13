@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 from . import (check_artwork, check_dependencies, check_entrypoint,
                check_files, check_old_addon, check_py3_compatibility,
                check_string, check_url, common, handle_files,
-               schema_validation)
+               schema_validation, ValidKodiVersions)
 from .addons.Repository import Repository
 from .record import INFORMATION, Record
 from .report import Report
@@ -112,10 +112,9 @@ def get_all_repo_addons():
         {'gotham':{'name_of_addon':'version_of_addon'}}
     """
 
-    branches = ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia']
     repo_addons = {}
 
-    for branch in branches:
+    for branch in ValidKodiVersions:
         branch_url = ROOT_URL.format(branch=branch)
         repo_addons[branch] = Repository(branch, branch_url)
 

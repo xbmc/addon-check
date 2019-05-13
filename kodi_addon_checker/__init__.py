@@ -7,3 +7,12 @@
 """
 
 __version__ = "0.0.14"
+
+ValidKodiVersions = [
+    "gotham",
+    "helix",
+    "isengard",
+    "jarvis",
+    "krypton",
+    "leia",
+]
