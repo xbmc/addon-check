@@ -12,6 +12,7 @@ from os.path import dirname, exists, join
 
 import xmlschema
 
+from . import ValidKodiVersions
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
@@ -115,7 +116,7 @@ def _validate(xml, schemapath):
 
 
 def check_version(branch_name, schema_file):
-    all_branches = ['leia', 'krypton', 'jarvis', 'isengard', 'helix', 'gotham']
+    all_branches = ValidKodiVersions[::-1]
     branches = all_branches[all_branches.index(branch_name)::1]
     for branch in branches:
         file = branch + '_' + schema_file
