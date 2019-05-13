@@ -15,4 +15,5 @@ ValidKodiVersions = [
     "jarvis",
     "krypton",
     "leia",
+    "matrix",
 ]
