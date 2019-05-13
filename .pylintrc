@@ -1,7 +1,8 @@
 [MASTER]
 
 # Add files or directories to the blacklist.
-ignore=LICENSE,
+ignore=kodi_addon_checker.egg-info,
+       LICENSE,
        MANIFEST.in,
        PUBLISH.md,
        README.md,
