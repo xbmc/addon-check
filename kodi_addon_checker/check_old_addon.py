@@ -11,13 +11,15 @@ import os
 import xml.etree.ElementTree as ET
 from distutils.version import LooseVersion
 
+from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
 LOGGER = logging.getLogger(__name__)
 
 
-def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: dict, pr: bool):
+def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: dict, pr: bool,
+                             kodi_version: KodiVersion):
     """Check if addon submitted already exists or not
         :addon_path: path of the addon
         :all_repo_addons: dictionary return by all_repo_addon() function
@@ -26,8 +28,8 @@ def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: d
     addon_xml = os.path.join(addon_path, "addon.xml")
     addon_name, addon_version = _get_addon_name(addon_xml)
 
-    for branch, repo in sorted(all_repo_addons.items()):
-        if addon_name in repo:
+    for branch, repo in sorted(all_repo_addons.items(), reverse=True):
+        if KodiVersion(branch) <= kodi_version and addon_name in repo:
             _check_versions(report, addon_name, branch, addon_version, repo.find(addon_name).version, pr)
             return
 
