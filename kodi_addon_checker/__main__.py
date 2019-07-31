@@ -75,11 +75,13 @@ def main():
     parser.add_argument("--PR", help="Tell if tool is to run on a pull requests or not", action='store_true')
     parser.add_argument("--allow-folder-id-mismatch", help="Allow the addon's folder name and id to mismatch",
                         action="store_true")
+    parser.add_argument("--enable-debug-log", help="Enable debug logging to kodi-addon-checker.log",
+                        action="store_true", default=False)
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 
     log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker.log")
-    Logger.create_logger(log_file_name, __package__)
+    Logger.create_logger(log_file_name, __package__, args.enable_debug_log)
 
     all_repo_addons = check_addon.get_all_repo_addons()
 
