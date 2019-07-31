@@ -17,6 +17,9 @@ from kodi_addon_checker.reporter import Reporter, reporter
 class LogReporter(Reporter):
 
     def __init__(self):
+        self.logger = None
+
+    def create_logger(self):
         log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker-report.log")
         logger = logging.getLogger("log_reporter")
         logger.setLevel(logging.DEBUG)
@@ -29,6 +32,9 @@ class LogReporter(Reporter):
         self.logger = logger
 
     def report(self, report):
+        if not self.logger:
+            self.create_logger()
+
         if isinstance(report, Record):
             self.logger.info(report)
         else:
