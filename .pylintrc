@@ -26,7 +26,6 @@ disable=import-error,
         too-few-public-methods,
         invalid-name,
         useless-else-on-loop,
-        too-many-arguments,
         too-many-nested-blocks,
 
 
