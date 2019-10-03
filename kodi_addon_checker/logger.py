@@ -35,3 +35,6 @@ class Logger:
             logger.addHandler(logging.NullHandler())
 
         return logger
+
+    def __str__(self):
+        return self.__class__.__name__

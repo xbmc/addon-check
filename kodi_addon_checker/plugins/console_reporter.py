@@ -36,3 +36,6 @@ class ConsoleReporter(Reporter):
         else:
             for rep in report:
                 self.report(rep)
+
+    def __str__(self):
+        return self.__class__.__name__

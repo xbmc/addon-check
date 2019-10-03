@@ -8,6 +8,7 @@ from kodi_addon_checker.config import Config
 
 
 class Args():
+    # pylint: disable=too-few-public-methods
     PR = False
     allow_folder_id_mismatch = False
     branch = "krypton"

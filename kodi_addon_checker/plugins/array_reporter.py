@@ -18,3 +18,6 @@ class ArrayReporter(Reporter):
     def report(self, report):
         if isinstance(report, Record):
             self.reports.append(report)
+
+    def __str__(self):
+        return self.__class__.__name__

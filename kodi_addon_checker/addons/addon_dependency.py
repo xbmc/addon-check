@@ -11,9 +11,10 @@ from distutils.version import LooseVersion
 
 
 class AddonDependency():
+    # pylint: disable=too-few-public-methods
     def __init__(self, import_xml: ET.Element):
         super(AddonDependency, self).__init__()
-        self.id = import_xml.get('addon')
+        self.addon_id = import_xml.get('addon')
         self.version = None
         if import_xml.get('version') is not None:
             self.version = LooseVersion(import_xml.get('version'))

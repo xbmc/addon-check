@@ -40,3 +40,6 @@ class Report():
             self.problem_count += report.problem_count
             self.warning_count += report.warning_count
             self.information_count += report.information_count
+
+    def __str__(self):
+        return self.__class__.__name__
