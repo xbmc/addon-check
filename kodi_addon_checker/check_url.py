@@ -42,14 +42,14 @@ def check_url(report: Report, parsed_xml):
                 url = "http://{}".format(source.text)
                 scheme = False
 
-            r = requests.head(url, allow_redirects=True, timeout=5)
-            host = urllib3.util.parse_url(r.url).host
+            req = requests.head(url, allow_redirects=True, timeout=5)
+            host = urllib3.util.parse_url(req.url).host
             if not scheme and not host.endswith(source.text):
                 report.add(Record(WARNING, "{} redirects to {}".format(source.text, host)))
-            elif scheme and r.url.rstrip('/') != url.rstrip('/'):
-                report.add(Record(WARNING, "{} redirects to {}".format(source.text, r.url)))
-            r.raise_for_status()
+            elif scheme and req.url.rstrip('/') != url.rstrip('/'):
+                report.add(Record(WARNING, "{} redirects to {}".format(source.text, req.url)))
+            req.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError,
                 requests.exceptions.InvalidSchema, requests.exceptions.MissingSchema, requests.exceptions.ReadTimeout,
-                requests.exceptions.SSLError, urllib3.exceptions.LocationParseError) as e:
-            report.add(Record(WARNING, e))
+                requests.exceptions.SSLError, urllib3.exceptions.LocationParseError) as excep:
+            report.add(Record(WARNING, excep))

@@ -5,7 +5,7 @@ import kodi_addon_checker
 
 
 with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
+    REQUIREMENTS = f.read().splitlines()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,7 +23,7 @@ setuptools.setup(
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
-    install_requires=requirements,
+    install_requires=REQUIREMENTS,
     python_requires=">=3.4",
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [

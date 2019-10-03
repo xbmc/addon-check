@@ -48,10 +48,10 @@ class TestFindFilesRecursive(unittest.TestCase):
         makedirs(dirs)
         self.folder = join(dirs, "addon.xml")
 
-    def test_find_files_recursive_is_False(self):
+    def test_find_files_recursive_is_false(self):
         self.assertFalse(list(FFR("randomname", self.path)))
 
-    def test_find_files_recursive_is_True(self):
+    def test_find_files_recursive_is_true(self):
         with open(self.file, "w+"):
             self.assertTrue(FFR("addon.txt", self.path))
 

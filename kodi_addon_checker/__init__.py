@@ -8,7 +8,7 @@
 
 __version__ = "0.0.14"
 
-ValidKodiVersions = [
+VALID_KODI_VERSIONS = [
     "gotham",
     "helix",
     "isengard",

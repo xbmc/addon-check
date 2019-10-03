@@ -6,11 +6,11 @@
     See LICENSES/README.md for more information.
 """
 
-from . import ValidKodiVersions
+from . import VALID_KODI_VERSIONS
 
 class KodiVersion():
     def __init__(self, version: str):
-        if version not in ValidKodiVersions:
+        if version not in VALID_KODI_VERSIONS:
             raise ValueError("Invalid KodiVersion")
         super(KodiVersion, self).__init__()
         self.version = version
@@ -18,12 +18,12 @@ class KodiVersion():
     def __lt__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError()
-        return ValidKodiVersions.index(self.version) < ValidKodiVersions.index(other.version)
+        return VALID_KODI_VERSIONS.index(self.version) < VALID_KODI_VERSIONS.index(other.version)
 
     def __le__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError()
-        return ValidKodiVersions.index(self.version) <= ValidKodiVersions.index(other.version)
+        return VALID_KODI_VERSIONS.index(self.version) <= VALID_KODI_VERSIONS.index(other.version)
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.version == other.version
@@ -34,9 +34,9 @@ class KodiVersion():
     def __gt__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError()
-        return ValidKodiVersions.index(self.version) > ValidKodiVersions.index(other.version)
+        return VALID_KODI_VERSIONS.index(self.version) > VALID_KODI_VERSIONS.index(other.version)
 
     def __ge__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError()
-        return ValidKodiVersions.index(self.version) >= ValidKodiVersions.index(other.version)
+        return VALID_KODI_VERSIONS.index(self.version) >= VALID_KODI_VERSIONS.index(other.version)

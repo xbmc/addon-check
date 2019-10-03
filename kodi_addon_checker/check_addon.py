@@ -13,9 +13,9 @@ import xml.etree.ElementTree as ET
 from . import (check_artwork, check_dependencies, check_entrypoint,
                check_files, check_old_addon, check_py3_compatibility,
                check_string, check_url, common, handle_files,
-               schema_validation, ValidKodiVersions)
-from .addons.Repository import Repository
-from .KodiVersion import KodiVersion
+               schema_validation, VALID_KODI_VERSIONS)
+from .addons.repository import Repository
+from .kodi_version import KodiVersion
 from .record import INFORMATION, Record
 from .report import Report
 
@@ -116,7 +116,7 @@ def get_all_repo_addons():
 
     repo_addons = {}
 
-    for branch in ValidKodiVersions:
+    for branch in VALID_KODI_VERSIONS:
         branch_url = ROOT_URL.format(branch=branch)
         repo_addons[branch] = Repository(branch, branch_url)
 

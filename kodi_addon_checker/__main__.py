@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 
-from kodi_addon_checker import __version__, check_addon, ValidKodiVersions
+from kodi_addon_checker import __version__, check_addon, VALID_KODI_VERSIONS
 from kodi_addon_checker.check_repo import check_repo
 from kodi_addon_checker.common import load_plugins
 from kodi_addon_checker.config import Config, ConfigManager
@@ -70,7 +70,7 @@ def main():
     parser.add_argument("--version", action="version",
                         version="%(prog)s {version}".format(version=__version__))
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
-    parser.add_argument("--branch", choices=ValidKodiVersions, required=True,
+    parser.add_argument("--branch", choices=VALID_KODI_VERSIONS, required=True,
                         help="Target branch name where the checker will resolve dependencies")
     parser.add_argument("--PR", help="Tell if tool is to run on a pull requests or not", action='store_true')
     parser.add_argument("--allow-folder-id-mismatch", help="Allow the addon's folder name and id to mismatch",

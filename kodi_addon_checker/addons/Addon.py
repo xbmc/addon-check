@@ -8,7 +8,7 @@
 
 import xml.etree.ElementTree as ET
 
-from .AddonDependency import AddonDependency
+from .addon_dependency import AddonDependency
 
 
 class Addon():
@@ -23,8 +23,8 @@ class Addon():
     def __eq__(self, other):
         return self.id == other.id and self.version == other.version
 
-    def dependsOn(self, addonId):
+    def depends_on(self, addon_id):
         for dependency in self.dependencies:
-            if dependency.id == addonId:
+            if dependency.id == addon_id:
                 return True
         return False

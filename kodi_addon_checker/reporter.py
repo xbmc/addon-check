@@ -34,7 +34,7 @@ class ReportManager():
             arr[1] = name in names
 
     @classmethod
-    def getEnabledReporters(cls):
+    def get_enabled_reporters(cls):
         return [reporter[0] for reporter in cls.reporters.values() if reporter[1]]
 
 

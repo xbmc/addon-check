@@ -28,7 +28,7 @@ class Report():
         :return: None
         """
         if isinstance(report, Record):
-            for reporter in ReportManager.getEnabledReporters():
+            for reporter in ReportManager.get_enabled_reporters():
                 reporter.report(report)
             if PROBLEM == report.log_level:
                 self.problem_count += 1

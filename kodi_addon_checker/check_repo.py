@@ -33,6 +33,6 @@ def check_repo(repo_path, args, all_repo_addons, config):
             try:
                 addon_report = check_addon.start(addon_path, args, all_repo_addons, config)
                 repo_report.add(addon_report)
-            except Exception as e: # pylint: disable=broad-except
-                repo_report.add(Record(PROBLEM, "Something went wrong. Please see: %s" % e))
+            except Exception as excep: # pylint: disable=broad-except
+                repo_report.add(Record(PROBLEM, "Something went wrong. Please see: %s" % excep))
     return repo_report

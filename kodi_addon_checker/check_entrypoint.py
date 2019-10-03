@@ -56,11 +56,11 @@ def _number_of_lines(report: Report, filepath: str, library: str, max_entrypoint
                               "Complex entry point. Check: %s | Counted lines: %d | Lines allowed: %d"
                               % (library, lineno, max_entrypoint_count)))
 
-    except UnicodeDecodeError as e:
-        report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+    except UnicodeDecodeError as excep:
+        report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(excep)))
 
-    except SyntaxError as e:
-        if e.msg == 'SyntaxError at line: 1':
+    except SyntaxError as excep:
+        if excep.msg == 'SyntaxError at line: 1':
             report.add(Record(PROBLEM,
                               ("Error parsing file, is your file saved with UTF-8 encoding? "
                                "Make sure it has no BOM. Check: %s")

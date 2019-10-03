@@ -12,7 +12,7 @@ from io import BytesIO
 
 import requests
 
-from .Addon import Addon
+from .addon import Addon
 
 
 class Repository():
@@ -31,21 +31,21 @@ class Repository():
         for addon in tree.findall("addon"):
             self.addons.append(Addon(addon))
 
-    def __contains__(self, addonId):
+    def __contains__(self, addon_id):
         for addon in self.addons:
-            if addon.id == addonId:
+            if addon.id == addon_id:
                 return True
         return False
 
-    def find(self, addonId):
+    def find(self, addon_id):
         for addon in self.addons:
-            if addon.id == addonId:
+            if addon.id == addon_id:
                 return addon
         return None
 
-    def rdepends(self, addonId):
+    def rdepends(self, addon_id):
         rdepends = []
         for addon in self.addons:
-            if addon.dependsOn(addonId):
+            if addon.depends_on(addon_id):
                 rdepends.append(addon)
         return rdepends

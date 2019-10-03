@@ -53,9 +53,9 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
     for po_file in po_file_index:
         full_path = os.path.join(po_file["path"], po_file["name"])
 
-        with open(full_path, "r", encoding="utf-8") as f:
+        with open(full_path, "r", encoding="utf-8") as fpath:
             try:
-                contents = f.read()
+                contents = fpath.read()
             except UnicodeDecodeError:
                 report_made = True
                 report.add(Record(PROBLEM, "Invalid PO file %s: File is not saved with UTF-8 encoding"

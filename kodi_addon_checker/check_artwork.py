@@ -13,7 +13,7 @@ import re
 from PIL import Image
 
 from .common import has_transparency, relative_path
-from .KodiVersion import KodiVersion
+from .kodi_version import KodiVersion
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
 
@@ -55,17 +55,17 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
                     report.add(Record(
                         PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % image_type))
                 try:
-                    im = Image.open(filepath)
-                    width, height = im.size
+                    img = Image.open(filepath)
+                    width, height = img.size
 
                     if image_type == "icon":
-                        _check_icon(report, im, width, height)
+                        _check_icon(report, img, width, height)
 
                     elif image_type == "fanart":
                         _check_fanart(report, width, height)
                     else:
                         # screenshots have no size definitions
-                        if has_transparency(im):
+                        if has_transparency(img):
                             report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image))
                         LOGGER.info("Artwork was a screenshot")
                 except IOError:
@@ -108,14 +108,14 @@ def _assests(image_type: str, parsed_xml, addon_path: str):
     return fallback, images
 
 
-def _check_icon(report: Report, im, width, height):
+def _check_icon(report: Report, img, width, height):
     """Check the icon of the addon for transparency and dimensions
 
         :im: PIL.Image object
         :width: width of the icon
         :height: height of the icon
     """
-    if has_transparency(im):
+    if has_transparency(img):
         report.add(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
 
     icon_sizes = [(256, 256), (512, 512)]

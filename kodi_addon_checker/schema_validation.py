@@ -12,7 +12,7 @@ from os.path import dirname, exists, join
 
 import xmlschema
 
-from . import ValidKodiVersions
+from . import VALID_KODI_VERSIONS
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
@@ -20,11 +20,11 @@ XML_SCHEMA = join(dirname(__file__), 'xml_schema')
 LOGGER = logging.getLogger(__name__)
 
 
-def schemas(report: Report, CONST_parsed_xml, branch_name):
+def schemas(report: Report, const_parsed_xml, branch_name):
     """validates XML file with existing schemas
     :parsed_xml: parsed data from an XML file
     """
-    parsed_xml = copy.copy(CONST_parsed_xml)
+    parsed_xml = copy.copy(const_parsed_xml)
     failed, metadatacount, valid = _validation_checks(report, parsed_xml, branch_name)
 
     root_schema = join(XML_SCHEMA, 'addon.xsd')
@@ -116,7 +116,7 @@ def _validate(xml, schemapath):
 
 
 def check_version(branch_name, schema_file):
-    all_branches = ValidKodiVersions[::-1]
+    all_branches = VALID_KODI_VERSIONS[::-1]
     branches = all_branches[all_branches.index(branch_name)::1]
     for branch in branches:
         file = branch + '_' + schema_file

@@ -14,14 +14,14 @@ import sys
 REL_PATH = ""
 
 
-def has_transparency(im):
+def has_transparency(img):
     """Check the transparency(aplha layer) in the given image
 
-        :im: PIL.Image object
+        :img: PIL.Image object
     """
     try:
-        if im.mode == "RGBA":
-            alpha = im.split()[-1]
+        if img.mode == "RGBA":
+            alpha = img.split()[-1]
             listdata = list(alpha.getdata())
             first_transparent_pixel = next(x[0]
                                            for x in enumerate(listdata) if x[1] < 255)
