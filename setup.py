@@ -24,7 +24,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
     install_requires=requirements,
-    python_requires=">=3.4",
+    python_requires=">=3.5",
     setup_requires=['setuptools>=38.6.0'],
     entry_points={'console_scripts': [
         'kodi-addon-checker = kodi_addon_checker.__main__:main']},
@@ -38,5 +38,5 @@ setuptools.setup(
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Topic :: Utilities"
-    ] + [('Programming Language :: Python :: %s' % x) for x in '3 3.4 3.5 3.6 3.7'.split()]
+    ] + [('Programming Language :: Python :: %s' % x) for x in '3 3.5 3.6 3.7'.split()]
 )
