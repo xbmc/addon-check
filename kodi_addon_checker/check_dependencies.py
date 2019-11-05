@@ -47,8 +47,8 @@ extensions = {"kodi.gameclient": "kodi.binary.instance.game",
               "xbmc.webinterface": "xbmc.webinterface",
               }
 
-VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0',
-                                 'jarvis': '2.24.0', 'krypton': '2.25.0', 'leia': '2.26.0'}}
+VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0', 'jarvis': '2.24.0',
+                                 'krypton': '2.25.0', 'leia': '2.26.0', 'matrix': '3.0.0'}}
 
 LOGGER = logging.getLogger(__name__)
 
