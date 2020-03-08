@@ -47,8 +47,17 @@ extensions = {"kodi.gameclient": "kodi.binary.instance.game",
               "xbmc.webinterface": "xbmc.webinterface",
               }
 
-VERSION_ATTRB = {'xbmc.python': {'gotham': '2.14.0', 'helix': '2.19.0', 'isengard': '2.20.0', 'jarvis': '2.24.0',
-                                 'krypton': '2.25.0', 'leia': '2.26.0', 'matrix': '3.0.0'}}
+VERSION_ATTRB = {
+    'xbmc.python': {
+        'gotham': {'min_compatible': '2.1.0', 'advised': '2.14.0'},
+        'helix': {'min_compatible': '2.1.0', 'advised': '2.19.0'},
+        'isengard': {'min_compatible': '2.1.0', 'advised': '2.20.0'},
+        'jarvis': {'min_compatible': '2.1.0', 'advised': '2.24.0'},
+        'krypton': {'min_compatible': '2.1.0', 'advised': '2.25.0'},
+        'leia': {'min_compatible': '2.1.0', 'advised': '2.26.0'},
+        'matrix': {'min_compatible': '3.0.0', 'advised': '3.0.0'}
+    }
+}
 
 LOGGER = logging.getLogger(__name__)
 
@@ -87,10 +96,17 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
 
         if dependency.id in VERSION_ATTRB:
             try:
-                version = VERSION_ATTRB[dependency.id][branch_name]
-                if LooseVersion(version) != dependency.version:
+                version_info = VERSION_ATTRB[dependency.id][branch_name]
+                if LooseVersion(version_info["min_compatible"]) > dependency.version:
+                    report.add(Record(PROBLEM, "For {}, {} version must be higher than {}. Advised {}."
+                                      .format(branch_name, dependency.id,
+                                              version_info["min_compatible"], version_info["advised"])))
+                    continue
+
+                if LooseVersion(version_info["advised"]) != dependency.version:
                     report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
-                                      .format(branch_name, dependency.id, version)))
+                                      .format(branch_name, dependency.id, version_info["advised"])))
+
             except KeyError:
                 LOGGER.warning("Misconfiguration in VERSION_ATTRB of check_dependencies")
 
