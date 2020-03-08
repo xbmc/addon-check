@@ -14,18 +14,22 @@ matrix:
     - env: REPO=repo-plugins BRANCH=jarvis
     - env: REPO=repo-plugins BRANCH=krypton
     - env: REPO=repo-plugins BRANCH=leia
+    - env: REPO=repo-plugins BRANCH=matrix
     - env: REPO=repo-resources BRANCH=isengard
     - env: REPO=repo-resources BRANCH=jarvis
     - env: REPO=repo-resources BRANCH=krypton
     - env: REPO=repo-resources BRANCH=leia
+    - env: REPO=repo-resources BRANCH=matrix
     - env: REPO=repo-scripts BRANCH=gotham
     - env: REPO=repo-scripts BRANCH=helix
     - env: REPO=repo-scripts BRANCH=isengard
     - env: REPO=repo-scripts BRANCH=jarvis
     - env: REPO=repo-scripts BRANCH=krypton
     - env: REPO=repo-scripts BRANCH=leia
+    - env: REPO=repo-scripts BRANCH=matrix
     - env: REPO=repo-skins BRANCH=krypton
     - env: REPO=repo-skins BRANCH=leia
+    - env: REPO=repo-skins BRANCH=matrix
   allow_failures:
     - env: REPO=repo-plugins BRANCH=gotham
     - env: REPO=repo-plugins BRANCH=helix
@@ -33,18 +37,22 @@ matrix:
     - env: REPO=repo-plugins BRANCH=jarvis
     - env: REPO=repo-plugins BRANCH=krypton
     - env: REPO=repo-plugins BRANCH=leia
+    - env: REPO=repo-plugins BRANCH=matrix
     - env: REPO=repo-resources BRANCH=isengard
     - env: REPO=repo-resources BRANCH=jarvis
     - env: REPO=repo-resources BRANCH=krypton
     - env: REPO=repo-resources BRANCH=leia
+    - env: REPO=repo-resources BRANCH=matrix
     - env: REPO=repo-scripts BRANCH=gotham
     - env: REPO=repo-scripts BRANCH=helix
     - env: REPO=repo-scripts BRANCH=isengard
     - env: REPO=repo-scripts BRANCH=jarvis
     - env: REPO=repo-scripts BRANCH=krypton
     - env: REPO=repo-scripts BRANCH=leia
+    - env: REPO=repo-scripts BRANCH=matrix
     - env: REPO=repo-skins BRANCH=krypton
     - env: REPO=repo-skins BRANCH=leia
+    - env: REPO=repo-skins BRANCH=matrix
 
 # command to install dependencies
 install:
