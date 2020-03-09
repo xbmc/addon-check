@@ -88,7 +88,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
 def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str, kodi_version: KodiVersion):
     """Check for whether the given image type exists or not if they do """
 
-    fallback, images = _assests(asset.image_type, parsed_xml, addon_path)
+    fallback, images = _assets(asset.image_type, parsed_xml, addon_path)
 
     for image in images:
         if image:
@@ -124,7 +124,7 @@ def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str,
                 Record(WARNING, "Empty image tag found for %s" % asset.image_type))
 
 
-def _assests(image_type: str, parsed_xml, addon_path: str):
+def _assets(image_type: str, parsed_xml, addon_path: str):
     """"""
     images = [image.text for image in parsed_xml.findall("./extension/assets/" + image_type)]
 
