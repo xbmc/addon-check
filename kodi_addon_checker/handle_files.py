@@ -61,21 +61,23 @@ def find_in_file(path: str, search_terms: list, whitelisted_file_types: list):
         :whitelisted_file_type: list of all the whitelisted file types
     """
     results = []
-    if search_terms:
-        for directory in os.walk(path):
-            for file_name in directory[2]:
-                if pathlib.Path(file_name).suffix in whitelisted_file_types or not whitelisted_file_types:
-                    file_path = os.path.join(directory[0], file_name)
+    if not search_terms:
+        return results
+    for directory in os.walk(path):
+        for file_name in directory[2]:
+            if whitelisted_file_types and not pathlib.Path(file_name).suffix in whitelisted_file_types:
+                continue
+            file_path = os.path.join(directory[0], file_name)
 
-                    searchfile = open(file_path, "r", encoding="utf8")
-                    linenumber = 0
-                    for line in searchfile:
-                        linenumber = linenumber + 1
-                        for term in search_terms:
-                            if term in line:
-                                results.append({"term": term, "line": line.strip(
-                                ), "searchfile": file_path, "linenumber": linenumber})
-                    searchfile.close()
+            searchfile = open(file_path, "r", encoding="utf8")
+            linenumber = 0
+            for line in searchfile:
+                linenumber = linenumber + 1
+                for term in search_terms:
+                    if term in line:
+                        results.append({"term": term, "line": line.strip(
+                        ), "searchfile": file_path, "linenumber": linenumber})
+            searchfile.close()
     return results
 
 

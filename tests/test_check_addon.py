@@ -32,13 +32,12 @@ class TestCheckAddon(unittest.TestCase):
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
 
         # Comparing the whitelist with the list of output we get from addon-checker tool
+        flag = True
         for white_str in self.whitelist:
             for value in records:
                 if white_str.lower() == value.lower():
                     break
             else:
                 flag = False
-        else:
-            flag = True
 
         self.assertTrue(flag)

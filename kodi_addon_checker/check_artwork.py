@@ -46,45 +46,46 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
     fallback, images = _assests(image_type, parsed_xml, addon_path)
 
     for image in images:
-        if image:
-            filepath = os.path.join(addon_path, image)
-
-            if os.path.isfile(filepath):
-                report.add(Record(INFORMATION, "Image %s exists" % image_type))
-                if fallback and kodi_version >= KodiVersion("krypton"):
-                    report.add(Record(
-                        PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % image_type))
-                try:
-                    im = Image.open(filepath)
-                    width, height = im.size
-
-                    if image_type == "icon":
-                        _check_icon(report, im, width, height)
-
-                    elif image_type == "fanart":
-                        _check_fanart(report, width, height)
-                    else:
-                        # screenshots have no size definitions
-                        if has_transparency(im):
-                            report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image))
-                        LOGGER.info("Artwork was a screenshot")
-                except IOError:
-                    report.add(
-                        Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
-
-            else:
-                # if it's a fallback path addons.xml should still be able to
-                # get build
-                if fallback:
-                    report.add(Record(INFORMATION, "You might want to add a %s" % image_type))
-                # it's no fallback path, so building addons.xml will crash -
-                # this is a problem ;)
-                else:
-                    report.add(
-                        Record(PROBLEM, "%s does not exist at specified path." % image_type))
-        else:
+        if not image:
             report.add(
                 Record(WARNING, "Empty image tag found for %s" % image_type))
+            continue
+
+        filepath = os.path.join(addon_path, image)
+
+        if os.path.isfile(filepath):
+            report.add(Record(INFORMATION, "Image %s exists" % image_type))
+            if fallback and kodi_version >= KodiVersion("krypton"):
+                report.add(Record(
+                    PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % image_type))
+            try:
+                im = Image.open(filepath)
+                width, height = im.size
+
+                if image_type == "icon":
+                    _check_icon(report, im, width, height)
+
+                elif image_type == "fanart":
+                    _check_fanart(report, width, height)
+                else:
+                    # screenshots have no size definitions
+                    if has_transparency(im):
+                        report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image))
+                    LOGGER.info("Artwork was a screenshot")
+            except IOError:
+                report.add(
+                    Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
+
+        else:
+            # if it's a fallback path addons.xml should still be able to
+            # get build
+            if fallback:
+                report.add(Record(INFORMATION, "You might want to add a %s" % image_type))
+            # it's no fallback path, so building addons.xml will crash -
+            # this is a problem ;)
+            else:
+                report.add(
+                    Record(PROBLEM, "%s does not exist at specified path." % image_type))
 
 
 def _assests(image_type: str, parsed_xml, addon_path: str):
