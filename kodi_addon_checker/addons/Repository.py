@@ -20,7 +20,7 @@ class Repository():
         super(Repository, self).__init__()
         self.version = version
         self.path = path
-        content = requests.get(path, timeout=(10, 10)).content
+        content = requests.get(path, timeout=(30, 30)).content
 
         if path.endswith('.gz'):
             with gzip.open(BytesIO(content), 'rb') as xml_file:
