@@ -10,6 +10,7 @@ import logging
 import os
 import re
 
+from collections import namedtuple
 from PIL import Image
 
 from .common import has_transparency, relative_path
@@ -26,9 +27,53 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
         :parsed_xml: xml file i.e addon.xml
         :file_index: list having name and path of all the files in an addon
     """
-    art_type = ['icon', 'fanart', 'screenshot']
-    for image_type in art_type:
-        _check_image_type(report, image_type, parsed_xml, addon_path, kodi_version)
+    Asset = namedtuple('Asset', ['image_type', 'specifications'])
+
+    art_assets = [
+        Asset(
+            'icon',
+            {
+                'extension': ['.png'],
+                'transparency': False,
+                'sizes': [(256, 256), (512, 512)]
+            }
+        ),
+        Asset(
+            'fanart',
+            {
+                'extension': [".jpg", ".jpeg"],
+                'transparency': None,
+                'sizes': [(1280, 720), (1920, 1080), (3840, 2160)]
+            }
+        ),
+        Asset(
+            'screenshot',
+            {
+                'extension': [".jpg", ".jpeg"],
+                'transparency': False,
+                'sizes': [(1280, 720), (1920, 1080)]
+            }
+        ),
+        Asset(
+            'banner',
+            {
+                'extension': [".jpg", ".jpeg"],
+                'transparency': False,
+                'sizes': [(1000, 185)]
+            }
+        ),
+        Asset(
+            'clearlogo',
+            {
+                'extension': ['.png'],
+                'transparency': True,
+                'sizes': [(400, 155), (800, 310)]
+            }
+        )
+    ]
+
+    for asset in art_assets:
+        _check_image_type(report, asset, parsed_xml, addon_path, kodi_version)
 
     for file in file_index:
         if re.match(r"(?!fanart\.jpg|icon\.png).*\.(png|jpg|jpeg|gif)$", file["name"]) is not None:
@@ -40,34 +85,26 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
                     Record(PROBLEM, "Could not open image, is the file corrupted ? %s" % relative_path(image_path)))
 
 
-def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: str, kodi_version: KodiVersion):
+def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str, kodi_version: KodiVersion):
     """Check for whether the given image type exists or not if they do """
 
-    fallback, images = _assests(image_type, parsed_xml, addon_path)
+    fallback, images = _assets(asset.image_type, parsed_xml, addon_path)
 
     for image in images:
         if image:
             filepath = os.path.join(addon_path, image)
 
             if os.path.isfile(filepath):
-                report.add(Record(INFORMATION, "Image %s exists" % image_type))
+                report.add(Record(INFORMATION, "Image %s exists" % asset.image_type))
                 if fallback and kodi_version >= KodiVersion("krypton"):
                     report.add(Record(
-                        PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % image_type))
+                        PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % asset.image_type))
                 try:
                     im = Image.open(filepath)
-                    width, height = im.size
-
-                    if image_type == "icon":
-                        _check_icon(report, im, width, height)
-
-                    elif image_type == "fanart":
-                        _check_fanart(report, width, height)
-                    else:
-                        # screenshots have no size definitions
-                        if has_transparency(im):
-                            report.add(Record(PROBLEM, "%s should be solid. It has transparency." % image))
-                        LOGGER.info("Artwork was a screenshot")
+                    # check image specifications
+                    _check_art_asset_specifications(report, filepath, im, asset)
+                    # close handler
+                    im.close()
                 except IOError:
                     report.add(
                         Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
@@ -76,18 +113,18 @@ def _check_image_type(report: Report, image_type: str, parsed_xml, addon_path: s
                 # if it's a fallback path addons.xml should still be able to
                 # get build
                 if fallback:
-                    report.add(Record(INFORMATION, "You might want to add a %s" % image_type))
+                    report.add(Record(INFORMATION, "You might want to add a %s" % asset.image_type))
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
                     report.add(
-                        Record(PROBLEM, "%s does not exist at specified path." % image_type))
+                        Record(PROBLEM, "%s does not exist at specified path." % asset.image_type))
         else:
             report.add(
-                Record(WARNING, "Empty image tag found for %s" % image_type))
+                Record(WARNING, "Empty image tag found for %s" % asset.image_type))
 
 
-def _assests(image_type: str, parsed_xml, addon_path: str):
+def _assets(image_type: str, parsed_xml, addon_path: str):
     """"""
     images = [image.text for image in parsed_xml.findall("./extension/assets/" + image_type)]
 
@@ -108,37 +145,44 @@ def _assests(image_type: str, parsed_xml, addon_path: str):
     return fallback, images
 
 
-def _check_icon(report: Report, im, width, height):
-    """Check the icon of the addon for transparency and dimensions
+def _check_art_asset_specifications(report: Report, filepath, im, asset):
+    """Check the art asset specifications (dimensions, transparency, extension)
 
+        :filepath: file path of the image
         :im: PIL.Image object
-        :width: width of the icon
-        :height: height of the icon
+        :asset: Asset namedtuple
     """
-    if has_transparency(im):
-        report.add(Record(PROBLEM, "Icon.png should be solid. It has transparency."))
+    _, fileextension = os.path.splitext(filepath)
+    width, height = im.size
 
-    icon_sizes = [(256, 256), (512, 512)]
+    # extension check
+    if fileextension not in asset.specifications['extension']:
+        report.add(Record(PROBLEM, "Allowed format for %s is %s, provided %s is %s." %
+                          (asset.image_type,
+                           str(asset.specifications['extension']),
+                           asset.image_type, fileextension)))
 
-    if (width, height) not in icon_sizes:
-        report.add(Record(PROBLEM, "Icon should have either 256x256 or 512x512 but it has %sx%s" % (
-            width, height)))
+    # transparency check
+    if asset.specifications['transparency'] is not None:
+        if has_transparency(im) and not asset.specifications['transparency']:
+            report.add(Record(PROBLEM, "%s should be solid. It has transparency." %
+                              asset.image_type))
+        elif not has_transparency(im) and asset.specifications['transparency']:
+            report.add(Record(PROBLEM, "%s should have transparency. It is solid." %
+                              asset.image_type))
+
+    # dimensions check
+    if (width, height) not in asset.specifications['sizes']:
+        if len(asset.specifications['sizes']) > 1:
+            log_str = "either " + \
+                " or ".join(["%dx%d" % (w, h) for w, h in asset.specifications['sizes']])
+        else:
+            log_str = "%dx%d" % (
+                asset.specifications['sizes'][0][0],
+                asset.specifications['sizes'][0][1]
+            )
+        report.add(Record(PROBLEM, "%s should have %s but it has %sx%s" % (
+            asset.image_type, log_str, width, height)))
     else:
-        report.add(
-            Record(INFORMATION, "Icon dimensions are fine %sx%s" % (width, height)))
-
-
-def _check_fanart(report: Report, width, height):
-    """Check the dimensions of the fanart
-
-        :width: width of the icon
-        :height: height of the icon
-    """
-    fanart_sizes = [(1280, 720), (1920, 1080), (3840, 2160)]
-    fanart_sizes_str = " or ".join(["%dx%d" % (w, h) for w, h in fanart_sizes])
-
-    if (width, height) not in fanart_sizes:
-        report.add(Record(PROBLEM, "Fanart should have either %s but it has %sx%s" % (
-            fanart_sizes_str, width, height)))
-    else:
-        report.add(Record(INFORMATION, "Fanart dimensions are fine %sx%s" % (width, height)))
+        report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
+                          (asset.image_type, width, height)))

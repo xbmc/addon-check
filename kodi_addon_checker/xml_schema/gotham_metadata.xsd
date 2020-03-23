@@ -48,7 +48,7 @@
   </xs:complexType>
   <xs:simpleType name="nonEmptyStringCappedLong">
     <xs:restriction base="nonEmptyString">
-      <xs:maxLength value="2500"/>  
+      <xs:maxLength value="2500"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="translatedStringLong">
@@ -82,7 +82,7 @@
     <xs:choice maxOccurs="unbounded">
         <xs:element name="icon" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
         <xs:element name="fanart" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="screenshot" type="nonEmptyString" minOccurs="0"/>
+        <xs:element name="screenshot" type="nonEmptyString" minOccurs="0" maxOccurs="10"/>
         <xs:element name="clearlogo" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
         <xs:element name="banner" type="nonEmptyString" minOccurs="0" maxOccurs="1"/>
     </xs:choice>
