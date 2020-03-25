@@ -35,15 +35,21 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
             {
                 'extension': ['.png'],
                 'transparency': False,
-                'sizes': [(256, 256), (512, 512)]
+                'sizes': [(256, 256), (512, 512)],
+                'max_file_size': None
             }
         ),
         Asset(
             'fanart',
             {
-                'extension': [".jpg", ".jpeg"],
+                'extension':
+                    # fanart no longer hardcoded/assets element added as of Krypton, allow .png
+                    [".jpg", ".jpeg", ".png"]
+                    if kodi_version >= KodiVersion("krypton") else
+                    [".jpg", ".jpeg"],
                 'transparency': None,
-                'sizes': [(1280, 720), (1920, 1080), (3840, 2160)]
+                'sizes': [(1280, 720), (1920, 1080), (3840, 2160)],
+                'max_file_size': 1000
             }
         ),
         Asset(
@@ -51,7 +57,8 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
             {
                 'extension': [".jpg", ".jpeg"],
                 'transparency': False,
-                'sizes': [(1280, 720), (1920, 1080)]
+                'sizes': [(1280, 720), (1920, 1080)],
+                'max_file_size': 750
             }
         ),
         Asset(
@@ -59,7 +66,8 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
             {
                 'extension': [".jpg", ".jpeg"],
                 'transparency': False,
-                'sizes': [(1000, 185)]
+                'sizes': [(1000, 185)],
+                'max_file_size': None
             }
         ),
         Asset(
@@ -67,7 +75,8 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
             {
                 'extension': ['.png'],
                 'transparency': True,
-                'sizes': [(400, 155), (800, 310)]
+                'sizes': [(400, 155), (800, 310)],
+                'max_file_size': None
             }
         )
     ]
@@ -154,6 +163,7 @@ def _check_art_asset_specifications(report: Report, filepath, im, asset):
     """
     _, fileextension = os.path.splitext(filepath)
     width, height = im.size
+    max_file_size_kb = asset.specifications.get('max_file_size')
 
     # extension check
     if fileextension not in asset.specifications['extension']:
@@ -186,3 +196,24 @@ def _check_art_asset_specifications(report: Report, filepath, im, asset):
     else:
         report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
                           (asset.image_type, width, height)))
+
+    if isinstance(max_file_size_kb, int):
+        file_size_b = os.stat(filepath).st_size
+        file_size_kb = str(file_size_b // 1024)
+        max_file_size_b = max_file_size_kb * 1024
+
+        if file_size_b <= max_file_size_b:
+            report.add(Record(INFORMATION, "%s file size is fine %sKB" %
+                              (asset.image_type, file_size_kb)))
+
+        else:
+            if asset.image_type == "fanart" and fileextension == ".png":
+                report.add(Record(PROBLEM, "%s is too large %sKB, "
+                                           "maximum file size of %sKB. "
+                                           "Consider converting to JPEG" %
+                                  (asset.image_type, file_size_kb, str(max_file_size_kb))))
+
+            else:
+                report.add(Record(PROBLEM, "%s is too large %sKB, "
+                                           "maximum file size of %sKB." %
+                                  (asset.image_type, file_size_kb, str(max_file_size_kb))))
