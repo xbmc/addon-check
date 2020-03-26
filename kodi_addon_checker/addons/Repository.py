@@ -20,7 +20,14 @@ class Repository():
         super(Repository, self).__init__()
         self.version = version
         self.path = path
-        content = requests.get(path, timeout=(30, 30)).content
+
+        # Recover from unreliable mirrors
+        session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(max_retries=5)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+
+        content = session.get(path, timeout=(30, 30)).content
 
         if path.endswith('.gz'):
             with gzip.open(BytesIO(content), 'rb') as xml_file:
