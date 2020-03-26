@@ -10,9 +10,9 @@ import difflib
 from lib2to3 import pgen2, refactor
 
 from .common import relative_path
-from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
+from .versions import KodiVersion
 
 
 class KodiRefactoringTool(refactor.RefactoringTool):

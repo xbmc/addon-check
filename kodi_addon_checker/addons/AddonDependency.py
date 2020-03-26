@@ -7,8 +7,7 @@
 """
 
 import xml.etree.ElementTree as ET
-from distutils.version import LooseVersion
-
+from ..versions import AddonVersion
 
 class AddonDependency():
     def __init__(self, import_xml: ET.Element):
@@ -16,5 +15,5 @@ class AddonDependency():
         self.id = import_xml.get('addon')
         self.version = None
         if import_xml.get('version') is not None:
-            self.version = LooseVersion(import_xml.get('version'))
+            self.version = AddonVersion(import_xml.get('version'))
         self.optional = import_xml.get('optional', False)

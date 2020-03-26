@@ -9,11 +9,11 @@
 import logging
 import os
 import xml.etree.ElementTree as ET
-from distutils.version import LooseVersion
 
-from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
+from .versions import AddonVersion, KodiVersion
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,15 +59,15 @@ def _check_versions(report: Report, addon_details, branch, repo_addons_version, 
     addon_version = addon_details.get('version')
 
     if pr:
-        if LooseVersion(addon_version) > LooseVersion(repo_addons_version):
+        if AddonVersion(addon_version) > AddonVersion(repo_addons_version):
             LOGGER.info("%s addon have greater version: %s than repo_version: %s in branch %s",
                         addon_name, addon_version, repo_addons_version, branch)
         else:
-            report.add(Record(PROBLEM, "%s addon already exists with version: %s in %s branch"
+            report.add(Record(PROBLEM, "%s addon already exists with a higher version: %s in %s branch"
                               % (addon_name, repo_addons_version, branch)))
     else:
-        if LooseVersion(addon_version) < LooseVersion(repo_addons_version):
-            report.add(Record(PROBLEM, "%s addon already exist with version: %s in %s branch"
+        if AddonVersion(addon_version) < AddonVersion(repo_addons_version):
+            report.add(Record(PROBLEM, "%s addon already exist with a higher version: %s in %s branch"
                               % (addon_name, repo_addons_version, branch)))
         else:
             report.add(Record(INFORMATION, "%s addon also exists in %s branch but with version: %s"

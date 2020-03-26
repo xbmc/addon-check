@@ -14,9 +14,10 @@ from collections import namedtuple
 from PIL import Image
 
 from .common import has_transparency, relative_path
-from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
+from .versions import KodiVersion
+
 
 LOGGER = logging.getLogger(__name__)
 

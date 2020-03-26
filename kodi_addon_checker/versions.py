@@ -6,7 +6,40 @@
     See LICENSES/README.md for more information.
 """
 
-from . import ValidKodiVersions
+from packaging.version import parse
+from kodi_addon_checker import ValidKodiVersions
+
+
+class AddonVersion():
+    def __init__(self, version):
+        self.version = parse(str(version))
+
+    def __lt__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError()
+        return self.version < other.version
+
+    def __le__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError()
+        return self.version <= other.version
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.version == other.version
+
+    def __ne__(self, other):
+        return not isinstance(other, self.__class__) or self.version != other.version
+
+    def __gt__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError()
+        return self.version > other.version
+
+    def __ge__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError()
+        return self.version >= other.versionß
+
 
 class KodiVersion():
     def __init__(self, version: str):
