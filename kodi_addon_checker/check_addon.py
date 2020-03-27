@@ -15,7 +15,7 @@ from . import (check_artwork, check_dependencies, check_entrypoint,
                check_string, check_url, common, handle_files,
                schema_validation, ValidKodiVersions)
 from .addons.Repository import Repository
-from .KodiVersion import KodiVersion
+from .versions import KodiVersion
 from .record import INFORMATION, Record
 from .report import Report
 

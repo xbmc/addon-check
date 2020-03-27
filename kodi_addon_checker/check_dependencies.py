@@ -7,12 +7,12 @@
 """
 
 import logging
-from distutils.version import LooseVersion
 
 from .addons.Addon import Addon
-from .KodiVersion import KodiVersion
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
+from .versions import AddonVersion, KodiVersion
+
 
 common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.movies',
                       'xbmc.metadata.scraper.musicvideos', 'xbmc.metadata.scraper.tvshows',
@@ -88,7 +88,7 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
                               .format("Optional" if dependency.optional else "Required", dependency.id,
                                       repo_addons.find(dependency.id).version)))
 
-        elif repo_addons.find(dependency.id).version < dependency.version:
+        elif AddonVersion(repo_addons.find(dependency.id).version) < dependency.version:
             report.add(Record(INFORMATION if dependency.optional else PROBLEM,
                               "Version mismatch for {} dependency {}, required: {}, Available: {}"
                               .format("optional" if dependency.optional else "required", dependency.id,
@@ -97,13 +97,13 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
         if dependency.id in VERSION_ATTRB:
             try:
                 version_info = VERSION_ATTRB[dependency.id][branch_name]
-                if LooseVersion(version_info["min_compatible"]) > dependency.version:
+                if AddonVersion(version_info["min_compatible"]) > dependency.version:
                     report.add(Record(PROBLEM, "For {}, {} version must be higher than {}. Advised {}."
                                       .format(branch_name, dependency.id,
                                               version_info["min_compatible"], version_info["advised"])))
                     continue
 
-                if LooseVersion(version_info["advised"]) != dependency.version:
+                if AddonVersion(version_info["advised"]) != dependency.version:
                     report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
                                       .format(branch_name, dependency.id, version_info["advised"])))
 
