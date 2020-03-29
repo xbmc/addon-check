@@ -40,6 +40,9 @@ class AddonVersion():
             raise TypeError()
         return self.version >= other.version
 
+    def __repr__(self):
+        return str(self.version)
+
 
 class KodiVersion():
     def __init__(self, version: str):
