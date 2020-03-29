@@ -38,7 +38,7 @@ class AddonVersion():
     def __ge__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError()
-        return self.version >= other.versionß
+        return self.version >= other.version
 
 
 class KodiVersion():
