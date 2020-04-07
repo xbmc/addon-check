@@ -16,6 +16,7 @@ from .common import relative_path
 from .common.decorators import posix_only
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
+from .versions import KodiVersion
 
 
 def check_for_invalid_xml_files(report: Report, file_index: list):
@@ -88,6 +89,19 @@ def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml, folder
                                            "to Kodi's official repository.".format(addon_id)))
         else:
             report.add(Record(PROBLEM, "Addon id and folder name does not match."))
+
+
+def check_for_legacy_changelog(report: Report, addon_path: str, branch: str):
+    """Check whehter a legacy changelog.txt is present in the addon folder root"""
+    changelog_path = os.path.join(addon_path, "changelog.txt")
+    if os.path.isfile(changelog_path):
+        report.add(
+            Record(
+                PROBLEM if KodiVersion(branch) >= KodiVersion("leia") else WARNING,
+                "A changelog.txt file was found. Use the <news> tag in addon.xml for the most recent changes "
+                "instead of a changelog.txt. See https://kodi.wiki/view/Addon.xml"
+            )
+        )
 
 
 def check_for_new_language_directory_structure(report: Report, addon_path: str, supported=True):
