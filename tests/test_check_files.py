@@ -1,3 +1,4 @@
+import os
 import unittest
 from os.path import abspath, dirname, join
 
@@ -29,7 +30,10 @@ class TestCheckFilePermission(unittest.TestCase):
         check_file_permission(self.report, file_index)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         flag = any(s == string for s in records)
-        self.assertTrue(flag)
+        if os.name == "nt":
+            self.assertFalse(flag)
+        else:
+            self.assertTrue(flag)
 
     def test_check_file_permission_is_None(self):
         path = join(HERE, 'test_data', 'Non-Executable_file')
