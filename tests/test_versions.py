@@ -18,6 +18,7 @@ def test_addonversion_simple_major():
 
 def test_addonversion_kodi_versions():
     assert AddonVersion("1.0.0+matrix.1") > AddonVersion("1.0.0+leia.1")
+    assert AddonVersion("1.0.0+leia.1") == AddonVersion("1.0.0+Leia.1")
 
 
 def test_addonversion_kodi_simplevsstring():

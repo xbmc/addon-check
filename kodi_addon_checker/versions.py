@@ -12,7 +12,7 @@ from kodi_addon_checker import ValidKodiVersions
 
 class AddonVersion():
     def __init__(self, version):
-        self.version = parse(str(version))
+        self.version = parse(str(version).lower())
         # non PEP440 compliant versions (legacy), for beta and alpha versions
         # convert them into PEP440 format: 1.1.0~beta01 -> 1.1.0beta01
         if self._islegacy_devversion:
