@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 
 from . import handle_files
 from .common import relative_path
+from .common.decorators import posix_only
 from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
 
@@ -129,6 +130,7 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
                                   relative_path(os.path.join(file["path"], file["name"]))))
 
 
+@posix_only
 def check_file_permission(report: Report, file_index: list):
     """Check whether the files present in addon are marked executable
        or not

@@ -6,6 +6,8 @@
     See LICENSES/README.md for more information.
 """
 
+__all__ = ["decorators", "has_transparency", "relative_path", "load_plugins"]
+
 import importlib
 import os
 import pkgutil
@@ -35,7 +37,7 @@ def has_transparency(im):
 def load_plugins():
     """Load the reporter plugins
     """
-    plugins_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plugins")
+    plugins_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plugins")
     sys.path.append(plugins_dir)
     for _, package_name, _ in pkgutil.iter_modules([plugins_dir]):
         if "test_" not in package_name:
