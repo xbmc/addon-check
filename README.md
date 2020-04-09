@@ -35,6 +35,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Check if addon already exists in any of lower repositories
 
+- Check if addon already exists in any of the upper repositories (with non-compatible python abi) with a lower version, thus preventing a user kodi migration
+
 - Check if addon is compatible with python3 or not
 
 - Check specific [version attribute](https://kodi.wiki/view/Addon.xml#version_attribute_2)

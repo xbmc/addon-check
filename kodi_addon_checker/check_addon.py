@@ -11,7 +11,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from . import (check_artwork, check_dependencies, check_entrypoint,
-               check_files, check_old_addon, check_py3_compatibility,
+               check_files, check_addon_branches, check_py3_compatibility,
                check_string, check_url, common, handle_files,
                schema_validation, ValidKodiVersions)
 from .addons.Repository import Repository
@@ -47,8 +47,8 @@ def start(addon_path, args, all_repo_addons, config=None):
     addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml, args.allow_folder_id_mismatch)
 
     if addon_xml is not None:
-        check_old_addon.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR,
-                                                 KodiVersion(args.branch))
+        check_addon_branches.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR,
+                                                      KodiVersion(args.branch))
 
         if not addon_xml.findall("*//broken"):
             file_index = handle_files.create_file_index(addon_path)
