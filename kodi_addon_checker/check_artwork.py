@@ -56,7 +56,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
         Asset(
             'screenshot',
             {
-                'extension': [".jpg", ".jpeg"],
+                'extension': [".jpg", ".jpeg", ".png"],
                 'transparency': False,
                 'sizes': [(1280, 720), (1920, 1080)],
                 'max_file_size': 750
@@ -65,7 +65,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
         Asset(
             'banner',
             {
-                'extension': [".jpg", ".jpeg"],
+                'extension': [".jpg", ".jpeg", ".png"],
                 'transparency': False,
                 'sizes': [(1000, 185)],
                 'max_file_size': None
