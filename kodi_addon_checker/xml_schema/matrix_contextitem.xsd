@@ -8,6 +8,7 @@
           <xs:unique name="oneLibraryOnly">
             <xs:selector xpath="./*"/>
             <xs:field xpath="@library"/>
+            <xs:field xpath="@args"/>
           </xs:unique>
         </xs:element>
       </xs:sequence>
@@ -21,6 +22,7 @@
       <xs:element name="visible" type="xs:string" minOccurs="1"/>
     </xs:all>
     <xs:attribute name="library" type="xs:string" use="required"/>
+    <xs:attribute name="args" type="xs:string"/>
   </xs:complexType>
   <xs:complexType name="menuType">
     <xs:choice maxOccurs="unbounded">
