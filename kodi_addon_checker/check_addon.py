@@ -84,7 +84,9 @@ def start(addon_path, args, all_repo_addons, config=None):
             check_string.check_for_legacy_strings_xml(addon_report, addon_path)
 
             if KodiVersion(args.branch) >= KodiVersion("isengard"):
-                check_files.check_for_legacy_language_path(addon_report, addon_path)
+                check_files.check_for_new_language_directory_structure(addon_report, addon_path)
+            else:
+                check_files.check_for_new_language_directory_structure(addon_report, addon_path, supported=False)
 
             check_string.check_for_invalid_strings_po(addon_report, file_index)
 

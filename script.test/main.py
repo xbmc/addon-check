@@ -108,7 +108,9 @@ def start(addon_path, repo_addons, config=None):
             _check_for_legacy_strings_xml(addon_report, addon_path)
 
             if branch_name not in ['gotham', 'helix']:
-                _check_for_legacy_language_path(addon_report, addon_path)
+                check_for_new_language_directory_structure(addon_report, addon_path)
+            else:
+                check_for_new_language_directory_structure(addon_report, addon_path, supported=False)
 
             # Kodi 18 Leia + deprecations
             if config.is_enabled("check_kodi_leia_deprecations"):
@@ -287,14 +289,22 @@ def _find_blacklisted_strings(report: Report, addon_path, problem_list, warning_
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
 
-def _check_for_legacy_language_path(report: Report, addon_path):
+def check_for_new_language_directory_structure(report: Report, addon_path, supported=True):
     language_path = os.path.join(addon_path, "resources", "language")
     if os.path.exists(language_path):
         dirs = next(os.walk(language_path))[1]
         found_warning = False
-        for dir in dirs:
-            if not found_warning and "resource.language." not in dir:
-                report.add(Record(WARNING, "Using the old language directory structure, please move to the new one."))
+        for directory in dirs:
+            if not found_warning and "resource.language." not in directory and supported:
+                report.add(Record(
+                    WARNING, "Using the old language directory structure in %s, please move to the new one." %
+                    os.path.join(language_path, directory)))
+                found_warning = True
+            elif not found_warning "resource.language." in directory and not supported:
+                report.add(Record(
+                    WARNING, "Using the new language directory structure in %s for a Kodi version that does not" \
+                             "support it. Please use the old language file struture or move the addon to" \
+                             "an upper branch/kodi version." % os.path.join(language_path, directory)))
                 found_warning = True
 
 

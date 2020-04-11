@@ -90,18 +90,25 @@ def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml, folder
             report.add(Record(PROBLEM, "Addon id and folder name does not match."))
 
 
-def check_for_legacy_language_path(report: Report, addon_path: str):
+def check_for_new_language_directory_structure(report: Report, addon_path: str, supported=True):
     """Check whether the language directory structure is new or not
         :addon_path: path to addon folder
+        :supported: if we should error out in case the new language format is not supported
+        by the respective kodiversion
     """
     language_path = os.path.join(addon_path, "resources", "language")
     if os.path.exists(language_path):
         dirs = next(os.walk(language_path))[1]
         for directory in dirs:
-            if "resource.language." not in directory:
+            if "resource.language." not in directory and supported:
                 report.add(Record(
-                    PROBLEM, "Using the old language directory structure, please move to the new one."))
-                break
+                    PROBLEM, "Using the old language directory structure in %s, please move to the new one." %
+                    os.path.join(language_path, directory)))
+            elif "resource.language." in directory and not supported:
+                report.add(Record(
+                    PROBLEM, "Using the new language directory structure in %s for a Kodi version that does not" \
+                             "support it. Please use the old language file struture or move the addon to" \
+                             "an upper branch/kodi version." % os.path.join(language_path, directory)))
 
 
 def check_file_whitelist(report: Report, file_index: list, addon_path: str):
