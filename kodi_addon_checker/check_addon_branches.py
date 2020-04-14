@@ -43,7 +43,7 @@ def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: d
         # if that branch corresponds to a breaking change (e.g. version of addon in matrix version >
         # version of addon in gotham) since xbmc.python is not backwards compatible.
         elif KodiVersion(branch) > kodi_version and addon_name in repo and \
-            not _is_pythonabi_compatible(kodi_version, branch):
+            not _is_pythonabi_compatible(repr(kodi_version), branch):
             is_new_addon = False
             _check_version_lower(report, addon_details, branch, repo.find(addon_name).version, pr)
 
