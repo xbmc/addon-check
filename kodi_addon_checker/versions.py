@@ -85,3 +85,6 @@ class KodiVersion():
         if not isinstance(other, self.__class__):
             raise TypeError()
         return ValidKodiVersions.index(self.version) >= ValidKodiVersions.index(other.version)
+
+    def __repr__(self):
+        return str(self.version)
