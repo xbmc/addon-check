@@ -62,7 +62,7 @@ def _get_addon_name(xml_path: str):
 
 def _is_pythonabi_compatible(target_branch, upper_branch):
     """returns true if the target_branch for this addon is backwards compatible with a
-        given upper branch. E.g. if kodi isengard python abi is comaptible with leia python abi.
+        given upper branch. E.g. if kodi isengard python abi is compatible with leia python abi.
         :target_branch: the branch the addon lives in (or is being PR'd to)
         : upper_branch: an upper branch that also contains an addon with the same addon id
     """
