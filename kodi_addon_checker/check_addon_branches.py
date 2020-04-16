@@ -11,7 +11,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from .check_dependencies import VERSION_ATTRB
-from .record import INFORMATION, PROBLEM, Record
+from .record import INFORMATION, PROBLEM, Record, WARNING
 from .report import Report
 from .versions import AddonVersion, KodiVersion
 
@@ -99,7 +99,6 @@ def _check_version_higher(report: Report, addon_details, branch, repo_addons_ver
                               % (addon_name, branch, repo_addons_version)))
 
 
-
 def _check_version_lower(report: Report, addon_details, branch, repo_addons_version, pr):
     """Check the version in upper branch is higher than the addon version being submitted
        thus allowing for kodi migration and inherent addon update.
@@ -117,7 +116,7 @@ def _check_version_lower(report: Report, addon_details, branch, repo_addons_vers
         (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and pr):
         report.add(
             Record(
-                PROBLEM,
+                PROBLEM if pr else WARNING,
                 "%s addon already exists with a lower or equal version: %s in %s branch. Users migrating " \
                 "to kodi version %s won't be able to receive the addon update"
                 % (addon_name, repo_addons_version, branch, branch)
