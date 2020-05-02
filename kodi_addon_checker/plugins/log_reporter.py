@@ -9,6 +9,7 @@ import logging
 import logging.handlers
 import os
 
+from kodi_addon_checker.common import get_reporter_log_path
 from kodi_addon_checker.report import Record
 from kodi_addon_checker.reporter import Reporter, reporter
 
@@ -18,14 +19,14 @@ class LogReporter(Reporter):
 
     def __init__(self):
         self.logger = None
+        self.log_file_path = get_reporter_log_path()
 
     def create_logger(self):
-        log_file_name = os.path.join(os.getcwd(), "kodi-addon-checker-report.log")
         logger = logging.getLogger("log_reporter")
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
         formatter = logging.Formatter(fmt="%(asctime)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-        log_handler = logging.handlers.RotatingFileHandler(log_file_name, encoding="utf-8", mode="w")
+        log_handler = logging.handlers.RotatingFileHandler(self.log_file_path, encoding="utf-8", mode="w")
         log_handler.setFormatter(formatter)
         log_handler.setLevel(logging.DEBUG)
         logger.addHandler(log_handler)

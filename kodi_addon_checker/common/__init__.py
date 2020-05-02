@@ -49,3 +49,21 @@ def relative_path(file_path):
     """
     path_to_print = file_path[len(REL_PATH):]
     return ".{}".format(path_to_print)
+
+
+def get_debug_log_path():
+    """Return the path of the debug log file (including its name).
+
+    :return: the full path of the debug log file
+    """
+
+    return os.path.join(os.getcwd(), "kodi-addon-checker.log")
+
+
+def get_reporter_log_path():
+    """Return the path of the reporter log file (including its name).
+
+    :return: the full path of the reporter log file
+    """
+
+    return os.path.join(os.getcwd(), "kodi-addon-checker-report.log")

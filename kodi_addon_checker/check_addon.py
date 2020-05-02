@@ -42,6 +42,16 @@ def start(addon_path, args, all_repo_addons, config=None):
     addon_xml_path = os.path.join(addon_path, "addon.xml")
     parsed_xml = ET.parse(addon_xml_path).getroot()
 
+    # Check if the debug log and/or the reporter log are enabled: it will be
+    # used to add them to the list of files to ignored
+    reporter_log_enabled = False
+    if args.reporter is not None:
+        if "log" in args.reporter:
+            reporter_log_enabled = True
+    debug_log_enabled = False
+    if args.enable_debug_log is not None:
+        debug_log_enabled = args.enable_debug_log
+
     # Extract common path from addon paths
     # All paths will be printed relative to this path
     common.REL_PATH = os.path.split(addon_path[:-1])[0]
@@ -103,7 +113,7 @@ def start(addon_path, args, all_repo_addons, config=None):
             # General blacklist
             check_string.find_blacklisted_strings(addon_report, addon_path, [], [], [])
 
-            check_files.check_file_whitelist(addon_report, file_index, addon_path)
+            check_files.check_file_whitelist(addon_report, file_index, addon_path, debug_log_enabled, reporter_log_enabled)
         else:
             addon_report.add(
                 Record(INFORMATION, "Addon marked as broken - skipping"))
