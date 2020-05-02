@@ -15,6 +15,13 @@ matrix:
     - env: REPO=repo-plugins BRANCH=krypton
     - env: REPO=repo-plugins BRANCH=leia
     - env: REPO=repo-plugins BRANCH=matrix
+    - env: REPO=repo-scrapers BRANCH=gotham
+    - env: REPO=repo-scrapers BRANCH=helix
+    - env: REPO=repo-scrapers BRANCH=isengard
+    - env: REPO=repo-scrapers BRANCH=jarvis
+    - env: REPO=repo-scrapers BRANCH=krypton
+    - env: REPO=repo-scrapers BRANCH=leia
+    - env: REPO=repo-scrapers BRANCH=matrix
     - env: REPO=repo-resources BRANCH=isengard
     - env: REPO=repo-resources BRANCH=jarvis
     - env: REPO=repo-resources BRANCH=krypton
@@ -38,6 +45,13 @@ matrix:
     - env: REPO=repo-plugins BRANCH=krypton
     - env: REPO=repo-plugins BRANCH=leia
     - env: REPO=repo-plugins BRANCH=matrix
+    - env: REPO=repo-scrapers BRANCH=gotham
+    - env: REPO=repo-scrapers BRANCH=helix
+    - env: REPO=repo-scrapers BRANCH=isengard
+    - env: REPO=repo-scrapers BRANCH=jarvis
+    - env: REPO=repo-scrapers BRANCH=krypton
+    - env: REPO=repo-scrapers BRANCH=leia
+    - env: REPO=repo-scrapers BRANCH=matrix
     - env: REPO=repo-resources BRANCH=isengard
     - env: REPO=repo-resources BRANCH=jarvis
     - env: REPO=repo-resources BRANCH=krypton
@@ -61,17 +75,17 @@ install:
 
 before_script:
   - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
-      git clone --branch=$BRANCH --depth=1 --single-branch https://github.com/xbmc/$REPO.git ../repo;
+    git clone --branch=$BRANCH --depth=1 --single-branch https://github.com/xbmc/$REPO.git ../repo;
     fi
 
 # command to run tests
 script:
   - if [[ -n "$REPO" && -n "$BRANCH" ]]; then
-      python3 -m kodi_addon_checker --branch=$BRANCH ../repo;
+    python3 -m kodi_addon_checker --branch=$BRANCH ../repo;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
-      py.test -v;
+    py.test -v;
     fi
   - if [[ -z "$REPO" || -z "$BRANCH" ]]; then
-      pylint *;
+    pylint *;
     fi
