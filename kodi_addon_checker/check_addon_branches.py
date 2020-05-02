@@ -7,9 +7,9 @@
 """
 
 import logging
-import os
 import xml.etree.ElementTree as ET
 
+from .addons.Addon import Addon
 from .check_dependencies import VERSION_ATTRB
 from .record import INFORMATION, PROBLEM, Record, WARNING
 from .report import Report
@@ -19,16 +19,21 @@ from .versions import AddonVersion, KodiVersion
 LOGGER = logging.getLogger(__name__)
 
 
-def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: dict, pr: bool,
-                             kodi_version: KodiVersion):
+def check_for_existing_addon(report: Report, addon: Addon, all_repo_addons: dict, args):
     """Check if addon submitted already exists or not
-        :addon_path: path of the addon
+        :report: the report object
+        :addon: the Addon object (contains id and version)
         :all_repo_addons: dictionary return by all_repo_addon() function
+        :args: the args object passed to addon-checker
     """
-
-    addon_xml = os.path.join(addon_path, "addon.xml")
-    addon_name, addon_version = _get_addon_name(addon_xml)
+    # addon details
+    addon_name = addon.id
+    addon_version = addon.version
     addon_details = {'name': addon_name, 'version': addon_version}
+
+    # args
+    pr = bool(args.PR)
+    kodi_version = KodiVersion(args.branch)
 
     is_new_addon = True
     for branch, repo in sorted(all_repo_addons.items(), reverse=True):
@@ -41,9 +46,9 @@ def check_for_existing_addon(report: Report, addon_path: str, all_repo_addons: d
 
         # Addon submission must be lower than the versions already available in upper repo branches
         # if that branch corresponds to a breaking change (e.g. version of addon in matrix version >
-        # version of addon in gotham) since xbmc.python is not backwards compatible.
+        # version of addon in gotham) since there might be dependencies not abi-backward compatible.
         elif KodiVersion(branch) > kodi_version and addon_name in repo and \
-            not _is_pythonabi_compatible(repr(kodi_version), branch):
+            not _is_xbmcabi_compatible(addon.dependencies, repr(kodi_version), branch):
             is_new_addon = False
             _check_version_lower(report, addon_details, branch, repo.find(addon_name).version, pr)
 
@@ -60,14 +65,20 @@ def _get_addon_name(xml_path: str):
     return (tree.get("id"), tree.get("version"))
 
 
-def _is_pythonabi_compatible(target_branch, upper_branch):
+def _is_xbmcabi_compatible(dependencies: list, target_branch: str, upper_branch: str):
     """returns true if the target_branch for this addon is backwards compatible with a
-        given upper branch. E.g. if kodi isengard python abi is compatible with leia python abi.
+        given upper branch. E.g. if there are dependencies on the addon that are ABI incompatible
+        with the migration to an upper kodi version (resulting in the addon being incompatible)
+        :dependencies: the list of dependencies of the addon
         :target_branch: the branch the addon lives in (or is being PR'd to)
-        : upper_branch: an upper branch that also contains an addon with the same addon id
+        :upper_branch: an upper branch that also contains an addon with the same addon id
     """
-    return VERSION_ATTRB['xbmc.python'][upper_branch]["min_compatible"] == \
-        VERSION_ATTRB['xbmc.python'][target_branch]["min_compatible"]
+    for dependency in dependencies:
+        if dependency.id in VERSION_ATTRB.keys():
+            if AddonVersion(VERSION_ATTRB[dependency.id][upper_branch]["min_compatible"]) > \
+                AddonVersion(VERSION_ATTRB[dependency.id][target_branch]["min_compatible"]):
+                return False
+    return True
 
 
 def _check_version_higher(report: Report, addon_details, branch, repo_addons_version, pr):
@@ -117,8 +128,9 @@ def _check_version_lower(report: Report, addon_details, branch, repo_addons_vers
         report.add(
             Record(
                 PROBLEM if pr else WARNING,
-                "%s addon already exists with a lower or equal version: %s in %s branch. Users migrating " \
-                "to kodi version %s won't be able to receive the addon update"
+                "%s addon already exists with a lower or equal version: %s in %s branch " \
+                "and the addon has non forward abi compatible dependencies. Users migrating " \
+                "to kodi version %s won't be able to receive the addon update."
                 % (addon_name, repo_addons_version, branch, branch)
             )
         )

@@ -14,6 +14,7 @@ from . import (check_artwork, check_dependencies, check_entrypoint,
                check_files, check_addon_branches, check_py3_compatibility,
                check_string, check_url, common, handle_files,
                schema_validation, ValidKodiVersions)
+from .addons.Addon import Addon
 from .addons.Repository import Repository
 from .versions import KodiVersion
 from .record import INFORMATION, Record
@@ -47,8 +48,7 @@ def start(addon_path, args, all_repo_addons, config=None):
     addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml, args.allow_folder_id_mismatch)
 
     if addon_xml is not None:
-        check_addon_branches.check_for_existing_addon(addon_report, addon_path, all_repo_addons, args.PR,
-                                                      KodiVersion(args.branch))
+        check_addon_branches.check_for_existing_addon(addon_report, Addon(parsed_xml), all_repo_addons, args)
 
         if not addon_xml.findall("*//broken"):
             file_index = handle_files.create_file_index(addon_path)
