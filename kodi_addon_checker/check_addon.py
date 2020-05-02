@@ -89,7 +89,7 @@ def start(addon_path, args, all_repo_addons, config=None):
                 check_files.check_for_new_language_directory_structure(addon_report, addon_path, supported=False)
 
             if KodiVersion(args.branch) >= KodiVersion("krypton"):
-                check_files.check_for_legacy_changelog(addon_report, addon_path, args.branch)
+                check_files.check_for_legacy_changelog(addon_report, addon_path, parsed_xml, args.branch)
 
             check_string.check_for_invalid_strings_po(addon_report, file_index)
 

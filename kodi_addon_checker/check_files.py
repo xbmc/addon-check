@@ -91,17 +91,23 @@ def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml, folder
             report.add(Record(PROBLEM, "Addon id and folder name does not match."))
 
 
-def check_for_legacy_changelog(report: Report, addon_path: str, branch: str):
+def check_for_legacy_changelog(report: Report, addon_path: str, parsed_xml: ET.Element, branch: str):
     """Check whehter a legacy changelog.txt is present in the addon folder root"""
     changelog_path = os.path.join(addon_path, "changelog.txt")
+
     if os.path.isfile(changelog_path):
-        report.add(
-            Record(
-                PROBLEM if KodiVersion(branch) >= KodiVersion("leia") else WARNING,
-                "A changelog.txt file was found. Use the <news> tag in addon.xml for the most recent changes "
-                "instead of a changelog.txt. See https://kodi.wiki/view/Addon.xml"
+        news = parsed_xml.find("./extension/news")
+        news_present = news is not None and news.text
+
+        if not news_present:
+            report.add(
+                Record(
+                    PROBLEM if KodiVersion(branch) >= KodiVersion("krypton") else WARNING,
+                    "A changelog.txt file was found but no <news> tag was present in the addon.xml. Please add a "
+                    "<news> element to your addon.xml and include the most recent changes there. "
+                    "See https://kodi.wiki/view/Addon.xml"
+                )
             )
-        )
 
 
 def check_for_new_language_directory_structure(report: Report, addon_path: str, supported=True):
