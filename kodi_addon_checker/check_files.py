@@ -130,20 +130,20 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str, debu
 
     # Depending on the arguments used, ignore the log files
     files_to_ignore = []
-    if reporter_log_enabled:
-        files_to_ignore.append(get_reporter_log_path())
     if debug_log_enabled:
         files_to_ignore.append(get_debug_log_path())
+    if reporter_log_enabled:
+        files_to_ignore.append(get_reporter_log_path())
 
     for file in file_index:
-        file_parts = file["name"].rsplit(".")
-        if len(file_parts) > 1:
-            file_ending = "." + file_parts[len(file_parts) - 1]
-            if re.match(whitelist, file_ending, re.IGNORECASE) is None:
-                if os.path.join(file["path"], file["name"]) not in files_to_ignore:
+        if os.path.join(file["path"], file["name"]) not in files_to_ignore:
+            file_parts = file["name"].rsplit(".")
+            if len(file_parts) > 1:
+                file_ending = "." + file_parts[len(file_parts) - 1]
+                if re.match(whitelist, file_ending, re.IGNORECASE) is None:
                     report.add(Record(WARNING,
-                                  "Found non whitelisted file ending in filename %s" %
-                                  relative_path(os.path.join(file["path"], file["name"]))))
+                                      "Found non whitelisted file ending in filename %s" %
+                                      relative_path(os.path.join(file["path"], file["name"]))))
 
 
 @posix_only
