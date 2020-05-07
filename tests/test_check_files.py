@@ -73,7 +73,7 @@ class TestCheckFileWhitelist(unittest.TestCase):
         self.file_index.append({"path": os.path.dirname(get_debug_log_path()),
                                 "name": self.debug_log_filename})
         self.file_index.append({"path": os.path.dirname(get_reporter_log_path()),
-                               "name": self.reporter_log_filename})
+                                "name": self.reporter_log_filename})
 
     def check_if_log_files_were_reported(self):
         """Helper function to check if the log files were reported."""

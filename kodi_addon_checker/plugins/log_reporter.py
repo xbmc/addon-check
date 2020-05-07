@@ -7,7 +7,6 @@
 """
 import logging
 import logging.handlers
-import os
 
 from kodi_addon_checker.common import get_reporter_log_path
 from kodi_addon_checker.report import Record
