@@ -56,6 +56,8 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
         with open(full_path, "r", encoding="utf-8") as f:
             try:
                 contents = f.read()
+                f.seek(0)
+                lines = f.readlines()
             except UnicodeDecodeError:
                 report_made = True
                 report.add(Record(PROBLEM, "Invalid PO file %s: File is not saved with UTF-8 encoding"
@@ -85,8 +87,15 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
                               % (relative_path(full_path))))
             continue
 
+        # fix any Gettext automatic comments in the source before testing with polib
+        contents = ''.join(['# ' + line.replace('#', '').lstrip()
+                            if (line.startswith('#') and line.replace('#', '').lstrip())
+                            else ('\n'
+                                  if line.startswith('#') and not line.replace('#', '').lstrip()
+                                  else line)
+                            for line in lines])
         try:
-            polib.pofile(full_path, encoding="utf-8")
+            polib.pofile(contents, encoding="utf-8")
         except OSError as error:
             # raised on the first syntax error
             message = str(error)
