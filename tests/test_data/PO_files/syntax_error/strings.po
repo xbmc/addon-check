@@ -2,6 +2,7 @@
 # Addon Name: kodi test addon
 # Addon id: script.test
 # Addon Provider: mzfr
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Addons\n"
@@ -16,9 +17,10 @@ msgstr ""
 "Language: en_gb\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#This is an invalid comment, raises syntax error @ line 19
+#This is a Gettext automatic comment and won't raise syntax error
 
-msgctxt "#32000"
+# The following line starting with ; will raise Syntax error on line 23
+;msgctxt "#32000"
 msgid "Example"
 msgstr ""
 

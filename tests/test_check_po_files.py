@@ -62,7 +62,7 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
-                    "Syntax error on line 19".format(path=relative_path(full_path))]
+                    "Syntax error on line 23".format(path=relative_path(full_path))]
 
         check_for_invalid_strings_po(self.report, file_index)
 
