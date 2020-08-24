@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "http://www.w3.org/2001/XMLSchema.dtd">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="extension">
+    <xs:complexType>
+      <xs:attribute name="point" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="protocols" type="xs:string"/>
+      <xs:attribute name="listitemprops" type="xs:string"/>
+      <xs:attribute name="extension" type="xs:string"/>
+      <xs:attribute name="tags" type="xs:boolean"/>
+      <xs:attribute name="library_android" type="lib_so"/>
+      <xs:attribute name="library_freebsd" type="lib_so"/>
+      <xs:attribute name="library_rbpi" type="lib_so"/>
+      <xs:attribute name="library_linux" type="lib_so"/>
+      <xs:attribute name="library_windx" type="lib_dll"/>
+      <xs:attribute name="library_windows" type="lib_dll"/>
+      <xs:attribute name="library_windowsstore" type="lib_dll"/>
+      <xs:attribute name="library_darwin_embedded" type="lib_dylib"/>
+      <xs:attribute name="library_osx" type="lib_dylib"/>
+      <xs:attribute name="library" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="lib_so">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(inputstream\.).*(\.so)(\.[0-9]*)?((\.[0-9]*)(\.[0-9]*))?"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="lib_dll">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(inputstream\.).*(\.dll)"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="lib_dylib">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(inputstream\.).*(\.dylib)"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
