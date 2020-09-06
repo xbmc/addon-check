@@ -13,7 +13,7 @@ from .AddonDependency import AddonDependency
 
 class Addon():
     def __init__(self, addon_xml: ET.Element):
-        super(Addon, self).__init__()
+        super().__init__()
         self.id = addon_xml.get('id')
         self.version = addon_xml.get('version')
         self.dependencies = []

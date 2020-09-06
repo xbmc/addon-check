@@ -57,7 +57,7 @@ class KodiVersion():
     def __init__(self, version: str):
         if version not in ValidKodiVersions:
             raise ValueError("Invalid KodiVersion")
-        super(KodiVersion, self).__init__()
+        super().__init__()
         self.version = version
 
     def __lt__(self, other):

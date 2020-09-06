@@ -11,7 +11,7 @@ from ..versions import AddonVersion
 
 class AddonDependency():
     def __init__(self, import_xml: ET.Element):
-        super(AddonDependency, self).__init__()
+        super().__init__()
         self.id = import_xml.get('addon')
         self.version = None
         if import_xml.get('version') is not None:
