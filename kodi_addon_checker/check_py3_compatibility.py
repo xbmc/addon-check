@@ -20,7 +20,7 @@ class KodiRefactoringTool(refactor.RefactoringTool):
     def __init__(self, report, log_level, *args, **kwargs):
         self.report = report
         self.log_level = log_level
-        super(KodiRefactoringTool, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def print_output(self, old_text, new_text, filename, equal):
         """

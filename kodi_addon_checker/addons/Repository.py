@@ -17,7 +17,7 @@ from .Addon import Addon
 
 class Repository():
     def __init__(self, version, path):
-        super(Repository, self).__init__()
+        super().__init__()
         self.version = version
         self.path = path
 
