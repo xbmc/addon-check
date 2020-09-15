@@ -25,7 +25,15 @@ common_ignore_deps = ['xbmc.metadata.scraper.albums', 'xbmc.metadata.scraper.mov
                       'kodi.audioencoder', 'kodi.audiodecoder', 'xbmc.service', 'kodi.resource.images',
                       'kodi.resource.language', 'kodi.resource.uisounds', 'kodi.resource.games',
                       'kodi.resource.font', 'kodi.inputstream', 'kodi.vfs', 'kodi.imagedecoder', 'xbmc.addon',
-                      'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil']
+                      'xbmc.gui', 'xbmc.json', 'xbmc.metadata', 'xbmc.python', 'script.module.pil',
+                      'kodi.binary.global.main', 'kodi.binary.global.audioengine', 'kodi.binary.global.filesystem',
+                      'kodi.binary.global.general', 'kodi.binary.global.gui', 'kodi.binary.global.main',
+                      'kodi.binary.global.network', 'kodi.binary.global.tools', 'kodi.binary.instance.audiodecoder',
+                      'kodi.binary.instance.audioencoder', 'kodi.binary.instance.game',
+                      'kodi.binary.instance.imagedecoder', 'kodi.binary.instance.inputstream',
+                      'kodi.binary.instance.peripheral', 'kodi.binary.instance.pvr', 'kodi.binary.instance.screensaver',
+                      'kodi.binary.instance.vfs', 'kodi.binary.instance.videocodec',
+                      'kodi.binary.instance.visualization']
 
 extensions = {"kodi.gameclient": "kodi.binary.instance.game",
               "xbmc.gui.skin": "xbmc.gui",
