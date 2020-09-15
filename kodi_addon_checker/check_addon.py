@@ -50,7 +50,9 @@ def start(addon_path, args, all_repo_addons, config=None):
     if addon_xml is not None:
         check_addon_branches.check_for_existing_addon(addon_report, Addon(parsed_xml), all_repo_addons, args)
 
-        if not addon_xml.findall("*//broken"):
+        if not addon_xml.findall("*//broken") and \
+           not (addon_xml.findall("*//lifecyclestate") and \
+                addon_xml.find("*//lifecyclestate").attrib.get("type") == "broken"):
             file_index = handle_files.create_file_index(addon_path)
 
             schema_validation.schemas(addon_report, parsed_xml, args.branch)
