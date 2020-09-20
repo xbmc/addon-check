@@ -8,7 +8,7 @@ from kodi_addon_checker.config import Config
 
 
 class Args():
-    PR = False
+    higher_version_required = False
     allow_folder_id_mismatch = False
     branch = "krypton"
 

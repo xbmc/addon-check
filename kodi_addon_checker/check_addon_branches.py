@@ -32,17 +32,17 @@ def check_for_existing_addon(report: Report, addon: Addon, all_repo_addons: dict
     addon_details = {'name': addon_name, 'version': addon_version}
 
     # args
-    pr = bool(args.PR)
+    version_constraint = bool(args.higher_version_required)
     kodi_version = KodiVersion(args.branch)
 
     is_new_addon = True
     for branch, repo in sorted(all_repo_addons.items(), reverse=True):
 
         # Addon submission must be higher than the versions already available in lower
-        # branches to allow users to receive the update (especially if run with --pr)
+        # branches to allow users to receive the update (especially if run with --higher-version-required)
         if KodiVersion(branch) <= kodi_version and addon_name in repo:
             is_new_addon = False
-            _check_version_higher(report, addon_details, branch, repo.find(addon_name).version, pr)
+            _check_version_higher(report, addon_details, branch, repo.find(addon_name).version, version_constraint)
 
         # Addon submission must be lower than the versions already available in upper repo branches
         # if that branch corresponds to a breaking change (e.g. version of addon in matrix version >
@@ -50,7 +50,7 @@ def check_for_existing_addon(report: Report, addon: Addon, all_repo_addons: dict
         elif KodiVersion(branch) > kodi_version and addon_name in repo and \
             not _is_xbmcabi_compatible(addon.dependencies, repr(kodi_version), branch):
             is_new_addon = False
-            _check_version_lower(report, addon_details, branch, repo.find(addon_name).version, pr)
+            _check_version_lower(report, addon_details, branch, repo.find(addon_name).version, version_constraint)
 
     if is_new_addon:
         report.add(Record(INFORMATION, "This is a new addon"))
@@ -81,21 +81,21 @@ def _is_xbmcabi_compatible(dependencies: list, target_branch: str, upper_branch:
     return True
 
 
-def _check_version_higher(report: Report, addon_details, branch, repo_addons_version, pr):
+def _check_version_higher(report: Report, addon_details, branch, repo_addons_version, version_constraint):
     """Check the version in lower branch is lower than the addon version being submitted
        thus allowing for addon updates.
 
         :addon_details:       a dict containing name and version of the addon {'name': .., 'version': ..}
         :branch:              branch of the addon present in Kodi repository
         :repo_addons_version: version of addon present in Kodi repository
-        :pr:                  boolean value indicating whether the check is
+        :version_constraint:  boolean value indicating whether the check is
                               running on pull request or not
     """
     addon_name = addon_details.get('name')
     addon_version = addon_details.get('version')
 
     if AddonVersion(addon_version) < AddonVersion(repo_addons_version) or \
-        (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and pr):
+        (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and version_constraint):
         report.add(
             Record(
                 PROBLEM,
@@ -105,29 +105,29 @@ def _check_version_higher(report: Report, addon_details, branch, repo_addons_ver
             )
         )
     else:
-        if pr:
+        if version_constraint:
             report.add(Record(INFORMATION, "%s addon also exists in %s branch but with update compatible version: %s"
                               % (addon_name, branch, repo_addons_version)))
 
 
-def _check_version_lower(report: Report, addon_details, branch, repo_addons_version, pr):
+def _check_version_lower(report: Report, addon_details, branch, repo_addons_version, version_constraint):
     """Check the version in upper branch is higher than the addon version being submitted
        thus allowing for kodi migration and inherent addon update.
 
         :addon_details:       a dict containing name and version of the addon {'name': .., 'version': ..}
         :branch:              branch of the addon present in Kodi repository
         :repo_addons_version: version of addon present in Kodi repository
-        :pr:                  boolean value indicating whether the check is
+        :version_constraint:  boolean value indicating whether the check is
                               running on pull request or not
     """
     addon_name = addon_details.get('name')
     addon_version = addon_details.get('version')
 
     if AddonVersion(addon_version) > AddonVersion(repo_addons_version) or \
-        (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and pr):
+        (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and version_constraint):
         report.add(
             Record(
-                PROBLEM if pr else WARNING,
+                PROBLEM if version_constraint else WARNING,
                 "%s addon already exists with a lower or equal version: %s in %s branch " \
                 "and the addon has non forward abi compatible dependencies. Users migrating " \
                 "to kodi version %s won't be able to receive the addon update."
@@ -135,6 +135,6 @@ def _check_version_lower(report: Report, addon_details, branch, repo_addons_vers
             )
         )
     else:
-        if pr:
+        if version_constraint:
             report.add(Record(INFORMATION, "%s addon also exists in %s branch but with migration compatible version: %s"
                               % (addon_name, branch, repo_addons_version)))

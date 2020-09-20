@@ -72,7 +72,10 @@ def main():
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
     parser.add_argument("--branch", choices=ValidKodiVersions, required=True,
                         help="Target branch name where the checker will resolve dependencies")
-    parser.add_argument("--PR", help="Tell if tool is to run on a pull requests or not", action='store_true')
+    # TODO: remove --PR, when --PR is removed dest will also no longer be required
+    parser.add_argument("--higher-version-required", "--PR", dest="higher_version_required",
+                        help="The addon version must be higher than the version available from the repository",
+                        action='store_true')
     parser.add_argument("--allow-folder-id-mismatch", help="Allow the addon's folder name and id to mismatch",
                         action="store_true")
     parser.add_argument("--enable-debug-log", help="Enable debug logging to kodi-addon-checker.log",

@@ -35,6 +35,13 @@ disable=import-error,
 max-line-length=120
 
 
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma
+# Setting notes blank, default will cause warning W0511 for TODO/FIXME/XXX comments
+notes=
+
+
 [SIMILARITIES]
 
 # Ignore imports when computing similarities.
