@@ -205,7 +205,7 @@ def _get_ignore_list(kodi_version: KodiVersion):
        on the branch name
     """
 
-    if kodi_version == KodiVersion("leia"):
+    if kodi_version >= KodiVersion("leia"):
         common_ignore_deps.extend(["script.module.pycryptodome"])
 
     if kodi_version == KodiVersion("krypton"):
