@@ -17,20 +17,31 @@ from .Addon import Addon
 
 class Repository():
     def __init__(self, version, path):
+        """Get information of all the addons
+        :version: Kodi version name for the repository
+        :path: path to the Kodi repository file
+        """
         super().__init__()
         self.version = version
         self.path = path
 
-        # Recover from unreliable mirrors
-        session = requests.Session()
-        adapter = requests.adapters.HTTPAdapter(max_retries=5)
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
+        content = ''
 
-        content = session.get(path, timeout=(30, 30)).content
+        if path.startswith('http'):
+            # Recover from unreliable mirrors
+            session = requests.Session()
+            adapter = requests.adapters.HTTPAdapter(max_retries=5)
+            session.mount('http://', adapter)
+            session.mount('https://', adapter)
 
-        if path.endswith('.gz'):
-            with gzip.open(BytesIO(content), 'rb') as xml_file:
+            content = session.get(path, timeout=(30, 30)).content
+
+            if path.endswith('.gz'):
+                with gzip.open(BytesIO(content), 'rb') as xml_file:
+                    content = xml_file.read()
+
+        if not content and path.endswith('.xml'):
+            with open(path, 'rb') as xml_file:
                 content = xml_file.read()
 
         tree = ET.fromstring(content)

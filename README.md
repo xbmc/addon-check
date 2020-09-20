@@ -53,6 +53,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Check if all PO files are valid
 
+- Check for circular dependencies
+
 All of the validation and checks are done according to the kodi [addon rules](https://kodi.wiki/view/Add-on_rules)
 
 ## Installation

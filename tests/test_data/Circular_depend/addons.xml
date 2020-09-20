@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addons>
+    <addon id="plugin.test.one" version="0.0.1" name="Testing" provider-name="Tester">
+        <requires>
+            <import addon="xbmc.python" version="2.25.0"/>
+            <import addon="plugin.test.two"/>
+        </requires>
+        <extension point="xbmc.python.pluginsource" library="addon.py">
+            <provides>video</provides>
+        </extension>
+        <extension point="xbmc.addon.metadata">
+            <summary lang="en_GB">Testing</summary>
+            <description lang="en_GB">Testing</description>
+            <language>en</language>
+            <disclaimer>This is just a test</disclaimer>
+            <platform>all</platform>
+            <license>GPL-3.0-only</license>
+            <assets>
+                <icon>icon.png</icon>
+                <fanart>fanart.jpg</fanart>
+            </assets>
+            <news>Testing 123</news>
+        </extension>
+    </addon>
+</addons>
