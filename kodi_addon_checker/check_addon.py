@@ -90,7 +90,7 @@ def start(addon_path, args, all_repo_addons, config=None):
             else:
                 check_files.check_for_new_language_directory_structure(addon_report, addon_path, supported=False)
 
-            check_string.check_for_invalid_strings_po(addon_report, file_index)
+            check_string.check_for_invalid_strings_po(addon_report, file_index, addon_path)
 
             # Kodi 18 Leia + deprecations
             if config.is_enabled("check_kodi_leia_deprecations"):
