@@ -23,11 +23,12 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "valid_file")
-        file_index = [{"path": path, "name": "strings.po"}]
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = []
-
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -38,15 +39,16 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "missing_header")
-        full_path = join(path, "strings.po")
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+        full_path = join(language_path, "strings.po")
 
-        file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = ['ERROR: Invalid PO file {path}:\n'
                     'Missing required header:\n'
                     '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -57,14 +59,15 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "syntax_error")
-        full_path = join(path, "strings.po")
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+        full_path = join(language_path, "strings.po")
 
-        file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
                     "Syntax error on line 23".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -75,14 +78,15 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "encoding")
-        full_path = join(path, "strings.po")
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+        full_path = join(language_path, "strings.po")
 
-        file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
                     "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -93,14 +97,15 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "bom")
-        full_path = join(path, "strings.po")
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+        full_path = join(language_path, "strings.po")
 
-        file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: "
                     "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -111,15 +116,90 @@ class TestPOFiles(unittest.TestCase):
         ReportManager.getEnabledReporters()[0].reports = []
 
         path = join(self.path, "empty")
-        full_path = join(path, "strings.po")
+        language_path = join(path, "resources", "language", "resource.language.en_gb")
+        full_path = join(language_path, "strings.po")
 
-        file_index = [{"path": path, "name": "strings.po"}]
+        file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = ["ERROR: Invalid PO file {path}: File is empty".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index)
+        check_for_invalid_strings_po(self.report, file_index, path)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
 
+        self.assertListEqual(expected, output)
+
+    def test_check_for_invalid_strings_po_path(self):
+        ReportManager.getEnabledReporters()[0].reports = []
+
+        path = join(self.path, "path_check")
+        language_path = join(path, "resources", "language")
+
+        file_index = [{"path": join(language_path, "resources.language.en_gb"), "name": "strings.po"},
+                      {"path": join(language_path, "resource.language.en_gb"), "name": "strings.po"}]
+
+        expected = [
+            "ERROR: PO file not in the correct path: {path}"
+                .format(path=relative_path(join(language_path, "resources.language.en_gb", "strings.po"))),
+        ]
+
+        check_for_invalid_strings_po(self.report, file_index, path)
+
+        matches = (
+            self.report_matches,
+            "ERROR: PO file not in the correct path"
+        )
+
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        output = [s for s in records if s.startswith(matches)]
+        self.assertListEqual(expected, output)
+
+    def test_check_for_invalid_strings_po_language_code(self):
+        ReportManager.getEnabledReporters()[0].reports = []
+
+        path = join(self.path, "path_check")
+        language_path = join(path, "resources", "language")
+
+        file_index = [{"path": join(language_path, "resource.language.testing"), "name": "strings.po"},
+                      {"path": join(language_path, "resource.language.en_gb"), "name": "strings.po"}]
+
+        expected = [
+            "ERROR: PO file with invalid language code in the correct path: {path}"
+                .format(path=relative_path(join(language_path, "resource.language.testing", "strings.po")))
+        ]
+
+        check_for_invalid_strings_po(self.report, file_index, path)
+
+        matches = (
+            self.report_matches,
+            "ERROR: PO file with invalid language code in the correct path"
+        )
+
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        output = [s for s in records if s.startswith(matches)]
+
+        self.assertListEqual(expected, output)
+
+    def test_check_for_invalid_strings_po_missing_en_gb(self):
+        ReportManager.getEnabledReporters()[0].reports = []
+
+        path = join(self.path, "path_check")
+        language_path = join(path, "resources", "language")
+
+        file_index = [{"path": join(language_path, "resource.language.en_us"), "name": "strings.po"}]
+
+        expected = [
+            "ERROR: Required default language 'en_gb' is not present."
+        ]
+
+        check_for_invalid_strings_po(self.report, file_index, path)
+
+        matches = (
+            self.report_matches,
+            "ERROR: Required default language",
+        )
+
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        output = [s for s in records if s.startswith(matches)]
         self.assertListEqual(expected, output)
