@@ -106,23 +106,31 @@ VERSION_ATTRB = {
 LOGGER = logging.getLogger(__name__)
 
 
-def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, branch_name: str):
+def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, args):
     """Check for any new dependencies in addon.xml file and reports them
         :parsed_xml: parsed addon.xml file
         :repo_addons: dictionary having all the addon list of a particular
                         version of kodi
-        :branch_name: name of the kodi branch/version
+        :args: the args object passed to addon-checker
     """
 
     addon = Addon(parsed_xml)
-    ignore = _get_ignore_list(KodiVersion(branch_name))
+    ignore = _get_ignore_list(KodiVersion(args.branch))
+    pr = bool(args.PR)
 
     for dependency in addon.dependencies:
         if dependency.id in ignore and not dependency.optional:
             pass
 
         elif dependency.id not in repo_addons:
-            report.add(Record(INFORMATION if dependency.optional else PROBLEM,
+            if dependency.optional:
+                record_level = INFORMATION
+            elif not pr:
+                record_level = WARNING
+            else:
+                record_level = PROBLEM
+
+            report.add(Record(record_level,
                               "{} dependency {} is not available in current repository"
                               .format("Optional" if dependency.optional else "Required", dependency.id)))
 
@@ -140,16 +148,16 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, bran
 
         if dependency.id in VERSION_ATTRB:
             try:
-                version_info = VERSION_ATTRB[dependency.id][branch_name]
+                version_info = VERSION_ATTRB[dependency.id][args.branch]
                 if AddonVersion(version_info["min_compatible"]) > dependency.version:
                     report.add(Record(PROBLEM, "For {}, {} version must be higher than {}. Advised {}."
-                                      .format(branch_name, dependency.id,
+                                      .format(args.branch, dependency.id,
                                               version_info["min_compatible"], version_info["advised"])))
                     continue
 
                 if AddonVersion(version_info["advised"]) != dependency.version:
                     report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
-                                      .format(branch_name, dependency.id, version_info["advised"])))
+                                      .format(args.branch, dependency.id, version_info["advised"])))
 
             except KeyError:
                 LOGGER.warning("Misconfiguration in VERSION_ATTRB of check_dependencies")
