@@ -13,6 +13,7 @@ from io import BytesIO
 import requests
 
 from .Addon import Addon
+from ..versions import AddonVersion
 
 
 class Repository():
@@ -45,10 +46,19 @@ class Repository():
         return False
 
     def find(self, addonId):
+        # multiple copies of the same addon might exist on the repository, however
+        # kodi always uses the highest version available
+        addon_instances = []
         for addon in self.addons:
             if addon.id == addonId:
-                return addon
-        return None
+                addon_instances.append(addon)
+
+        if not addon_instances:
+            return None
+
+        # always return the highest version for the given addon id available in the repo
+        addon_instances.sort(key=lambda addon: AddonVersion(addon.version), reverse=True)
+        return addon_instances[0]
 
     def rdepends(self, addonId):
         rdepends = []
