@@ -66,8 +66,12 @@ def check_for_invalid_strings_po(report: Report, file_index: list, addon_path: s
             report_made = True
 
     if not en_gb_present:
-        report_made = True
-        report.add(Record(PROBLEM, "Required default language 'en_gb' is not present."))
+        if po_file_index:
+            report_made = True
+            report.add(Record(PROBLEM, "Required default language 'en_gb' is not present."))
+        else:
+            report.add(Record(WARNING, "No PO files found. "
+                                       "Consider adding language support to your add-on."))
 
     if po_file_index and not report_made:
         report.add(Record(INFORMATION, "PO files are valid"))
