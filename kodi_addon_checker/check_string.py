@@ -45,27 +45,31 @@ def find_blacklisted_strings(report: Report, addon_path: str, problems: list, wa
                           % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
 
 
-def check_for_invalid_strings_po(report: Report, file_index: list, addon_path: str):
+def check_for_invalid_strings_po(report: Report, file_index: list):
     """Validate strings.po files
         :file_index: list having names and path of all the files present in addon
-        :addon_path: Path of the addon
     """
     en_gb_present = False
     report_made = False
 
-    language_path = os.path.join(addon_path, "resources", "language", "resource.language.")
-
     po_file_index = [f for f in file_index if f["name"] == "strings.po"]
 
     for po_file in po_file_index:
-        success, language_code = parse_po_file(report, language_path, po_file)
+        success, language_code = parse_po_file(report, po_file.get("path"), po_file)
         if not en_gb_present and success and language_code and language_code.lower() == 'en_gb':
             en_gb_present = True
 
         if not report_made and not success:
             report_made = True
 
-    if not en_gb_present:
+    skip_en_gb_validation = all(
+        [
+            _is_using_legacy_language_directory_structure(po_file.get("path")) \
+            for po_file in po_file_index
+        ]
+    )
+
+    if not en_gb_present and not skip_en_gb_validation:
         if po_file_index:
             report_made = True
             report.add(Record(PROBLEM, "Required default language 'en_gb' is not present."))
@@ -79,21 +83,17 @@ def check_for_invalid_strings_po(report: Report, file_index: list, addon_path: s
 
 def parse_po_file(report: Report, language_path: str, po_file: dict):
     """Parse strings.po files
-        :language_path: base language path, "<ADDON_PATH>/resources/language/resource.language."
+        :language_path: base language path, "<ADDON_PATH>/resources/language/resource.language.
+        or <ADDON_PATH>/resources/language/language (legacy)"
         :po_file: dict containing name and path of the po file representing a file from file_index
     """
     success = True
     full_path = os.path.join(po_file["path"], po_file["name"])
 
-    if not full_path.startswith(language_path):
-        success = False
-        report.add(Record(PROBLEM, "PO file not in the correct path: %s"
-                          % (relative_path(full_path))))
-        return success, None
-
     language_code = po_file["path"].replace(language_path, "")
 
-    if not RE_LANG_CODE.match(language_code):
+    if not _is_using_legacy_language_directory_structure(po_file["path"]) \
+        and not RE_LANG_CODE.match(language_code):
         success = False
         report.add(Record(PROBLEM, "PO file with invalid language code in the correct path: %s"
                           % (relative_path(full_path))))
@@ -158,3 +158,16 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
         report.add(Record(PROBLEM, "Invalid PO file %s: %s" % (relative_path(full_path), message)))
 
     return success, language_code
+
+
+def _is_using_legacy_language_directory_structure(po_file: str):
+    """Checks if all the po files in the addon directory are not
+    using the new language folder layout
+
+    Args:
+        po_file (str): Path to the po file
+
+    Returns:
+        [bool]: If addon is using legacy directory path
+    """
+    return "resource.language" not in os.path.dirname(po_file)
