@@ -28,7 +28,7 @@ class TestPOFiles(unittest.TestCase):
         file_index = [{"path": language_path, "name": "strings.po"}]
 
         expected = []
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -48,7 +48,7 @@ class TestPOFiles(unittest.TestCase):
                     'Missing required header:\n'
                     '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -67,7 +67,7 @@ class TestPOFiles(unittest.TestCase):
         expected = ["ERROR: Invalid PO file {path}: "
                     "Syntax error on line 23".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -86,7 +86,7 @@ class TestPOFiles(unittest.TestCase):
         expected = ["ERROR: Invalid PO file {path}: "
                     "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -105,7 +105,7 @@ class TestPOFiles(unittest.TestCase):
         expected = ["ERROR: Invalid PO file {path}: "
                     "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
@@ -123,36 +123,11 @@ class TestPOFiles(unittest.TestCase):
 
         expected = ["ERROR: Invalid PO file {path}: File is empty".format(path=relative_path(full_path))]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(self.report_matches)]
 
-        self.assertListEqual(expected, output)
-
-    def test_check_for_invalid_strings_po_path(self):
-        ReportManager.getEnabledReporters()[0].reports = []
-
-        path = join(self.path, "path_check")
-        language_path = join(path, "resources", "language")
-
-        file_index = [{"path": join(language_path, "resources.language.en_gb"), "name": "strings.po"},
-                      {"path": join(language_path, "resource.language.en_gb"), "name": "strings.po"}]
-
-        expected = [
-            "ERROR: PO file not in the correct path: {path}"
-                .format(path=relative_path(join(language_path, "resources.language.en_gb", "strings.po"))),
-        ]
-
-        check_for_invalid_strings_po(self.report, file_index, path)
-
-        matches = (
-            self.report_matches,
-            "ERROR: PO file not in the correct path"
-        )
-
-        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        output = [s for s in records if s.startswith(matches)]
         self.assertListEqual(expected, output)
 
     def test_check_for_invalid_strings_po_language_code(self):
@@ -169,7 +144,7 @@ class TestPOFiles(unittest.TestCase):
                 .format(path=relative_path(join(language_path, "resource.language.testing", "strings.po")))
         ]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         matches = (
             self.report_matches,
@@ -193,7 +168,7 @@ class TestPOFiles(unittest.TestCase):
             "ERROR: Required default language 'en_gb' is not present."
         ]
 
-        check_for_invalid_strings_po(self.report, file_index, path)
+        check_for_invalid_strings_po(self.report, file_index)
 
         matches = (
             self.report_matches,
