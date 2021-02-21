@@ -130,31 +130,6 @@ class TestPOFiles(unittest.TestCase):
 
         self.assertListEqual(expected, output)
 
-    def test_check_for_invalid_strings_po_path(self):
-        ReportManager.getEnabledReporters()[0].reports = []
-
-        path = join(self.path, "path_check")
-        language_path = join(path, "resources", "language")
-
-        file_index = [{"path": join(language_path, "resources.language.en_gb"), "name": "strings.po"},
-                      {"path": join(language_path, "resource.language.en_gb"), "name": "strings.po"}]
-
-        expected = [
-            "ERROR: PO file not in the correct path: {path}"
-                .format(path=relative_path(join(language_path, "resources.language.en_gb", "strings.po"))),
-        ]
-
-        check_for_invalid_strings_po(self.report, file_index)
-
-        matches = (
-            self.report_matches,
-            "ERROR: PO file not in the correct path"
-        )
-
-        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
-        output = [s for s in records if s.startswith(matches)]
-        self.assertListEqual(expected, output)
-
     def test_check_for_invalid_strings_po_language_code(self):
         ReportManager.getEnabledReporters()[0].reports = []
 
