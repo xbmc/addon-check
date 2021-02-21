@@ -90,7 +90,10 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
     success = True
     full_path = os.path.join(po_file["path"], po_file["name"])
 
-    language_code = po_file["path"].replace(language_path, "")
+    language_code = ''
+    split_lang = language_path.rpartition('.')
+    if len(split_lang) == 3:
+        language_code = split_lang[2]
 
     if not _is_using_legacy_language_directory_structure(po_file["path"]) \
         and not RE_LANG_CODE.match(language_code):
@@ -170,4 +173,5 @@ def _is_using_legacy_language_directory_structure(po_file: str):
     Returns:
         [bool]: If addon is using legacy directory path
     """
-    return "resource.language" not in os.path.dirname(po_file)
+
+    return "resource.language." not in po_file
