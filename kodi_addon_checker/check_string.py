@@ -63,10 +63,10 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
             report_made = True
 
     skip_en_gb_validation = all(
-        [
+        (
             _is_using_legacy_language_directory_structure(po_file.get("path")) \
             for po_file in po_file_index
-        ]
+        )
     )
 
     if not en_gb_present and not skip_en_gb_validation:
@@ -91,9 +91,8 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
     full_path = os.path.join(po_file["path"], po_file["name"])
 
     language_code = ''
-    split_lang = language_path.rpartition('.')
-    if len(split_lang) == 3:
-        language_code = split_lang[2]
+    if len(language_path.rpartition('.')) == 3:
+        language_code = language_path.rpartition('.')[2]
 
     if not _is_using_legacy_language_directory_structure(po_file["path"]) \
         and not RE_LANG_CODE.match(language_code):
