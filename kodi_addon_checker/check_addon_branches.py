@@ -94,8 +94,7 @@ def _check_version_higher(report: Report, addon_details, branch, repo_addons_ver
     addon_name = addon_details.get('name')
     addon_version = addon_details.get('version')
 
-    if AddonVersion(addon_version) < AddonVersion(repo_addons_version) or \
-        (AddonVersion(addon_version) == AddonVersion(repo_addons_version) and pr):
+    if AddonVersion(addon_version) <= AddonVersion(repo_addons_version) and pr:
         report.add(
             Record(
                 PROBLEM,
