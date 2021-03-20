@@ -20,7 +20,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="Team Kodi",
     url="https://github.com/xbmc/addon-check",
-    download_url="https://github.com/xbmc/addon-check/archive/master.zip",
+    download_url="https://github.com/xbmc/addon-check/archive/main.zip",
     packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
     package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
     install_requires=requirements,

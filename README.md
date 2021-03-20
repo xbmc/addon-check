@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/xbmc/addon-check.svg?branch=master)](https://travis-ci.org/xbmc/addon-check)
+[![Build Status](https://travis-ci.org/xbmc/addon-check.svg?branch=main)](https://travis-ci.org/xbmc/addon-check)
 [![PyPI version](https://badge.fury.io/py/kodi-addon-checker.svg)](https://badge.fury.io/py/kodi-addon-checker)
 
 # Kodi Addon checker
@@ -57,8 +57,7 @@ All of the validation and checks are done according to the kodi [addon rules](ht
 
 ## Installation
 
-
-* You will need Python3.
+- You will need Python3.
 
 Then you can directly install it from pip package:
 
@@ -68,29 +67,33 @@ pip install kodi-addon-checker
 
 #### For Developement
 
-* Clone the repository
+- Clone the repository
+
 ```
 git clone https://github.com/xbmc/addon-check
 ```
 
-* `cd <path-to-cloned-repo>`
-* Install the requirements:
+- `cd <path-to-cloned-repo>`
+- Install the requirements:
+
 ```
 pip install -r requirements.txt
 ```
 
 ## Usage
 
-* If you are in add-on directory:
-    - Execute `kodi-addon-checker`
+- If you are in add-on directory:
 
-* If you want to run it from any other directory
-    - Execute
-    ```
-    kodi-addon-checker <path-to-addon>
-    ```
+  - Execute `kodi-addon-checker`
+
+- If you want to run it from any other directory
+  - Execute
+  ```
+  kodi-addon-checker <path-to-addon>
+  ```
 
 You can use the tool with the following options:
+
 ```
 
 --version                   version of the tool
