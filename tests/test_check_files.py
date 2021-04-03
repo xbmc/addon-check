@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import abspath, dirname, join
 
-from kodi_addon_checker.check_files import check_file_permission
+from kodi_addon_checker.check_files import check_file_permission, check_file_whitelist
 from kodi_addon_checker.handle_files import create_file_index
 
 from kodi_addon_checker.common import load_plugins
@@ -39,3 +39,13 @@ class TestCheckFilePermission(unittest.TestCase):
         path = join(HERE, 'test_data', 'Non-Executable_file')
         file_index = create_file_index(path)
         self.assertIsNone(check_file_permission(self.report, file_index))
+
+    def test_gitignore(self):
+        path = join(HERE, 'test_data', 'GitIgnore')
+        string = "WARN: Found non whitelisted file ending in filename {path}" \
+            .format(path=relative_path(join(path, ".gitignore")))
+        file_index = create_file_index(path)
+        check_file_whitelist(self.report, file_index, path)
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        self.assertGreater(len(records), 0)
+        self.assertEqual(records[-1], string)
