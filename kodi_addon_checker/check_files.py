@@ -122,7 +122,7 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
         return
 
     whitelist = (
-        r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|gitignore|markdown|yml|"
+        r"\.?(py|xml|gif|png|jpg|jpeg|md|txt|po|json|markdown|yml|"
         r"rst|ini|flv|wav|mp4|html|css|lst|pkla|g|template|in|cfg|xsd|directory|"
         r"help|list|mpeg|pls|info|ttf|xsp|theme|yaml|dict|crt|ico)?$"
     )
