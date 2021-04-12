@@ -15,6 +15,8 @@ It can also be used locally for detecting problems in your addons.
 
 - Checks if addon.xml and license file exists for an addon.
 
+- Checks if the version in addon.xml is valid (for repository generator)
+
 - Checks if all xml files are valid.
 
 - Check if all the json files are valid.
