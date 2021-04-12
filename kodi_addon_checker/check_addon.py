@@ -17,7 +17,7 @@ from . import (check_artwork, check_dependencies, check_entrypoint,
 from .addons.Addon import Addon
 from .addons.Repository import Repository
 from .versions import KodiVersion
-from .record import INFORMATION, Record
+from .record import INFORMATION, PROBLEM, Record
 from .report import Report
 
 ROOT_URL = "http://mirrors.kodi.tv/addons/{branch}/addons.xml.gz"
@@ -40,7 +40,11 @@ def start(addon_path, args, all_repo_addons, config=None):
 
     repo_addons = all_repo_addons[args.branch]
     addon_xml_path = os.path.join(addon_path, "addon.xml")
-    parsed_xml = ET.parse(addon_xml_path).getroot()
+    try:
+        parsed_xml = ET.parse(addon_xml_path).getroot()
+    except ET.ParseError:
+        addon_report.add(
+                Record(PROBLEM, "Invalid XML data in addon.xml"))
 
     # Extract common path from addon paths
     # All paths will be printed relative to this path
