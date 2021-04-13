@@ -10,10 +10,10 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 
-from . import (check_artwork, check_dependencies, check_entrypoint,
-               check_files, check_addon_branches, check_py3_compatibility,
-               check_string, check_url, common, handle_files,
-               schema_validation, ValidKodiVersions)
+from . import (check_allowed_versions, check_artwork, check_dependencies,
+               check_entrypoint, check_files, check_addon_branches,
+               check_py3_compatibility, check_string, check_url, common,
+               handle_files, schema_validation, ValidKodiVersions)
 from .addons.Addon import Addon
 from .addons.Repository import Repository
 from .versions import KodiVersion
@@ -46,6 +46,8 @@ def start(addon_path, args, all_repo_addons, config=None):
         addon_report.add(
                 Record(PROBLEM, "Invalid XML data in addon.xml"))
 
+    # check if provided version for the addon is allowed
+    check_allowed_versions.check_version(addon_report, parsed_xml)
     # Extract common path from addon paths
     # All paths will be printed relative to this path
     common.REL_PATH = os.path.split(addon_path[:-1])[0]
