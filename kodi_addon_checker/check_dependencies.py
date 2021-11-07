@@ -63,7 +63,8 @@ VERSION_ATTRB = {
         'jarvis': {'min_compatible': '2.1.0', 'advised': '2.24.0'},
         'krypton': {'min_compatible': '2.1.0', 'advised': '2.25.0'},
         'leia': {'min_compatible': '2.1.0', 'advised': '2.26.0'},
-        'matrix': {'min_compatible': '3.0.0', 'advised': '3.0.0'}
+        'matrix': {'min_compatible': '3.0.0', 'advised': '3.0.0'},
+        'nexus': {'min_compatible': '3.0.0', 'advised': '3.0.1'}
     },
     'xbmc.gui': {
         'gotham': {'min_compatible': '5.0.0', 'advised': '5.0.0'},
@@ -72,7 +73,8 @@ VERSION_ATTRB = {
         'jarvis': {'min_compatible': '5.10.0', 'advised': '5.10.0'},
         'krypton': {'min_compatible': '5.12.0', 'advised': '5.12.0'},
         'leia': {'min_compatible': '5.14.0', 'advised': '5.14.0'},
-        'matrix': {'min_compatible': '5.14.0', 'advised': '5.15.0'}
+        'matrix': {'min_compatible': '5.14.0', 'advised': '5.15.0'},
+        'nexus': {'min_compatible': '5.15.0', 'advised': '5.16.0'}
     },
     'xbmc.json': {
         'gotham': {'min_compatible': '6.0.0', 'advised': '5.0.0'},
@@ -81,7 +83,8 @@ VERSION_ATTRB = {
         'jarvis': {'min_compatible': '6.0.0', 'advised': '6.32.4'},
         'krypton': {'min_compatible': '6.0.0', 'advised': '7.0.0'},
         'leia': {'min_compatible': '6.0.0', 'advised': '9.7.2'},
-        'matrix': {'min_compatible': '6.0.0', 'advised': '11.2.0'}
+        'matrix': {'min_compatible': '6.0.0', 'advised': '12.4.0'},
+        'nexus': {'min_compatible': '6.0.0', 'advised': '12.5.0'}
     },
     'xbmc.addon': {
         'gotham': {'min_compatible': '12.0.0', 'advised': '13.0.0'},
@@ -90,7 +93,8 @@ VERSION_ATTRB = {
         'jarvis': {'min_compatible': '12.0.0', 'advised': '16.0.0'},
         'krypton': {'min_compatible': '12.0.0', 'advised': '17.0.0'},
         'leia': {'min_compatible': '12.0.0', 'advised': '17.9.910'},
-        'matrix': {'min_compatible': '12.0.0', 'advised': '18.9.701'}
+        'matrix': {'min_compatible': '12.0.0', 'advised': '19.1.0'},
+        'nexus': {'min_compatible': '12.0.0', 'advised': '19.90.101'}
     },
     'xbmc.metadata': {
         'gotham': {'min_compatible': '1.0', 'advised': '2.1.0'},
@@ -99,7 +103,8 @@ VERSION_ATTRB = {
         'jarvis': {'min_compatible': '1.0', 'advised': '2.1.0'},
         'krypton': {'min_compatible': '1.0', 'advised': '2.1.0'},
         'leia': {'min_compatible': '1.0', 'advised': '2.1.0'},
-        'matrix': {'min_compatible': '1.0', 'advised': '2.1.0'}
+        'matrix': {'min_compatible': '1.0', 'advised': '2.1.0'},
+        'nexus': {'min_compatible': '1.0', 'advised': '2.1.0'}
     },
 }
 
