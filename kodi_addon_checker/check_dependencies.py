@@ -52,7 +52,7 @@ extensions = {"kodi.gameclient": "kodi.binary.instance.game",
               "xbmc.python.script": "xbmc.python",
               "xbmc.python.weather": "xbmc.python",
               "xbmc.ui.screensaver": "xbmc.python",
-              "xbmc.webinterface": "xbmc.webinterface",
+              "xbmc.webinterface": "xbmc.json",
               }
 
 VERSION_ATTRB = {
