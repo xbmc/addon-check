@@ -4,12 +4,7 @@
   <xs:element name="extension">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="dir" type="dirItem" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="info" type="infoItem" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="checksum" type="checksumItem" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="datadir" type="datadirItem" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="artdir" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="hashes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="dir" type="dirItem" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="point" type="xs:string" use="required"/>
       <xs:attribute name="id" type="simpleIdentifier"/>
@@ -19,13 +14,21 @@
   <xs:complexType name="dirItem">
     <xs:group ref="dirItems" />
   </xs:complexType>
+  <xs:simpleType name="hashvalues">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="sha256"/>
+      <xs:enumeration value="sha512"/>
+      <xs:enumeration value="sha1"/>
+      <xs:enumeration value="md5"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:group name="dirItems">
     <xs:all>
       <xs:element name="info" type="infoItem" minOccurs="1"/>
       <xs:element name="checksum" type="checksumItem" minOccurs="1"/>
       <xs:element name="datadir" type="datadirItem" minOccurs="1"/>
       <xs:element name="artdir" type="xs:string" minOccurs="0"/>
-      <xs:element name="hashes" type="xs:string" minOccurs="0"/>
+      <xs:element name="hashes" type="hashvalues" minOccurs="0"/>
     </xs:all>
   </xs:group>
   <xs:complexType name="checksumItem">

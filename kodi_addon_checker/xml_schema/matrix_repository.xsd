@@ -18,6 +18,8 @@
   </xs:element>
   <xs:complexType name="dirItem">
     <xs:group ref="dirItems" />
+    <xs:attribute name="minversion" type="xs:string"/>
+    <xs:attribute name="maxversion" type="xs:string"/>
   </xs:complexType>
   <xs:group name="dirItems">
     <xs:all>
