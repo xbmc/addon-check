@@ -6,7 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
-from packaging.version import parse, Version, LegacyVersion
+from packaging.version import parse, Version
 from kodi_addon_checker import ValidKodiVersions
 
 
@@ -20,8 +20,7 @@ class AddonVersion():
 
     @property
     def _islegacy_devversion(self):
-        return isinstance(self.version, LegacyVersion) and \
-            ("~beta" or "~alpha" in self.version)
+        return "~beta" or "~alpha" in self.version
 
     def __lt__(self, other):
         if not isinstance(other, self.__class__):
