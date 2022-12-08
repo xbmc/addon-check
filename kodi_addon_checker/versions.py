@@ -6,22 +6,21 @@
     See LICENSES/README.md for more information.
 """
 
-from packaging.version import parse, Version, LegacyVersion
+from packaging.version import parse, Version
 from kodi_addon_checker import ValidKodiVersions
 
 
 class AddonVersion():
     def __init__(self, version):
-        self.version = parse(str(version).lower())
         # non PEP440 compliant versions (legacy), for beta and alpha versions
         # convert them into PEP440 format: 1.1.0~beta01 -> 1.1.0beta01
         if self._islegacy_devversion:
-            self.version = Version(version.replace("~", ""))
+            version = version.replace("~", "")
+        self.version = parse(str(version).lower())
 
     @property
     def _islegacy_devversion(self):
-        return isinstance(self.version, LegacyVersion) and \
-            ("~beta" or "~alpha" in self.version)
+        return "~beta" or "~alpha" in self.version
 
     def __lt__(self, other):
         if not isinstance(other, self.__class__):
