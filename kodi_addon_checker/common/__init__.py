@@ -48,4 +48,4 @@ def relative_path(file_path):
     """Return the relative_path of the file
     """
     path_to_print = file_path[len(REL_PATH):]
-    return ".{}".format(path_to_print)
+    return f".{path_to_print}"

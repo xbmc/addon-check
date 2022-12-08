@@ -26,7 +26,7 @@ class TestFindFile(unittest.TestCase):
         self.assertIsNone(find_file("randomname", self.path))
 
     def test_find_file_is_not_none(self):
-        with open(self.file, "w+"):
+        with open(self.file, "w+", encoding="utf8"):
             self.assertIsNotNone(find_file("addon.txt", self.path))
 
     def teardown(self):
@@ -52,11 +52,11 @@ class TestFindFilesRecursive(unittest.TestCase):
         self.assertFalse(list(FFR("randomname", self.path)))
 
     def test_find_files_recursive_is_True(self):
-        with open(self.file, "w+"):
+        with open(self.file, "w+", encoding="utf8"):
             self.assertTrue(FFR("addon.txt", self.path))
 
     def test_find_files_recursive_deeply(self):
-        with open(self.folder, "w+"):
+        with open(self.folder, "w+", encoding="utf8"):
             self.assertTrue(FFR("addon.xml", self.path))
 
     def teardown(self):

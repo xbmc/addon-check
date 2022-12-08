@@ -24,8 +24,7 @@ class TestCheckFilePermission(unittest.TestCase):
 
     def test_check_file_permission_is_true(self):
         path = join(HERE, 'test_data', 'Executable_file')
-        string = "ERROR: {path} is marked as stand-alone executable"\
-            .format(path=relative_path(join(path, "file_permission.py")))
+        string = f"ERROR: { relative_path(join(path, 'file_permission.py')) } is marked as stand-alone executable"
         file_index = create_file_index(path)
         check_file_permission(self.report, file_index)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
@@ -42,8 +41,7 @@ class TestCheckFilePermission(unittest.TestCase):
 
     def test_gitignore(self):
         path = join(HERE, 'test_data', 'GitIgnore')
-        string = "WARN: Found non whitelisted file ending in filename {path}" \
-            .format(path=relative_path(join(path, ".gitignore")))
+        string = f"WARN: Found non whitelisted file ending in filename { relative_path(join(path, '.gitignore')) }"
         file_index = create_file_index(path)
         check_file_whitelist(self.report, file_index, path)
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]

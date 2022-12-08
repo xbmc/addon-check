@@ -136,33 +136,35 @@ def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, args
                 record_level = PROBLEM
 
             report.add(Record(record_level,
-                              "{} dependency {} is not available in current repository"
-                              .format("Optional" if dependency.optional else "Required", dependency.id)))
+                              f"{'Optional' if dependency.optional else 'Required'} dependency {dependency.id} " \
+                                "is not available in current repository"
+            ))
 
         elif dependency.version is None:
             report.add(Record(INFORMATION if dependency.optional else WARNING,
-                              "{} dependency {} does not require a minimum version, available: {}"
-                              .format("Optional" if dependency.optional else "Required", dependency.id,
-                                      repo_addons.find(dependency.id).version)))
+                              f"{'Optional' if dependency.optional else 'Required'} dependency {dependency.id} " \
+                                "does not require a minimum version, " \
+                                f"available: {repo_addons.find(dependency.id).version}"))
 
         elif AddonVersion(repo_addons.find(dependency.id).version) < dependency.version:
             report.add(Record(INFORMATION if dependency.optional else PROBLEM,
-                              "Version mismatch for {} dependency {}, required: {}, Available: {}"
-                              .format("optional" if dependency.optional else "required", dependency.id,
-                                      dependency.version, repo_addons.find(dependency.id).version)))
+                              f"Version mismatch for {'optional' if dependency.optional else 'required'} " \
+                              f"dependency {dependency.id}, required: {dependency.version}, "\
+                              f"Available: {repo_addons.find(dependency.id).version}"))
 
         if dependency.id in VERSION_ATTRB:
             try:
                 version_info = VERSION_ATTRB[dependency.id][args.branch]
                 if AddonVersion(version_info["min_compatible"]) > dependency.version:
-                    report.add(Record(PROBLEM, "For {}, {} version must be higher than {}. Advised {}."
-                                      .format(args.branch, dependency.id,
-                                              version_info["min_compatible"], version_info["advised"])))
+                    report.add(Record(PROBLEM, f"For {args.branch}, {dependency.id} version must be " \
+                                        f"higher than {version_info['min_compatible']}. " \
+                                        f"Advised {version_info['advised']}."))
                     continue
 
                 if AddonVersion(version_info["advised"]) != dependency.version:
-                    report.add(Record(WARNING, "For {} it is advised to set {} version to {}"
-                                      .format(args.branch, dependency.id, version_info["advised"])))
+                    report.add(Record(WARNING, f"For {args.branch} it is advised to set {dependency.id} " \
+                        f"version to {version_info['advised']}"))
+
 
             except KeyError:
                 LOGGER.warning("Misconfiguration in VERSION_ATTRB of check_dependencies")
@@ -205,12 +207,15 @@ def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all
         report.add(Record(WARNING, "This module isn't required by any add-on."))
 
     if rdepends:
-        report.add(Record(INFORMATION, "Reverse dependencies: {} ({})"
-                          .format(", ".join(sorted([r.id for r in rdepends])), len(rdepends))))
+        report.add(Record(INFORMATION,
+            f"Reverse dependencies: {', '.join(sorted([r.id for r in rdepends]))} ({len(rdepends)})"
+        ))
 
     if rdependsLowerBranch:
-        report.add(Record(INFORMATION, "Reverse dependencies (in lower branches): {} ({})"
-                          .format(", ".join(sorted([r.id for r in rdependsLowerBranch])), len(rdependsLowerBranch))))
+        report.add(Record(INFORMATION,
+            "Reverse dependencies (in lower branches): " \
+            f"{', '.join(sorted([r.id for r in rdependsLowerBranch]))} ({len(rdependsLowerBranch)})"
+        ))
 
 
 def _get_ignore_list(kodi_version: KodiVersion):
@@ -238,5 +243,5 @@ def _check_extensions(report: Report, parsed_xml, addon):
     for extension in parsed_xml.findall("extension"):
         point = extension.get("point")
         if point in extensions and extensions[point] not in deps:
-            report.add(Record(PROBLEM, "{} dependency is required for {} extensions"
-                              .format(extensions[point], point)))
+            report.add(Record(PROBLEM, f"{extensions[point]} dependency is required for "\
+                f"{point} extensions"))

@@ -36,8 +36,6 @@ def check_version(report: Report, parsed_xml):
         return
 
     if not version_is_valid(parsed_xml.attrib["version"]):
-        report.add(Record(PROBLEM, "Invalid version {} in addon.xml. " \
-            "Please use the major.minor.revision (e.g. 1.0.0) format or " \
-            "major.minor.revision+localversion_identifier (e.g. 1.0.0+matrix.1)".format(
-                parsed_xml.attrib["version"]
-            )))
+        report.add(Record(PROBLEM, f"Invalid version {parsed_xml.attrib['version']} " \
+            "in addon.xml. Please use the major.minor.revision (e.g. 1.0.0) format or " \
+            "major.minor.revision+localversion_identifier (e.g. 1.0.0+matrix.1)"))

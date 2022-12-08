@@ -36,7 +36,7 @@ def start(addon_path, args, all_repo_addons, config=None):
     addon_id = os.path.basename(os.path.normpath(addon_path))
     addon_report = Report(addon_id)
     LOGGER.info("Checking add-on %s", addon_id)
-    addon_report.add(Record(INFORMATION, "Checking add-on %s" % addon_id))
+    addon_report.add(Record(INFORMATION, f"Checking add-on {addon_id}"))
 
     repo_addons = all_repo_addons[args.branch]
     addon_xml_path = os.path.join(addon_path, "addon.xml")

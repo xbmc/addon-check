@@ -8,7 +8,7 @@
 
 import os
 
-import kodi_addon_checker.check_addon as check_addon
+from kodi_addon_checker import check_addon
 
 from .record import INFORMATION, PROBLEM, Record
 from .report import Report
@@ -24,7 +24,7 @@ def check_repo(repo_path, args, all_repo_addons, config):
         :config: Config object
     """
     repo_report = Report(repo_path)
-    repo_report.add(Record(INFORMATION, "Checking repository %s" % repo_path))
+    repo_report.add(Record(INFORMATION, f"Checking repository {repo_path}"))
     toplevel_folders = sorted(next(os.walk(repo_path))[1])
 
     for addon_folder in toplevel_folders:
@@ -34,5 +34,5 @@ def check_repo(repo_path, args, all_repo_addons, config):
                 addon_report = check_addon.start(addon_path, args, all_repo_addons, config)
                 repo_report.add(addon_report)
             except Exception as e: # pylint: disable=broad-except
-                repo_report.add(Record(PROBLEM, "Something went wrong. Please see: %s" % e))
+                repo_report.add(Record(PROBLEM, f"Something went wrong. Please see: {e}"))
     return repo_report
