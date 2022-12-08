@@ -6,7 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
-__version__ = "0.0.27"
+__version__ = "0.0.28"
 
 ValidKodiVersions = [
     "gotham",
