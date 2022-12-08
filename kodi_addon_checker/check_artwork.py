@@ -92,7 +92,7 @@ def check_artwork(report: Report, addon_path: str, parsed_xml, file_index: list,
                 Image.open(image_path)
             except IOError:
                 report.add(
-                    Record(PROBLEM, "Could not open image, is the file corrupted ? %s" % relative_path(image_path)))
+                    Record(PROBLEM, f"Could not open image, is the file corrupted ? {relative_path(image_path)}"))
 
 
 def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str, kodi_version: KodiVersion):
@@ -105,10 +105,10 @@ def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str,
             filepath = os.path.join(addon_path, image)
 
             if os.path.isfile(filepath):
-                report.add(Record(INFORMATION, "Image %s exists" % asset.image_type))
+                report.add(Record(INFORMATION, f"Image {asset.image_type} exists"))
                 if fallback and kodi_version >= KodiVersion("krypton"):
                     report.add(Record(
-                        PROBLEM, "Image %s should be explicitly declared in addon.xml <assets>." % asset.image_type))
+                        PROBLEM, f"Image {asset.image_type} should be explicitly declared in addon.xml <assets>."))
                 try:
                     im = Image.open(filepath)
                     # check image specifications
@@ -117,21 +117,21 @@ def _check_image_type(report: Report, asset: tuple, parsed_xml, addon_path: str,
                     im.close()
                 except IOError:
                     report.add(
-                        Record(PROBLEM, "Could not open image, is the file corrupted? %s" % relative_path(filepath)))
+                        Record(PROBLEM, f"Could not open image, is the file corrupted? {relative_path(filepath)}"))
 
             else:
                 # if it's a fallback path addons.xml should still be able to
                 # get build
                 if fallback:
-                    report.add(Record(INFORMATION, "You might want to add a %s" % asset.image_type))
+                    report.add(Record(INFORMATION, f"You might want to add a {asset.image_type}"))
                 # it's no fallback path, so building addons.xml will crash -
                 # this is a problem ;)
                 else:
                     report.add(
-                        Record(PROBLEM, "%s does not exist at specified path." % asset.image_type))
+                        Record(PROBLEM, f"{asset.image_type} does not exist at specified path."))
         else:
             report.add(
-                Record(WARNING, "Empty image tag found for %s" % asset.image_type))
+                Record(WARNING, f"Empty image tag found for {asset.image_type}"))
 
 
 def _assets(image_type: str, parsed_xml, addon_path: str):
@@ -168,35 +168,26 @@ def _check_art_asset_specifications(report: Report, filepath, im, asset):
 
     # extension check
     if fileextension not in asset.specifications['extension']:
-        report.add(Record(PROBLEM, "Allowed format for %s is %s, provided %s is %s." %
-                          (asset.image_type,
-                           str(asset.specifications['extension']),
-                           asset.image_type, fileextension)))
+        report.add(Record(PROBLEM, f"Allowed format for {asset.image_type} is"
+         f"{str(asset.specifications['extension'])}, provided {asset.image_type} is {fileextension}."))
 
     # transparency check
     if asset.specifications['transparency'] is not None:
         if has_transparency(im) and not asset.specifications['transparency']:
-            report.add(Record(PROBLEM, "%s should be solid. It has transparency." %
-                              asset.image_type))
+            report.add(Record(PROBLEM, f"{asset.image_type} should be solid. It has transparency."))
         elif not has_transparency(im) and asset.specifications['transparency']:
-            report.add(Record(PROBLEM, "%s should have transparency. It is solid." %
-                              asset.image_type))
+            report.add(Record(PROBLEM, f"{asset.image_type} should have transparency. It is solid."))
 
     # dimensions check
     if (width, height) not in asset.specifications['sizes']:
         if len(asset.specifications['sizes']) > 1:
             log_str = "either " + \
-                " or ".join(["%dx%d" % (w, h) for w, h in asset.specifications['sizes']])
+                " or ".join([f"{w}x{h}" for w, h in asset.specifications['sizes']])
         else:
-            log_str = "%dx%d" % (
-                asset.specifications['sizes'][0][0],
-                asset.specifications['sizes'][0][1]
-            )
-        report.add(Record(PROBLEM, "%s should have %s but it has %sx%s" % (
-            asset.image_type, log_str, width, height)))
+            log_str = f"{asset.specifications['sizes'][0][0]}x{asset.specifications['sizes'][0][1]}"
+        report.add(Record(PROBLEM, f"{asset.image_type} should have {log_str} but it has {width}x{height}"))
     else:
-        report.add(Record(INFORMATION, "%s dimensions are fine %sx%s" %
-                          (asset.image_type, width, height)))
+        report.add(Record(INFORMATION, f"{asset.image_type} dimensions are fine {width}x{height}"))
 
     if isinstance(max_file_size_kb, int):
         file_size_b = os.stat(filepath).st_size
@@ -204,17 +195,13 @@ def _check_art_asset_specifications(report: Report, filepath, im, asset):
         max_file_size_b = max_file_size_kb * 1024
 
         if file_size_b <= max_file_size_b:
-            report.add(Record(INFORMATION, "%s file size is fine %sKB" %
-                              (asset.image_type, file_size_kb)))
-
+            report.add(Record(INFORMATION, f"{asset.image_type} file size is fine {file_size_kb}KB"))
         else:
             if asset.image_type == "fanart" and fileextension == ".png":
-                report.add(Record(PROBLEM, "%s is too large %sKB, "
-                                           "maximum file size of %sKB. "
-                                           "Consider converting to JPEG" %
-                                  (asset.image_type, file_size_kb, str(max_file_size_kb))))
+                report.add(Record(PROBLEM, f"{asset.image_type} is too large {file_size_kb}KB, "
+                                           f"maximum file size of {str(max_file_size_kb)}KB. "
+                                           f"Consider converting to JPEG"))
 
             else:
-                report.add(Record(PROBLEM, "%s is too large %sKB, "
-                                           "maximum file size of %sKB." %
-                                  (asset.image_type, file_size_kb, str(max_file_size_kb))))
+                report.add(Record(PROBLEM, f"{asset.image_type} is too large {file_size_kb}KB, "
+                                           f"maximum file size of {str(max_file_size_kb)}KB."))

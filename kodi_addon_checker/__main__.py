@@ -34,7 +34,7 @@ def dir_type(dir_path):
     """
     if not os.path.isdir(dir_path):
         raise argparse.ArgumentTypeError(
-            "Add-on directory %s does not exist" % dir_path)
+            f"Add-on directory {dir_path} does not exist")
     return os.path.abspath(dir_path)
 
 
@@ -68,7 +68,7 @@ def main():
                                      Otherwise, scan current repository and check all add-ons in \
                                      the current directory.")
     parser.add_argument("--version", action="version",
-                        version="%(prog)s {version}".format(version=__version__))
+                        version=f"%(prog)s {__version__}")
     parser.add_argument("dir", type=dir_type, nargs="*", help="optional add-on or repo directories")
     parser.add_argument("--branch", choices=ValidKodiVersions, required=True,
                         help="Target branch name where the checker will resolve dependencies")
@@ -94,12 +94,12 @@ def main():
         report = check_artifact(os.getcwd(), args, all_repo_addons)
 
     if report.problem_count > 0:
-        report.add(Record(PROBLEM, "We found %s problems and %s warnings, please check the logfile." %
-                          (report.problem_count, report.warning_count)))
+        report.add(Record(PROBLEM, f"We found {report.problem_count} problems " \
+            f"and {report.warning_count} warnings, please check the logfile."))
         sys.exit(1)
     elif report.warning_count > 0:
-        report.add(Record(WARNING, "We found no problems and %s warnings, please check the logfile." %
-                          report.warning_count))
+        report.add(Record(WARNING, "We found no problems "\
+            f"and {report.warning_count} warnings, please check the logfile."))
     else:
         report.add(Record(INFORMATION, "We found no problems and no warnings, please enjoy your day."))
 

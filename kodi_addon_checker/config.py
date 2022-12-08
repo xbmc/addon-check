@@ -28,7 +28,7 @@ class Config():
             return
         config_path = os.path.join(repo_path, '.tests-config.json')
         if os.path.isfile(config_path):
-            with open(config_path) as json_data:
+            with open(config_path, "r", encoding="utf8") as json_data:
                 file_config = json.load(json_data)
                 if file_config is not None:
                     for key, value in self.configs.items():

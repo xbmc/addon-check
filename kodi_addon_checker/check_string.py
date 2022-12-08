@@ -25,7 +25,7 @@ def check_for_legacy_strings_xml(report: Report, addon_path: str):
     """
     for file in handle_files.find_files_recursive("strings.xml", os.path.join(addon_path, "resources", "language")):
         report.add(
-            Record(PROBLEM, "Found %s please migrate to strings.po." % relative_path(file)))
+            Record(PROBLEM, f"Found {relative_path(file)} please migrate to strings.po."))
 
 
 def find_blacklisted_strings(report: Report, addon_path: str, problems: list, warnings: list, file_types: list):
@@ -37,12 +37,12 @@ def find_blacklisted_strings(report: Report, addon_path: str, problems: list, wa
         :file_type: List of the whitelisted files to look into
     """
     for result in handle_files.find_in_file(addon_path, problems, file_types):
-        report.add(Record(PROBLEM, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
+        report.add(Record(PROBLEM, f"Found blacklisted term {result['term']} in file "\
+                     f"{result['searchfile']}:{result['linenumber']} ({result['line']})"))
 
     for result in handle_files.find_in_file(addon_path, warnings, file_types):
-        report.add(Record(WARNING, "Found blacklisted term %s in file %s:%s (%s)"
-                          % (result["term"], result["searchfile"], result["linenumber"], result["line"])))
+        report.add(Record(WARNING, f"Found blacklisted term {result['term']} in file "\
+                    f"{result['searchfile']}:{result['linenumber']} ({result['line']})"))
 
 
 def check_for_invalid_strings_po(report: Report, file_index: list):
@@ -97,8 +97,8 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
     if not _is_using_legacy_language_directory_structure(po_file["path"]) \
         and not RE_LANG_CODE.match(language_code):
         success = False
-        report.add(Record(PROBLEM, "PO file with invalid language code in the correct path: %s"
-                          % (relative_path(full_path))))
+        report.add(Record(PROBLEM, "PO file with invalid language code in the correct path: " \
+            f"{relative_path(full_path)}"))
         return success, language_code
 
     with open(full_path, "r", encoding="utf-8") as f:
@@ -108,31 +108,32 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
             lines = f.readlines()
         except UnicodeDecodeError:
             success = False
-            report.add(Record(PROBLEM, "Invalid PO file %s: File is not saved with UTF-8 encoding"
-                              % (relative_path(full_path))))
+            report.add(Record(PROBLEM,
+                f"Invalid PO file {relative_path(full_path)}: File is not saved with UTF-8 encoding"))
             return success, language_code
 
     if not contents:
         success = False
-        report.add(Record(PROBLEM, "Invalid PO file %s: File is empty" % (relative_path(full_path))))
+        report.add(Record(PROBLEM,
+            f"Invalid PO file {relative_path(full_path)}: File is empty"))
         return success, language_code
 
     if "\r\n" in contents:
         success = False
-        report.add(Record(WARNING, "Windows line endings found in %s, consider converting to Linux line endings."
-                          % relative_path(full_path)))
+        report.add(Record(WARNING,
+            f"Windows line endings found in {relative_path(full_path)}, consider converting to Linux line endings."
+        ))
 
     header = contents[:contents.find("msgctxt \"#")]
     if not re.search(r'msgid ""\s+msgstr ""', header):
         # This is only required by polib if metadata follows, Kodi requires this regardless of metadata
         success = False
-        report.add(Record(PROBLEM, "Invalid PO file %s:\nMissing required header:\n"
-                                   "\tmsgid \"\"\n\tmsgstr \"\"" % (relative_path(full_path))))
+        report.add(Record(PROBLEM, f"Invalid PO file {relative_path(full_path)}:\nMissing required header:\n"
+                                   "\tmsgid \"\"\n\tmsgstr \"\""))
 
     if contents[0] == "\ufeff":
         success = False
-        report.add(Record(PROBLEM, "Invalid PO file %s: File contains BOM (byte order mark)"
-                          % (relative_path(full_path))))
+        report.add(Record(PROBLEM, f"Invalid PO file {relative_path(full_path)}: File contains BOM (byte order mark)"))
         return success, language_code
 
     # fix any Gettext automatic comments in the source before testing with polib
@@ -153,11 +154,11 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
             match = re.search(pattern, message)
             if match:
                 # restructure message to remove file and path
-                message = "%s on line %s" % (match.group("message"), match.group("line_num"))
+                message = f"{match.group('message')} on line {match.group('line_num')}"
                 break
 
         success = False
-        report.add(Record(PROBLEM, "Invalid PO file %s: %s" % (relative_path(full_path), message)))
+        report.add(Record(PROBLEM, f"Invalid PO file {relative_path(full_path)}: {message}"))
 
     return success, language_code
 

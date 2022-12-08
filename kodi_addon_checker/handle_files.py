@@ -67,15 +67,14 @@ def find_in_file(path: str, search_terms: list, whitelisted_file_types: list):
                 if pathlib.Path(file_name).suffix in whitelisted_file_types or not whitelisted_file_types:
                     file_path = os.path.join(directory[0], file_name)
 
-                    searchfile = open(file_path, "r", encoding="utf8")
-                    linenumber = 0
-                    for line in searchfile:
-                        linenumber = linenumber + 1
-                        for term in search_terms:
-                            if term in line:
-                                results.append({"term": term, "line": line.strip(
-                                ), "searchfile": file_path, "linenumber": linenumber})
-                    searchfile.close()
+                    with open(file_path, "r", encoding="utf8") as searchfile:
+                        linenumber = 0
+                        for line in searchfile:
+                            linenumber = linenumber + 1
+                            for term in search_terms:
+                                if term in line:
+                                    results.append({"term": term, "line": line.strip(
+                                    ), "searchfile": file_path, "linenumber": linenumber})
     return results
 
 
@@ -85,4 +84,4 @@ def addon_file_exists(report: Report, addon_path: str, file_name: str):
         :file_name: name of the addon file
     """
     if find_file(file_name, addon_path) is None:
-        report.add(Record(PROBLEM, "Not found %s in folder %s" % (file_name, relative_path(addon_path))))
+        report.add(Record(PROBLEM, f"Not found {file_name} in folder {relative_path(addon_path)}"))

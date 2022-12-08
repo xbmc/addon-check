@@ -29,4 +29,4 @@ class Record():
         Text representation of record.
         :return: text representation of report
         """
-        return "%s: %s" % (self.log_level, self.message)
+        return f"{self.log_level}: {self.message}"

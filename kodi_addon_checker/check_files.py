@@ -30,8 +30,7 @@ def check_for_invalid_xml_files(report: Report, file_index: list):
                 # Just try if we can successfully parse it
                 ET.parse(xml_path)
             except ET.ParseError:
-                report.add(Record(PROBLEM, "Invalid xml found. %s" %
-                                  relative_path(xml_path)))
+                report.add(Record(PROBLEM, f"Invalid xml found. {relative_path(xml_path)}"))
 
 
 def check_for_invalid_json_files(report: Report, file_index: list):
@@ -44,11 +43,10 @@ def check_for_invalid_json_files(report: Report, file_index: list):
             path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully parse it
-                with open(path) as json_data:
+                with open(path, "r", encoding="utf8") as json_data:
                     json.load(json_data)
             except ValueError:
-                report.add(Record(PROBLEM, "Invalid json found. %s" %
-                                  relative_path(path)))
+                report.add(Record(PROBLEM, f"Invalid json found. {relative_path(path)}"))
 
 
 def check_addon_xml(report: Report, addon_path: str, parsed_xml, folder_id_mismatch: bool):
@@ -61,12 +59,10 @@ def check_addon_xml(report: Report, addon_path: str, parsed_xml, folder_id_misma
     try:
         handle_files.addon_file_exists(report, addon_path, r"addon\.xml")
 
-        report.add(Record(INFORMATION, "Created by %s" %
-                          parsed_xml.attrib.get("provider-name")))
+        report.add(Record(INFORMATION, f"Created by {parsed_xml.attrib.get('provider-name')}"))
         addon_xml_matches_folder(report, addon_path, parsed_xml, folder_id_mismatch)
     except ET.ParseError:
-        report.add(Record(PROBLEM, "Addon xml not valid, check xml. %s" %
-                          relative_path(addon_xml_path)))
+        report.add(Record(PROBLEM, f"Addon xml not valid, check xml. {relative_path(addon_xml_path)}"))
 
     return parsed_xml
 
@@ -84,8 +80,8 @@ def addon_xml_matches_folder(report: Report, addon_path: str, parsed_xml, folder
     else:
         if folder_id_mismatch:
             report.add(Record(INFORMATION, "Addon id and folder name does not match. "
-                                           "Ensure folder name is {} when submitting a PR "
-                                           "to Kodi's official repository.".format(addon_id)))
+                                           f"Ensure folder name is {addon_id} when submitting a PR "
+                                           "to Kodi's official repository."))
         else:
             report.add(Record(PROBLEM, "Addon id and folder name does not match."))
 
@@ -102,13 +98,15 @@ def check_for_new_language_directory_structure(report: Report, addon_path: str, 
         for directory in dirs:
             if "resource.language." not in directory and supported:
                 report.add(Record(
-                    PROBLEM, "Using the old language directory structure in %s, please move to the new one." %
-                    os.path.join(language_path, directory)))
+                    PROBLEM, "Using the old language directory structure in " \
+                    f"{os.path.join(language_path, directory)}, please move to the new one."))
             elif "resource.language." in directory and not supported:
                 report.add(Record(
-                    PROBLEM, "Using the new language directory structure in %s for a Kodi version that does not" \
-                             "support it. Please use the old language file struture or move the addon to" \
-                             "an upper branch/kodi version." % os.path.join(language_path, directory)))
+                    PROBLEM, "Using the new language directory structure "\
+                            f"in {os.path.join(language_path, directory)} " \
+                             "for a Kodi version that does not support it. " \
+                             "Please use the old language file struture or move the addon to" \
+                             "an upper branch/kodi version."))
 
 
 def check_file_whitelist(report: Report, file_index: list, addon_path: str):
@@ -132,9 +130,9 @@ def check_file_whitelist(report: Report, file_index: list, addon_path: str):
         if len(file_parts) > 1:
             file_ending = "." + file_parts[len(file_parts) - 1]
             if re.match(whitelist, file_ending, re.IGNORECASE) is None:
+                filename = relative_path(os.path.join(file['path'], file['name']))
                 report.add(Record(WARNING,
-                                  "Found non whitelisted file ending in filename %s" %
-                                  relative_path(os.path.join(file["path"], file["name"]))))
+                                  f"Found non whitelisted file ending in filename {filename}"))
 
 
 @posix_only
@@ -147,4 +145,4 @@ def check_file_permission(report: Report, file_index: list):
     for file in file_index:
         file = os.path.join(file["path"], file["name"])
         if os.path.isfile(file) and os.access(str(file), os.X_OK):
-            report.add(Record(PROBLEM, "%s is marked as stand-alone executable" % relative_path(str(file))))
+            report.add(Record(PROBLEM, f"{relative_path(str(file))} is marked as stand-alone executable"))

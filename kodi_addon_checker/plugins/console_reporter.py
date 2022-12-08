@@ -18,7 +18,7 @@ def colorPrint(string, color):
     :param color: message color
     :return:
     """
-    print("\033[%sm%s\033[0m" % (color, string))
+    print(f"\033[{color}m{string}\033[0m")
 
 
 @reporter(name="console", enabled=True)

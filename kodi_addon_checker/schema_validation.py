@@ -38,7 +38,7 @@ def schemas(report: Report, CONST_parsed_xml, branch_name):
     if valid:
         report.add(Record(INFORMATION, "Valid XML file found"))
     elif failed:
-        report.add(Record(PROBLEM, "Schema validation failed for the following points: %s " % ''.join(failed)))
+        report.add(Record(PROBLEM, f"Schema validation failed for the following points: {''.join(failed)} "))
 
 
 def _validation_checks(report: Report, parsed_xml, branch_name):
@@ -95,7 +95,7 @@ def _validation_checks(report: Report, parsed_xml, branch_name):
                     metadatacount += 1
 
                 if not exists(schema_path):
-                    report.add(Record(PROBLEM, "%s doesn't exist" % schema_path))
+                    report.add(Record(PROBLEM, f"{schema_path} doesn't exist"))
                     continue
 
                 if not _validate(extension, schema_path):
@@ -104,9 +104,9 @@ def _validation_checks(report: Report, parsed_xml, branch_name):
 
                 parsed_xml.remove(extension)
             else:
-                report.add(Record(PROBLEM, "schema for %s doesn't exists" % extension_point))
+                report.add(Record(PROBLEM, f"schema for {extension_point} doesn't exists"))
         else:
-            report.add(Record(PROBLEM, "%s is not a valid extension point" % extension_point))
+            report.add(Record(PROBLEM, f"{extension_point} is not a valid extension point"))
             valid = False
 
     return failed, metadatacount, valid

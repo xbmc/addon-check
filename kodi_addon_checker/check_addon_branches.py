@@ -74,7 +74,7 @@ def _is_xbmcabi_compatible(dependencies: list, target_branch: str, upper_branch:
         :upper_branch: an upper branch that also contains an addon with the same addon id
     """
     for dependency in dependencies:
-        if dependency.id in VERSION_ATTRB.keys():
+        if dependency.id in VERSION_ATTRB:
             if AddonVersion(VERSION_ATTRB[dependency.id][upper_branch]["min_compatible"]) > \
                 AddonVersion(VERSION_ATTRB[dependency.id][target_branch]["min_compatible"]):
                 return False
@@ -98,15 +98,16 @@ def _check_version_higher(report: Report, addon_details, branch, repo_addons_ver
         report.add(
             Record(
                 PROBLEM,
-                "%s addon already exists with a higher or equal version: %s in %s branch. Users in %s won't " \
-                "be able to receive the addon update."
-                % (addon_name, repo_addons_version, branch, branch)
+                f"{addon_name} addon already exists with a higher or equal version: {repo_addons_version} "\
+                    f"in {branch} branch. Users in {branch} won't " \
+                     "be able to receive the addon update."
             )
         )
     else:
         if pr:
-            report.add(Record(INFORMATION, "%s addon also exists in %s branch but with update compatible version: %s"
-                              % (addon_name, branch, repo_addons_version)))
+            report.add(Record(INFORMATION,
+            f"{addon_name} addon also exists in {branch} branch but " \
+                f"with update compatible version: {repo_addons_version}"))
 
 
 def _check_version_lower(report: Report, addon_details, branch, repo_addons_version, pr):
@@ -127,13 +128,13 @@ def _check_version_lower(report: Report, addon_details, branch, repo_addons_vers
         report.add(
             Record(
                 PROBLEM if pr else WARNING,
-                "%s addon already exists with a lower or equal version: %s in %s branch " \
+                f"{addon_name} addon already exists with a lower or equal version: " \
+                f"{repo_addons_version} in {branch} branch " \
                 "and the addon has non forward abi compatible dependencies. Users migrating " \
-                "to kodi version %s won't be able to receive the addon update."
-                % (addon_name, repo_addons_version, branch, branch)
+                f"to kodi version {branch} won't be able to receive the addon update."
             )
         )
     else:
         if pr:
-            report.add(Record(INFORMATION, "%s addon also exists in %s branch but with migration compatible version: %s"
-                              % (addon_name, branch, repo_addons_version)))
+            report.add(Record(INFORMATION, f"{addon_name} addon also exists "\
+                f"in {branch} branch but with migration compatible version: {repo_addons_version}"))

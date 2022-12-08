@@ -7,7 +7,7 @@
 """
 
 import difflib
-from lib2to3 import pgen2, refactor
+from lib2to3 import pgen2, refactor # pylint: disable=deprecated-module
 
 from .common import relative_path
 from .record import INFORMATION, PROBLEM, Record
@@ -65,16 +65,16 @@ def check_py3_compatibility(report: Report, path: str, kodi_version: KodiVersion
     rt = KodiRefactoringTool(report, PROBLEM, fixer_names, options={"print_function": True}, explicit=None)
     try:
         rt.refactor([path])
-    except pgen2.parse.ParseError as e:
+    except pgen2.parse.ParseError:
         rt = KodiRefactoringTool(report, PROBLEM, fixer_names, options=None, explicit=None)
         try:
             rt.refactor([path])
-        except pgen2.parse.ParseError as e:
-            report.add(Record(PROBLEM, "ParseError: {}".format(e)))
-        except UnicodeDecodeError as e:
-            report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
-    except UnicodeDecodeError as e:
-        report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+        except pgen2.parse.ParseError as pe:
+            report.add(Record(PROBLEM, f"ParseError: {pe}"))
+        except UnicodeDecodeError as ude:
+            report.add(Record(PROBLEM, f"UnicodeDecodeError: {ude}"))
+    except UnicodeDecodeError as ude:
+        report.add(Record(PROBLEM, f"UnicodeDecodeError: {ude}"))
 
     if kodi_version >= KodiVersion("krypton"):
         list_of_fixes = [
@@ -97,13 +97,13 @@ def check_py3_compatibility(report: Report, path: str, kodi_version: KodiVersion
         rt = KodiRefactoringTool(report, INFORMATION, fixer_names, options={"print_function": True}, explicit=None)
         try:
             rt.refactor([path])
-        except pgen2.parse.ParseError as e:
+        except pgen2.parse.ParseError:
             rt = KodiRefactoringTool(report, INFORMATION, fixer_names, options=None, explicit=None)
             try:
                 rt.refactor([path])
-            except pgen2.parse.ParseError as e:
-                report.add(Record(INFORMATION, "ParseError: {}".format(e)))
-            except UnicodeDecodeError as e:
-                report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
-        except UnicodeDecodeError as e:
-            report.add(Record(PROBLEM, "UnicodeDecodeError: {}".format(e)))
+            except pgen2.parse.ParseError as pe:
+                report.add(Record(INFORMATION, f"ParseError: {pe}"))
+            except UnicodeDecodeError as ude:
+                report.add(Record(PROBLEM, f"UnicodeDecodeError: {ude}"))
+        except UnicodeDecodeError as ude:
+            report.add(Record(PROBLEM, f"UnicodeDecodeError: {ude}"))

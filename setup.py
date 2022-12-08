@@ -4,12 +4,12 @@ import setuptools
 import kodi_addon_checker
 
 
-with open('requirements.txt') as f:
+with open('requirements.txt', 'r', encoding="utf8") as f:
     requirements = f.read().splitlines()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(_ROOT, 'README.md')) as f:
+with open(os.path.join(_ROOT, 'README.md'), 'r', encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()
 
 setuptools.setup(
@@ -38,5 +38,5 @@ setuptools.setup(
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Topic :: Utilities"
-    ] + [('Programming Language :: Python :: %s' % x) for x in '3 3.5 3.6 3.7'.split()]
+    ] + [f'Programming Language :: Python :: {x}' for x in '3 3.5 3.6 3.7 3.8 3.9 3.10 3.11'.split()]
 )

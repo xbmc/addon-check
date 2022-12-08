@@ -44,9 +44,9 @@ class TestPOFiles(unittest.TestCase):
 
         file_index = [{"path": language_path, "name": "strings.po"}]
 
-        expected = ['ERROR: Invalid PO file {path}:\n'
+        expected = [f'ERROR: Invalid PO file { relative_path(full_path) }:\n'
                     'Missing required header:\n'
-                    '\tmsgid ""\n\tmsgstr ""'.format(path=relative_path(full_path))]
+                    '\tmsgid ""\n\tmsgstr ""']
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -64,8 +64,8 @@ class TestPOFiles(unittest.TestCase):
 
         file_index = [{"path": language_path, "name": "strings.po"}]
 
-        expected = ["ERROR: Invalid PO file {path}: "
-                    "Syntax error on line 23".format(path=relative_path(full_path))]
+        expected = [f"ERROR: Invalid PO file { relative_path(full_path) }: "
+                    "Syntax error on line 23"]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -83,8 +83,8 @@ class TestPOFiles(unittest.TestCase):
 
         file_index = [{"path": language_path, "name": "strings.po"}]
 
-        expected = ["ERROR: Invalid PO file {path}: "
-                    "File is not saved with UTF-8 encoding".format(path=relative_path(full_path))]
+        expected = [f"ERROR: Invalid PO file { relative_path(full_path) }: "
+                    "File is not saved with UTF-8 encoding"]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -102,8 +102,8 @@ class TestPOFiles(unittest.TestCase):
 
         file_index = [{"path": language_path, "name": "strings.po"}]
 
-        expected = ["ERROR: Invalid PO file {path}: "
-                    "File contains BOM (byte order mark)".format(path=relative_path(full_path))]
+        expected = [f"ERROR: Invalid PO file { relative_path(full_path) }: "
+                    "File contains BOM (byte order mark)"]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -121,7 +121,7 @@ class TestPOFiles(unittest.TestCase):
 
         file_index = [{"path": language_path, "name": "strings.po"}]
 
-        expected = ["ERROR: Invalid PO file {path}: File is empty".format(path=relative_path(full_path))]
+        expected = [f"ERROR: Invalid PO file { relative_path(full_path) }: File is empty"]
 
         check_for_invalid_strings_po(self.report, file_index)
 
@@ -140,8 +140,8 @@ class TestPOFiles(unittest.TestCase):
                       {"path": join(language_path, "resource.language.en_gb"), "name": "strings.po"}]
 
         expected = [
-            "ERROR: PO file with invalid language code in the correct path: {path}"
-                .format(path=relative_path(join(language_path, "resource.language.testing", "strings.po")))
+            "ERROR: PO file with invalid language code in the correct path: " \
+            f"{ relative_path(join(language_path, 'resource.language.testing', 'strings.po')) }"
         ]
 
         check_for_invalid_strings_po(self.report, file_index)
