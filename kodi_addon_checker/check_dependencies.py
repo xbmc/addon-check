@@ -64,7 +64,8 @@ VERSION_ATTRB = {
         'krypton': {'min_compatible': '2.1.0', 'advised': '2.25.0'},
         'leia': {'min_compatible': '2.1.0', 'advised': '2.26.0'},
         'matrix': {'min_compatible': '3.0.0', 'advised': '3.0.0'},
-        'nexus': {'min_compatible': '3.0.0', 'advised': '3.0.1'}
+        'nexus': {'min_compatible': '3.0.0', 'advised': '3.0.1'},
+        'omega': {'min_compatible': '3.0.0', 'advised': '3.0.1'}
     },
     'xbmc.gui': {
         'gotham': {'min_compatible': '5.0.0', 'advised': '5.0.0'},
@@ -74,7 +75,8 @@ VERSION_ATTRB = {
         'krypton': {'min_compatible': '5.12.0', 'advised': '5.12.0'},
         'leia': {'min_compatible': '5.14.0', 'advised': '5.14.0'},
         'matrix': {'min_compatible': '5.14.0', 'advised': '5.15.0'},
-        'nexus': {'min_compatible': '5.15.0', 'advised': '5.16.0'}
+        'nexus': {'min_compatible': '5.15.0', 'advised': '5.16.0'},
+        'omega': {'min_compatible': '5.15.0', 'advised': '5.16.0'}
     },
     'xbmc.json': {
         'gotham': {'min_compatible': '6.0.0', 'advised': '5.0.0'},
@@ -84,7 +86,8 @@ VERSION_ATTRB = {
         'krypton': {'min_compatible': '6.0.0', 'advised': '7.0.0'},
         'leia': {'min_compatible': '6.0.0', 'advised': '9.7.2'},
         'matrix': {'min_compatible': '6.0.0', 'advised': '12.4.0'},
-        'nexus': {'min_compatible': '6.0.0', 'advised': '13.0.0'}
+        'nexus': {'min_compatible': '6.0.0', 'advised': '13.0.0'},
+        'omega': {'min_compatible': '6.0.0', 'advised': '13.0.0'}
     },
     'xbmc.addon': {
         'gotham': {'min_compatible': '12.0.0', 'advised': '13.0.0'},
@@ -94,7 +97,8 @@ VERSION_ATTRB = {
         'krypton': {'min_compatible': '12.0.0', 'advised': '17.0.0'},
         'leia': {'min_compatible': '12.0.0', 'advised': '17.9.910'},
         'matrix': {'min_compatible': '12.0.0', 'advised': '19.1.0'},
-        'nexus': {'min_compatible': '12.0.0', 'advised': '20.90.101'}
+        'nexus': {'min_compatible': '12.0.0', 'advised': '20.0.0'},
+        'omega': {'min_compatible': '12.0.0', 'advised': '20.90.101'}
     },
     'xbmc.metadata': {
         'gotham': {'min_compatible': '1.0', 'advised': '2.1.0'},
@@ -104,7 +108,8 @@ VERSION_ATTRB = {
         'krypton': {'min_compatible': '1.0', 'advised': '2.1.0'},
         'leia': {'min_compatible': '1.0', 'advised': '2.1.0'},
         'matrix': {'min_compatible': '1.0', 'advised': '2.1.0'},
-        'nexus': {'min_compatible': '1.0', 'advised': '2.1.0'}
+        'nexus': {'min_compatible': '1.0', 'advised': '2.1.0'},
+        'omega': {'min_compatible': '1.0', 'advised': '2.1.0'}
     },
 }
 
