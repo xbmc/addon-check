@@ -16,5 +16,6 @@ ValidKodiVersions = [
     "krypton",
     "leia",
     "matrix",
-    "nexus"
+    "nexus",
+    "omega"
 ]
