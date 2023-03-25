@@ -29,7 +29,7 @@ def find_file(name: str, path: str):
 
 
 def find_files_recursive(name: str, path: str):
-    """This looks for a file but only returns the first occurance
+    """This looks for a file but only returns the first occurrence
         :name: name of the file to look for
         :path: path of directory to look for the file
     """

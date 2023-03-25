@@ -105,7 +105,7 @@ def check_for_new_language_directory_structure(report: Report, addon_path: str, 
                     PROBLEM, "Using the new language directory structure "\
                             f"in {os.path.join(language_path, directory)} " \
                              "for a Kodi version that does not support it. " \
-                             "Please use the old language file struture or move the addon to" \
+                             "Please use the old language file structure or move the addon to" \
                              "an upper branch/kodi version."))
 
 

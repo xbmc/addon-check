@@ -68,7 +68,7 @@ Then you can directly install it from pip package:
 pip install kodi-addon-checker
 ```
 
-#### For Developement
+#### For Development
 
 * Clone the repository
 ```
