@@ -101,4 +101,5 @@ You can use the tool with the following options:
 --allow-folder-id-mismatch  allow the addon's folder name and id to mismatch
 --reporter                  enable a reporter, this option can be used multiple times
 --enable-debug-log          enable debug logging to kodi-addon-checker.log
+--skip-dependency-checks    do not check if addon dependencies are available in the official Kodi addon repository
 ```
