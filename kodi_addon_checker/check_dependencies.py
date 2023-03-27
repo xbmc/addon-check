@@ -238,7 +238,7 @@ def _get_ignore_list(kodi_version: KodiVersion):
 
 
 def _check_extensions(report: Report, parsed_xml, addon):
-    """Check if required dependency exist with comparision to
+    """Check if required dependency exist with comparison to
        the existing extension points
 
       :addon: class kodi_addon_checker.addons.Addon.Addon

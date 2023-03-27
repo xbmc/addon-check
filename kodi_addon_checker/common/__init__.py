@@ -17,7 +17,7 @@ REL_PATH = ""
 
 
 def has_transparency(im):
-    """Check the transparency(aplha layer) in the given image
+    """Check the transparency(alpha layer) in the given image
 
         :im: PIL.Image object
     """

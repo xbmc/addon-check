@@ -39,7 +39,7 @@ def _find_file(name, path):
     return
 
 
-# this looks for a file but only returns the first occurance
+# this looks for a file but only returns the first occurrence
 def _find_file_recursive(name, path):
     for file in os.walk(path):
         if name in file[2]:
@@ -303,7 +303,7 @@ def check_for_new_language_directory_structure(report: Report, addon_path, suppo
             elif not found_warning "resource.language." in directory and not supported:
                 report.add(Record(
                     WARNING, "Using the new language directory structure in %s for a Kodi version that does not" \
-                             "support it. Please use the old language file struture or move the addon to" \
+                             "support it. Please use the old language file structure or move the addon to" \
                              "an upper branch/kodi version." % os.path.join(language_path, directory)))
                 found_warning = True
 
