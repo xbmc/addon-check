@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/xbmc/addon-check.svg?branch=master)](https://travis-ci.org/xbmc/addon-check)
+[![Build and test addon-checker](https://github.com/xbmc/addon-check/actions/workflows/test_and_lint_matrix.yml/badge.svg)](https://github.com/xbmc/addon-check/actions/workflows/test_and_lint_matrix.yml)
 [![PyPI version](https://badge.fury.io/py/kodi-addon-checker.svg)](https://badge.fury.io/py/kodi-addon-checker)
 
 # Kodi Addon checker
