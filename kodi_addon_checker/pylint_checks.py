@@ -18,7 +18,7 @@ from .report import Report
 from .record import Record, WARNING
 
 # TODO: Do not repeat name of same file in report just do something like . utils.py - 90,1780 ?
-table_format = [["File path", "Line no", "Message"]]
+table_format = [["File path", "Line no", "Message", "message-id"]]
 
 
 def short_path(path):
@@ -33,7 +33,7 @@ def analyze(report: Report, filename: str):
 
     json_data = json.loads(out.getvalue())
     for issue in json_data:
-        table_format.append([short_path(issue['path']), issue['line'], issue['message']])
+        table_format.append([short_path(issue['path']), issue['line'], issue['message'], issue['message-id']])
 
     table = AsciiTable(table_format).table
     report.add(Record(WARNING, table))
