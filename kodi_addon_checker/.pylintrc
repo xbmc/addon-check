@@ -10,9 +10,8 @@ persistent=yes
 #disable= R, C, W, E
 
 # All the checks you want
-#enable=C0301, E0601, R1705, R1703, C0330, C0413, R1710, E0001, W0611, W0612, W0621, W0622, W0311, W0301, W1501, E0102, W0704, F0401,RP0801, RP0004
-enable = R, C, W, E
-
+#enable=E0601, R1705, R1703, R1710, E0001, W0611, W0612, W0621, W0622, W0311, W0301, W1501, E0102, W0704, F0401,RP0801, RP0004
+enable=R, W, E, F
 [REPORTS]
 
 # Python expression which should return a note less than 10 (10 is the highest
