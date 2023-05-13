@@ -11,11 +11,9 @@ from .reporter import ReportManager
 
 
 class Report():
+    """Create a new report for the given artifact. The artifact can be a repo, add-on or file.
+    """
     def __init__(self, artifact_name):
-        """
-        Create a new report for the given artifact. The artifact can be a repo, add-on or file.
-        :param artifact_name: the artifact name
-        """
         self.artifact_name = artifact_name
         self.problem_count = 0
         self.warning_count = 0

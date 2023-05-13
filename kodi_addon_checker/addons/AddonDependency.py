@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 from ..versions import AddonVersion
 
 class AddonDependency():
+    """Get the minimum version of the dependency of an addon
+    """
     def __init__(self, import_xml: ET.Element):
         super().__init__()
         self.id = import_xml.get('addon')

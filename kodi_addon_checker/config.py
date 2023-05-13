@@ -14,9 +14,10 @@ from kodi_addon_checker.reporter import ReportManager
 
 
 class Config():
+    """Create Config object using .tests-config.json and command line arguments.
+    """
     def __init__(self, repo_path, cmd_args=None):
         """
-        Create Config object using .tests-config.json and command line arguments.
         :param repo_path: the repo path which contains .tests-config.json.
         :param cmd_args: argparse object
         """
@@ -24,6 +25,11 @@ class Config():
         self._load_config(repo_path)
 
     def _load_config(self, repo_path):
+        """Load the config file
+
+        Arguments:
+            repo_path {str} -- the repo path which contains .tests-config.json.
+        """
         if repo_path is None:
             return
         config_path = os.path.join(repo_path, '.tests-config.json')
@@ -37,6 +43,9 @@ class Config():
                     self.configs = file_config
 
     def is_enabled(self, value):
+        """Check if the certain value in the
+           config file is enabled or not
+        """
         return self.configs.get(value, False)
 
     def __getitem__(self, item):
@@ -44,14 +53,20 @@ class Config():
 
 
 class ConfigManager():
+    """Manages Config file
+    """
     configurations = {}
 
     @classmethod
     def register(cls, config, description, default_value, action):
+        """registers all the config
+        """
         cls.configurations[config] = [description, default_value, action]
 
     @classmethod
     def fill_cmd_args(cls, parser: ArgumentParser):
+        """Add an argument for the reporter
+        """
         # Add --reporter
         parser.add_argument("--reporter", action="append", choices=list(ReportManager.reporters.keys()),
                             help="""enable a reporter with the given name.
@@ -59,6 +74,8 @@ class ConfigManager():
 
     @classmethod
     def process_config(cls, config):
+        """Get the reporters
+        """
         reporters = config["reporter"]
         if reporters is not None:
             # To disable all, pass empty array in .tests-config.json

@@ -16,6 +16,11 @@ from .versions import KodiVersion
 
 
 class KodiRefactoringTool(refactor.RefactoringTool):
+    """Report possible refactoring error detected by lib2to3
+
+    Extends:
+        refactor.RefactoringTool
+    """
 
     def __init__(self, report, log_level, *args, **kwargs):
         self.report = report

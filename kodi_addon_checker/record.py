@@ -12,9 +12,10 @@ INFORMATION = "INFO"
 
 
 class Record():
+    """Create a record which is the low level entry in Report to represent logs.
+    """
     def __init__(self, log_level, message):
         """
-        Create a record which is the low level entry in Report to represent logs.
         :param log_level: "ERROR", "WARN" or "INFO"
         :param message: the actual log message
         """

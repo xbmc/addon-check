@@ -15,6 +15,11 @@ from kodi_addon_checker.reporter import Reporter, reporter
 
 @reporter(name="log", enabled=False)
 class LogReporter(Reporter):
+    """Report logs to the log file
+
+    Extends:
+        Reporter
+    """
 
     def __init__(self):
         self.logger = None

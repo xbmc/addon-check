@@ -12,6 +12,11 @@ from kodi_addon_checker.reporter import Reporter, reporter
 
 @reporter(name="array", enabled=False)
 class ArrayReporter(Reporter):
+    """Setup array report for Reporter class
+
+    Extends:
+        Reporter
+    """
     def __init__(self):
         self.reports = []
 
