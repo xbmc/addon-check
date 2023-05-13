@@ -15,25 +15,52 @@ from pylint.reporters.json import JSONReporter
 from terminaltables import AsciiTable
 
 from .report import Report
-from .record import Record, WARNING
+from .record import Record, WARNING, INFORMATION
 
-# TODO: Do not repeat name of same file in report just do something like . utils.py - 90,1780 ?
-table_format = [["File path", "Line no", "Message", "message-id"]]
+
+def analyze(report: Report, filename: str):
+    table_format = [["Line no", "Message", "message-id"]]
+
+    ARGS = ["-r", "n", "--score=yes", "--lint-all=y",
+            "--rcfile={}/.pylintrc".format(os.path.dirname(os.path.realpath(__file__)))]
+
+    out = io.StringIO()
+    Run([filename] + ARGS, reporter=JSONReporter(out), do_exit=False)
+
+    if out.getvalue():
+        json_data = json.loads(out.getvalue())
+        paths = []
+
+        for dicts in json_data:
+            paths.append(dicts['path'])
+
+        paths = list(set(paths))
+        data_dict = _path_dictionary(json_data, paths)
+
+        for path in paths:
+            report.add(Record(INFORMATION, (path + '\n')))
+            for issue in data_dict[path]:
+                table_format.append([issue['line'], issue['message'], issue['message-id'], ''])
+            table = AsciiTable(table_format).table
+            report.add(Record(WARNING, table))
+            table_format = [["Line no", "Message", "message-id"]]
+    else:
+        report.add(Record(INFORMATION, "Addin is free from pylint errors"))
 
 
 def short_path(path):
     return os.path.split(path)[1]
 
 
-def analyze(report: Report, filename: str):
+def _path_dictionary(data, paths):
+    path_dict = {}
 
-    ARGS = ["-r", "n", "--score=yes", "--lint-all=y", "--rcfile=kodi_addon_checker/.pylintrc"]
-    out = io.StringIO()
-    Run([filename] + ARGS, reporter=JSONReporter(out), do_exit=False)
+    for issue in data:
+        if issue['path'] not in paths:
+            continue
+        elif issue['path'] not in path_dict:
+            path_dict[issue['path']] = [issue]
+        else:
+            path_dict[issue['path']].append(issue)
 
-    json_data = json.loads(out.getvalue())
-    for issue in json_data:
-        table_format.append([short_path(issue['path']), issue['line'], issue['message'], issue['message-id']])
-
-    table = AsciiTable(table_format).table
-    report.add(Record(WARNING, table))
+    return path_dict
