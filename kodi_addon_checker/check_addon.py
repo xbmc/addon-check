@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 from . import (check_allowed_versions, check_artwork, check_dependencies,
                check_entrypoint, check_files, check_addon_branches,
                check_py3_compatibility, check_string, check_url, common,
-               handle_files, schema_validation, ValidKodiVersions)
+               handle_files, pylint_checks, schema_validation, ValidKodiVersions)
 from .addons.Addon import Addon
 from .addons.Repository import Repository
 from .versions import KodiVersion
@@ -70,6 +70,8 @@ def start(addon_path, args, all_repo_addons, config=None):
             check_dependencies.check_reverse_dependencies(addon_report, addon_id, args.branch, all_repo_addons)
 
             check_files.check_file_permission(addon_report, file_index)
+
+            pylint_checks.analyze(addon_report, addon_path)
 
             check_files.check_for_invalid_xml_files(addon_report, file_index)
 

@@ -1,7 +1,9 @@
 packaging
 pillow
 polib
+pylint
 requests
 radon
+terminaltables
 urllib3
 xmlschema
