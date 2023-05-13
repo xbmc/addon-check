@@ -71,6 +71,10 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_files.check_file_permission(addon_report, file_index)
 
+            check_files.check_license_identifier(addon_report, addon_path)
+
+            check_files.check_license_tag(addon_report, parsed_xml)
+
             check_files.check_for_invalid_xml_files(addon_report, file_index)
 
             check_files.check_for_invalid_json_files(addon_report, file_index)
