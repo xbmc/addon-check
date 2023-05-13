@@ -4,12 +4,11 @@
   <xs:element name="extension">
     <xs:complexType>
       <xs:attribute name="point" type="simpleIdentifier" use="required"/>
-      <xs:attribute name="type" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:simpleType name="simpleIdentifier">
     <xs:restriction base="xs:string">
-      <xs:pattern value="kodi\.resource\.images"/>
+      <xs:pattern value="kodi\.resource\.font"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

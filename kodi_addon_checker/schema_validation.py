@@ -62,6 +62,7 @@ def _validation_checks(report: Report, parsed_xml, branch_name):
         'kodi.resource.language': 'language.xsd',
         'kodi.addon.metadata': 'metadata.xsd',
         'kodi.resource.uisounds': 'uisounds.xsd',
+        'kodi.resource.font': 'font.xsd',
         'kodi.vfs': 'binary_vfs.xsd',
         'xbmc.addon.metadata': 'metadata.xsd',
         'xbmc.addon.repository': 'repository.xsd',
