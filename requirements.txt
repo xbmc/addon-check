@@ -1,7 +1,7 @@
 packaging
 pillow
 polib
-pylint
+git+git://github.com/mzfr/pylint.git@master
 requests
 radon
 terminaltables
