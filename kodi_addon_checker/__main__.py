@@ -77,6 +77,8 @@ def main():
                         action="store_true")
     parser.add_argument("--enable-debug-log", help="Enable debug logging to kodi-addon-checker.log",
                         action="store_true", default=False)
+    parser.add_argument("--skip-dependency-checks", help="Do not check if addon dependencies are available \
+                        in the official Kodi addon repository", action="store_true", default=False)
     ConfigManager.fill_cmd_args(parser)
     args = parser.parse_args()
 
