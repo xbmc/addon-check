@@ -69,6 +69,8 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_dependencies.check_reverse_dependencies(addon_report, addon_id, args.branch, all_repo_addons)
 
+            check_dependencies.check_circular_dependencies(addon_report, all_repo_addons, parsed_xml, args.branch)
+
             check_files.check_file_permission(addon_report, file_index)
 
             check_files.check_for_invalid_xml_files(addon_report, file_index)

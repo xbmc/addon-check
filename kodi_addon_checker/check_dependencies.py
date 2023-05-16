@@ -223,6 +223,70 @@ def check_reverse_dependencies(report: Report, addon: str, branch_name: str, all
         ))
 
 
+def check_circular_dependencies(report: Report, all_repo_addons: dict, parsed_xml, branch_name: str):
+    """Check for any circular dependencies in addon.xml file and reports them
+        :report: current report for adding result records
+        :all_repo_addons: dictionary return by all_repo_addon() function
+        :parsed_xml: parsed addon.xml file
+        :branch_name: name of the kodi branch/version
+    """
+    addon = Addon(parsed_xml)
+
+    dependency_tree = create_dependency_tree(addon, all_repo_addons, branch_name)
+
+    if dependency_tree:
+        circular_dependencies = []
+
+        for depend in list(dependency_tree.keys()):
+            if addon.id in dependency_tree.get(depend, []):
+                circular_dependencies.append(depend)
+
+        if circular_dependencies:
+            report.add(Record(PROBLEM, "Circular dependencies: {}"
+                              .format(", ".join(sorted(set(circular_dependencies))))))
+
+
+def create_dependency_tree(addon: Addon, all_repo_addons: dict, branch_name: str):
+    """Create a dict of dependencies and their dependencies based on addon.
+        :addon: root addon for dependency tree, class kodi_addon_checker.addons.Addon.Addon
+        :all_repo_addons: dictionary return by all_repo_addon() function
+        :branch_name: name of the kodi branch/version
+    """
+    ignore_list = _get_ignore_list(KodiVersion(branch_name))
+
+    dependencies = []
+    dependency_tree = {}
+
+    # add dependencies of `addon` to dependencies list
+    def add_dependencies(_addon):
+        new_depends = []
+        for dependency in _addon.dependencies:
+            # don't check ignored for dependencies
+            if dependency.id in ignore_list:
+                continue
+            new_depends.append(dependency)
+
+        if _addon.id not in dependency_tree:
+            dependency_tree[_addon.id] = []
+        if new_depends:
+            dependency_tree[_addon.id] = [d.id for d in new_depends]
+            dependencies.extend(new_depends)
+
+    add_dependencies(addon)
+
+    i = 0
+    # add all dependencies and their dependencies
+    while i < len(dependencies):
+        if dependencies[i].id not in dependency_tree:
+            for _, repo in sorted(all_repo_addons.items()):
+                found_addon = repo.find(dependencies[i].id)
+                if found_addon:
+                    add_dependencies(found_addon)
+        i += 1
+
+    return dependency_tree
+
+
 def _get_ignore_list(kodi_version: KodiVersion):
     """Generate an dependency ignore list based
        on the branch name
