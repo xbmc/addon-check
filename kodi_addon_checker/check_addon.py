@@ -84,6 +84,8 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, KodiVersion(args.branch))
 
+            check_files.check_print_statement(addon_report, file_index)
+
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
                 handle_files.addon_file_exists(addon_report, addon_path,
