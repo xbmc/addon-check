@@ -17,6 +17,8 @@ from ..versions import AddonVersion
 
 
 class Repository():
+    """Get information of all the addons
+    """
     def __init__(self, version, path):
         super().__init__()
         self.version = version
@@ -40,12 +42,23 @@ class Repository():
             self.addons.append(Addon(addon))
 
     def __contains__(self, addonId):
+        """Check if addon is present in the list or not
+
+        Arguments:
+            addonId {str} -- Id of addon that is to be looked for
+        """
         for addon in self.addons:
             if addon.id == addonId:
                 return True
         return False
 
     def find(self, addonId):
+        """If the addon exists in the list then return it
+
+        Arguments:
+            addonId {str} -- Id of addon that is to be looked for
+        """
+
         # multiple copies of the same addon might exist on the repository, however
         # kodi always uses the highest version available
         addon_instances = []
@@ -61,6 +74,12 @@ class Repository():
         return addon_instances[0]
 
     def rdepends(self, addonId):
+        """Check if addon is dependent on any other addon.
+
+        Arguments:
+            addonId {str} -- Id of addon whose dependencies
+                             are to be looked
+        """
         rdepends = []
         for addon in self.addons:
             if addon.dependsOn(addonId):

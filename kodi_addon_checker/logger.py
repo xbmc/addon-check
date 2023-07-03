@@ -11,6 +11,8 @@ import logging.handlers
 
 
 class Logger:
+    """Logger class the provokes the create_logger function.
+    """
 
     @staticmethod
     def create_logger(debug_filename, logger_name, enabled=False):

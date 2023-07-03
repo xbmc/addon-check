@@ -17,10 +17,14 @@ class Reporter(ABC):
 
 
 class ReportManager():
+    """Manage all the reporters
+    """
     reporters = {}
 
     @classmethod
     def register(cls, reporter_clazz: Reporter, name, enabled):
+        """Register the reporters
+        """
         cls.reporters[name] = [reporter_clazz(), enabled]
 
     @classmethod
@@ -35,10 +39,14 @@ class ReportManager():
 
     @classmethod
     def getEnabledReporters(cls):
+        """Get all the reporters that are enabled
+        """
         return [reporter[0] for reporter in cls.reporters.values() if reporter[1]]
 
 
 def reporter(name, enabled=False):
+    """Report all the enabled reporters to ReportManager
+    """
     def _reporter(clazz):
         if inspect.isclass(clazz):
             if not hasattr(clazz, "report") or len(inspect.signature(getattr(clazz, "report")).parameters.items()) != 2:

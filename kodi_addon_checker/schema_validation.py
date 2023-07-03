@@ -126,6 +126,18 @@ def _validate(xml, schemapath):
 
 
 def check_version(branch_name, schema_file):
+    """Check whether the schema files for the specific
+       branch exists or not and if not then return the
+       highest available variant of the schema file or None
+
+    Arguments:
+        branch_name {str} -- Name of the branch the schema
+                             is being validated of
+        schema_file {str} -- Schema file to look for.
+
+    Returns:
+        [str] -- full path to the schema file.
+    """
     all_branches = ValidKodiVersions[::-1]
     branches = all_branches[all_branches.index(branch_name)::1]
     for branch in branches:
