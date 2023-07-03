@@ -1,0 +1,39 @@
+[Master]
+
+#Files to be ignored
+ignore=CVS,ini,xml
+
+# Pickle collected data for later comparisons.
+persistent=yes
+
+# Message to be disabled
+#disable= R, C, W, E
+
+# All the checks you want
+#enable=E0601, R1705, R1703, R1710, E0001, W0611, W0612, W0621, W0622, W0311, W0301, W1501, E0102, W0704, F0401,RP0801, RP0004
+enable=R, W, E, F
+[REPORTS]
+
+# Python expression which should return a note less than 10 (10 is the highest
+# note). You have access to the variables errors warning, statement which
+# respectively contain the number of errors / warnings messages and the total
+# number of statements analyzed. This is used by the global evaluation report
+# (RP0004).
+evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+
+output-format=colorized
+
+# Full report or not
+reports=yes
+
+# Activate the evaluation score.
+score=yes
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=120
+
+# Maximum number of lines in a module
+max-module-lines=300
+

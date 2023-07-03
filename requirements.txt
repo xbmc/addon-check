@@ -1,7 +1,9 @@
 packaging
 pillow
 polib
+git+git://github.com/mzfr/pylint.git@master
 requests
 radon
+terminaltables
 urllib3
 xmlschema
