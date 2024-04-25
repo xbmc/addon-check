@@ -116,6 +116,19 @@ VERSION_ATTRB = {
 LOGGER = logging.getLogger(__name__)
 
 
+def check_python_dependency(report: Report, addon: Addon):
+    """ Checks if the Python dependency targets version 3 or highter.
+
+        :report: the report object
+        :addon: the Addon object (contains id and version)
+    """
+
+    for dependency in addon.dependencies:
+        if dependency.id == 'xbmc.python' and dependency.version < AddonVersion("3.0.0"):
+            report.add(Record(PROBLEM, "Add-ons should target Python 3 and up."))
+            return
+
+
 def check_addon_dependencies(report: Report, repo_addons: dict, parsed_xml, args):
     """Check for any new dependencies in addon.xml file and reports them
         :parsed_xml: parsed addon.xml file

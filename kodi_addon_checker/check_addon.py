@@ -54,7 +54,9 @@ def start(addon_path, args, all_repo_addons, config=None):
     addon_xml = check_files.check_addon_xml(addon_report, addon_path, parsed_xml, args.allow_folder_id_mismatch)
 
     if addon_xml is not None:
-        check_addon_branches.check_for_existing_addon(addon_report, Addon(parsed_xml), all_repo_addons, args)
+        addon = Addon(parsed_xml)
+        check_dependencies.check_python_dependency(addon_report, addon)
+        check_addon_branches.check_for_existing_addon(addon_report, addon, all_repo_addons, args)
 
         if not addon_xml.findall("*//broken") and \
            not (addon_xml.findall("*//lifecyclestate") and \
