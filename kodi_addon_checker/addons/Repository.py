@@ -6,7 +6,9 @@
     See LICENSES/README.md for more information.
 """
 
+import atexit
 import gzip
+import time
 import xml.etree.ElementTree as ET
 from io import BytesIO
 
@@ -16,26 +18,59 @@ from .Addon import Addon
 from ..versions import AddonVersion
 
 
+class RateLimitedAdapter(requests.adapters.HTTPAdapter):
+    def __init__(self, *args, retries=5, wait=10, **kwargs):
+        self._last_send = None
+        self._wait_time = wait
+        max_retries = requests.adapters.Retry(
+            total=retries,
+            backoff_factor=wait,
+            status_forcelist={429, },
+            allowed_methods=None,
+        )
+        kwargs.setdefault('max_retries', max_retries)
+        super().__init__(*args, **kwargs)
+
+    def send(self, *args, **kwargs):
+        if self._last_send:
+            delta = time.time() - self._last_send
+            if delta < self._wait_time:
+                time.sleep(self._wait_time - delta)
+
+        self._last_send = time.time()
+        response = super().send(*args, **kwargs)
+        status_code = getattr(response, 'status_code', None)
+        if 300 <= status_code < 400:
+            self._last_send = None
+        return response
+
+
 class Repository():
+    # Recover from unreliable mirrors
+    _session = requests.Session()
+    _adapter = RateLimitedAdapter(retries=5, wait=10)
+    _session.mount('http://', _adapter)
+    _session.mount('https://', _adapter)
+    atexit.register(_session.close)
+
     def __init__(self, version, path):
         super().__init__()
         self.version = version
         self.path = path
+        self.addons = []
 
-        # Recover from unreliable mirrors
-        session = requests.Session()
-        adapter = requests.adapters.HTTPAdapter(max_retries=5)
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
-
-        content = session.get(path, timeout=(30, 30)).content
+        try:
+            response = self._session.get(path, timeout=(30, 30))
+            response.raise_for_status()
+        except requests.exceptions.RequestException as exc:
+            return
+        content = response.content
 
         if path.endswith('.gz'):
             with gzip.open(BytesIO(content), 'rb') as xml_file:
                 content = xml_file.read()
 
         tree = ET.fromstring(content)
-        self.addons = []
         for addon in tree.findall("addon"):
             self.addons.append(Addon(addon))
 
