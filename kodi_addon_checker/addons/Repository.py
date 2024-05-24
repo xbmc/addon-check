@@ -19,7 +19,7 @@ from ..versions import AddonVersion
 
 
 class RateLimitedAdapter(requests.adapters.HTTPAdapter):
-    def __init__(self, *args, retries=5, wait=10, **kwargs):
+    def __init__(self, *args, retries=5, wait=None, **kwargs):
         self._last_send = None
         self._wait_time = wait
         max_retries = requests.adapters.Retry(
@@ -48,7 +48,7 @@ class RateLimitedAdapter(requests.adapters.HTTPAdapter):
 class Repository():
     # Recover from unreliable mirrors
     _session = requests.Session()
-    _adapter = RateLimitedAdapter(retries=5, wait=None, pool_maxsize=3, pool_block=True)
+    _adapter = RateLimitedAdapter(retries=5, pool_maxsize=3, pool_block=True)
     _session.mount('http://', _adapter)
     _session.mount('https://', _adapter)
     atexit.register(_session.close)
