@@ -24,7 +24,7 @@ class RateLimitedAdapter(requests.adapters.HTTPAdapter):
         self._wait_time = wait
         max_retries = requests.adapters.Retry(
             total=retries,
-            backoff_factor=wait,
+            backoff_factor=wait or 10,
             status_forcelist={429, },
             allowed_methods=None,
         )
@@ -32,7 +32,7 @@ class RateLimitedAdapter(requests.adapters.HTTPAdapter):
         super().__init__(*args, **kwargs)
 
     def send(self, *args, **kwargs):
-        if self._last_send:
+        if self._wait_time and self._last_send:
             delta = time.time() - self._last_send
             if delta < self._wait_time:
                 time.sleep(self._wait_time - delta)
@@ -48,7 +48,7 @@ class RateLimitedAdapter(requests.adapters.HTTPAdapter):
 class Repository():
     # Recover from unreliable mirrors
     _session = requests.Session()
-    _adapter = RateLimitedAdapter(retries=5, wait=10)
+    _adapter = RateLimitedAdapter(retries=5, wait=None, pool_maxsize=3, pool_block=True)
     _session.mount('http://', _adapter)
     _session.mount('https://', _adapter)
     atexit.register(_session.close)
@@ -57,7 +57,6 @@ class Repository():
         super().__init__()
         self.version = version
         self.path = path
-        self.addons = []
 
         try:
             response = self._session.get(path, timeout=(30, 30))
@@ -70,6 +69,7 @@ class Repository():
             with gzip.open(BytesIO(content), 'rb') as xml_file:
                 content = xml_file.read()
 
+        self.addons = []
         tree = ET.fromstring(content)
         for addon in tree.findall("addon"):
             self.addons.append(Addon(addon))
