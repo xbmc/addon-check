@@ -6,7 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
-__version__ = "0.0.32"
+__version__ = "0.0.33"
 
 ValidKodiVersions = [
     "gotham",
@@ -17,5 +17,5 @@ ValidKodiVersions = [
     "leia",
     "matrix",
     "nexus",
-    "omega"
+    "omega",
 ]
