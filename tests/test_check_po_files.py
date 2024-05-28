@@ -17,7 +17,7 @@ class TestPOFiles(unittest.TestCase):
         load_plugins()
         ReportManager.enable(["array"])
         self.report = Report("")
-        self.report_matches = ("ERROR: Invalid PO file")
+        self.report_matches = "ERROR: Invalid PO file"
 
     def test_check_for_invalid_strings_po_valid_file(self):
         ReportManager.getEnabledReporters()[0].reports = []
