@@ -1,7 +1,7 @@
 packaging
 pillow
 polib
-requests
+requests >= 2.25.0
 radon
-urllib3
+urllib3 >= 1.26.0
 xmlschema
