@@ -61,7 +61,7 @@ class Repository():
         try:
             response = self._session.get(path, timeout=(30, 30))
             response.raise_for_status()
-        except requests.exceptions.RequestException as exc:
+        except requests.exceptions.RequestException:
             return
         content = response.content
 
