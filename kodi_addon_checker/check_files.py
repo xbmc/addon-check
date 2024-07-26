@@ -24,7 +24,7 @@ def check_for_invalid_xml_files(report: Report, file_index: list):
                         addons
     """
     for file in file_index:
-        if ".xml" in file["name"]:
+        if os.path.splitext(file["name"])[1].lower() == ".xml":
             xml_path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully parse it
@@ -39,7 +39,7 @@ def check_for_invalid_json_files(report: Report, file_index: list):
                      addons
     """
     for file in file_index:
-        if ".json" in file["name"]:
+        if os.path.splitext(file["name"])[1].lower() == ".json":
             path = os.path.join(file["path"], file["name"])
             try:
                 # Just try if we can successfully parse it
