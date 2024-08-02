@@ -11,8 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repo: ['repo-plugins', 'repo-scripts', 'repo-scrapers', 'repo-resources', 'repo-skins']
-        kodi-version: ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia', 'matrix', 'nexus', 'omega']
+        repo: ['repo-plugins', 'repo-scripts', 'repo-scrapers', 'repo-resources', 'repo-skins', 'repo-webinterfaces']
+        kodi-version: ['gotham', 'helix', 'isengard', 'jarvis', 'krypton', 'leia', 'matrix', 'nexus', 'omega', 'piers']
 
     steps:
       - uses: actions/checkout@v3
