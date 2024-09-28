@@ -67,7 +67,8 @@ def start(addon_path, args, all_repo_addons, config=None):
 
             check_url.check_url(addon_report, parsed_xml)
 
-            check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, args)
+            if not args.skip_dependency_checks:
+                check_dependencies.check_addon_dependencies(addon_report, repo_addons, parsed_xml, args)
 
             check_dependencies.check_reverse_dependencies(addon_report, addon_id, args.branch, all_repo_addons)
 
