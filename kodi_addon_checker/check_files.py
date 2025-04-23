@@ -6,6 +6,7 @@
     See LICENSES/README.md for more information.
 """
 
+import ast
 import json
 import os
 import re
@@ -146,3 +147,31 @@ def check_file_permission(report: Report, file_index: list):
         file = os.path.join(file["path"], file["name"])
         if os.path.isfile(file) and os.access(str(file), os.X_OK):
             report.add(Record(PROBLEM, f"{relative_path(str(file))} is marked as stand-alone executable"))
+
+
+def check_print_statement(report: Report, file_index: list):
+    """Check whether any addon files have a print statement in them
+       or not
+        :file_index: list having names and path of all the files present in addon
+    """
+    for file in file_index:
+        if os.path.splitext(file["name"])[1] == '.py':
+            file = os.path.join(file["path"], file["name"])
+            try:
+                with open(file, 'r', encoding="utf-8") as f:
+                    source = f.read()
+
+                try:
+                    for node in ast.walk(ast.parse(source)):
+                        if (isinstance(node, ast.Expr) and
+                                isinstance(node.value, ast.Call) and
+                                isinstance(node.value.func, ast.Name)):
+
+                            if node.value.func.id == "print":
+                                report.add(Record(WARNING,
+                                    f"{relative_path(str(file))} has a print statement on line {node.lineno}"))
+                except SyntaxError as e:
+                    report.add(Record(PROBLEM, f"{relative_path(str(file))} failed to parse with {e}"))
+
+            except UnicodeDecodeError as e:
+                report.add(Record(PROBLEM, f"UnicodeDecodeError: {e}"))
