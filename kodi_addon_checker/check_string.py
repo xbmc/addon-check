@@ -45,7 +45,7 @@ def find_blacklisted_strings(report: Report, addon_path: str, problems: list, wa
                     f"{result['searchfile']}:{result['linenumber']} ({result['line']})"))
 
 
-def check_for_invalid_strings_po(report: Report, file_index: list):
+def check_for_invalid_strings_po(report: Report, file_index: list, is_language_addon: bool = False):
     """Validate strings.po files
         :file_index: list having names and path of all the files present in addon
     """
@@ -62,7 +62,7 @@ def check_for_invalid_strings_po(report: Report, file_index: list):
         if not report_made and not success:
             report_made = True
 
-    skip_en_gb_validation = all(
+    skip_en_gb_validation = is_language_addon or all(
         (
             _is_using_legacy_language_directory_structure(po_file.get("path")) \
             for po_file in po_file_index
