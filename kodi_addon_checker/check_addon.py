@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 from . import (check_allowed_versions, check_artwork, check_dependencies,
                check_entrypoint, check_files, check_addon_branches,
-               check_py3_compatibility, check_string, check_url, common,
+               check_string, check_url, common,
                handle_files, schema_validation, ValidKodiVersions)
 from .addons.Addon import Addon
 from .addons.Repository import Repository
@@ -84,8 +84,6 @@ def start(addon_path, args, all_repo_addons, config=None):
                 "max_entrypoint_count", 15)
             check_entrypoint.check_complex_addon_entrypoint(
                 addon_report, addon_path, parsed_xml, max_entrypoint_count)
-
-            check_py3_compatibility.check_py3_compatibility(addon_report, addon_path, KodiVersion(args.branch))
 
             if config.is_enabled("check_license_file_exists"):
                 # check if license file is existing
