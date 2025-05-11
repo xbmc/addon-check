@@ -4,12 +4,12 @@ import setuptools
 import kodi_addon_checker
 
 
-with open('requirements.txt', 'r', encoding="utf8") as f:
+with open("requirements.txt", "r", encoding="utf8") as f:
     requirements = f.read().splitlines()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(_ROOT, 'README.md'), 'r', encoding="utf8") as f:
+with open(os.path.join(_ROOT, "README.md"), "r", encoding="utf8") as f:
     LONG_DESCRIPTION = f.read()
 
 setuptools.setup(
@@ -21,14 +21,15 @@ setuptools.setup(
     author="Team Kodi",
     url="https://github.com/xbmc/addon-check",
     download_url="https://github.com/xbmc/addon-check/archive/master.zip",
-    packages=setuptools.find_packages(exclude=['script.test', 'tests*']),
-    package_data={'kodi_addon_checker': ['xml_schema/*.xsd']},
+    packages=setuptools.find_packages(exclude=["script.test", "tests*"]),
+    package_data={"kodi_addon_checker": ["xml_schema/*.xsd"]},
     install_requires=requirements,
     python_requires=">=3.5",
-    setup_requires=['setuptools>=38.6.0'],
-    entry_points={'console_scripts': [
-        'kodi-addon-checker = kodi_addon_checker.__main__:main']},
-    keywords='kodi add-on add-on_checker',
+    setup_requires=["setuptools>=38.6.0"],
+    entry_points={
+        "console_scripts": ["kodi-addon-checker = kodi_addon_checker.__main__:main"]
+    },
+    keywords="kodi add-on add-on_checker",
     classifiers=[
         "Operating System :: POSIX :: Linux",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -37,6 +38,10 @@ setuptools.setup(
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
-        "Topic :: Utilities"
-    ] + [f'Programming Language :: Python :: {x}' for x in '3 3.5 3.6 3.7 3.8 3.9 3.10 3.11'.split()]
+        "Topic :: Utilities",
+    ]
+    + [
+        f"Programming Language :: Python :: {x}"
+        for x in "3.8 3.9 3.10 3.11 3.12 3.13".split()
+    ],
 )
