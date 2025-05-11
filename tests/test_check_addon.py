@@ -26,6 +26,7 @@ class TestCheckAddon(unittest.TestCase):
         ReportManager.enable(["array"])
         self.all_repo_addons = get_all_repo_addons()
         self.args = Args()
+        self.args.skip_dependency_checks = False
 
     def test_start(self):
         start(self.path, self.args, self.all_repo_addons, self.config)
