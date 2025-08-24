@@ -6,10 +6,12 @@
     See LICENSES/README.md for more information.
 """
 
-import json
 import os
 import re
+import json
+import ast
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from . import handle_files
 from .common import relative_path
@@ -146,3 +148,33 @@ def check_file_permission(report: Report, file_index: list):
         file = os.path.join(file["path"], file["name"])
         if os.path.isfile(file) and os.access(str(file), os.X_OK):
             report.add(Record(PROBLEM, f"{relative_path(str(file))} is marked as stand-alone executable"))
+
+
+def check_license_identifier(report: Report, addon_path: str):
+    """Check whether all the files present in the addon
+       contains the SPDX license header or not
+        :addon_path: Path of the addon
+    """
+
+    files = Path(addon_path).glob('**/*.py')
+
+    for file in files:
+        with open(str(file), 'r', encoding="utf-8") as f:
+            tree = ast.parse(f.read())
+
+        docstring = ast.get_docstring(tree)
+        if docstring and "SPDX-License-Identifier" not in docstring:
+            report.add(Record(WARNING,
+                              f"SPDX-License-Identifier is missing from addon file {relative_path(str(file))}"))
+
+
+def check_license_tag(report: Report, parsed_xml):
+    """Check license tag in addon xml file
+        :parsed_xml: parsed tree for xml file
+    """
+
+    license_text = parsed_xml.find("extension/license").text
+    spdx_string = "GNU General Public License v2.0 or later"
+
+    if spdx_string != license_text:
+        report.add(Record(WARNING, "License is not of SPDX format"))
