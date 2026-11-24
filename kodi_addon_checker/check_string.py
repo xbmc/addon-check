@@ -17,6 +17,7 @@ from .record import INFORMATION, PROBLEM, WARNING, Record
 from .report import Report
 
 RE_LANG_CODE = re.compile(r"^[a-z]{2,3}(?:_[a-zA-Z]{2}(?:@\S+)?)?$")
+RE_LANG_FOLDER = re.compile(r"resource\.language\.([^/\\]+)")
 
 
 def check_for_legacy_strings_xml(report: Report, addon_path: str):
@@ -90,9 +91,10 @@ def parse_po_file(report: Report, language_path: str, po_file: dict):
     success = True
     full_path = os.path.join(po_file["path"], po_file["name"])
 
-    language_code = ''
-    if len(language_path.rpartition('.')) == 3:
-        language_code = language_path.rpartition('.')[2]
+    # A language add-on keeps strings.po in "resource.language.<code>/resources", so the code is
+    # the suffix of the last "resource.language." folder, not of the whole path
+    language_codes = RE_LANG_FOLDER.findall(language_path)
+    language_code = language_codes[-1] if language_codes else ''
 
     if not _is_using_legacy_language_directory_structure(po_file["path"]) \
         and not RE_LANG_CODE.match(language_code):
