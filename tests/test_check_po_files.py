@@ -178,3 +178,22 @@ class TestPOFiles(unittest.TestCase):
         records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
         output = [s for s in records if s.startswith(matches)]
         self.assertListEqual(expected, output)
+
+    def test_check_for_invalid_strings_po_language_addon(self):
+        ReportManager.getEnabledReporters()[0].reports = []
+
+        path = join(self.path, "language_addon")
+        file_index = [{"path": join(path, "resource.language.az_az", "resources"), "name": "strings.po"}]
+
+        expected = []
+
+        check_for_invalid_strings_po(self.report, file_index, is_language_addon=True)
+
+        matches = (
+            self.report_matches,
+            "ERROR: PO file with invalid language code in the correct path"
+        )
+
+        records = [Record.__str__(r) for r in ReportManager.getEnabledReporters()[0].reports]
+        output = [s for s in records if s.startswith(matches)]
+        self.assertListEqual(expected, output)
